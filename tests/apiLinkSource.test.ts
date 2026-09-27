@@ -65,4 +65,47 @@ describe('ApiLinkSource', () => {
     expect(result.get('Small')).toEqual({ links: ['Target'], sizeBytes: 100 });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it('treats a missing intermediate red link as a dead end, including in a paginated batch', async () => {
+    const fetchMock = vi.fn(async () => ({
+      ok: true, status: 200,
+      json: async () => ({
+        continue: { plcontinue: '1|0|Next', continue: '||info' },
+        query: { pages: [
+          { title: 'Existing', ns: 0, length: 5000, links: Array.from({ length: 50 }, (_, i) => ({ title: `Page ${i}`, ns: 0 })) },
+          { title: 'Arbeitertum', ns: 0, missing: true },
+        ] },
+      }),
+    }));
+    vi.stubGlobal('fetch', fetchMock);
+    const source = new ApiLinkSource(DEFAULT_LIMITS);
+    const result = await source.getOutlinksBatch(['Existing', 'Arbeitertum'], 'ru', 50);
+    expect(result.get('Arbeitertum')).toEqual({ links: [], sizeBytes: 0 });
+    expect(await source.getOutlinks('Arbeitertum', 'ru', 50)).toEqual([]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('also skips a red link that is absent from the first batch page', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const title = new URL(String(input)).searchParams.get('titles');
+      return { ok: true, status: 200, json: async () => title === 'Existing|Arbeitertum'
+        ? { continue: { plcontinue: '1|0|Next', continue: '||info' }, query: { pages: [
+          { title: 'Existing', ns: 0, length: 5000, links: Array.from({ length: 50 }, (_, i) => ({ title: `Page ${i}`, ns: 0 })) },
+        ] } }
+        : { query: { pages: [{ title: 'Arbeitertum', ns: 0, missing: true }] } } };
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const result = await new ApiLinkSource(DEFAULT_LIMITS).getOutlinksBatch(['Existing', 'Arbeitertum'], 'ru', 50);
+    expect(result.get('Arbeitertum')).toEqual({ links: [], sizeBytes: 0 });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('still rejects an explicitly requested nonexistent endpoint', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({
+      ok: true, status: 200,
+      json: async () => ({ query: { pages: [{ title: 'Arbeitertum', ns: 0, missing: true }] } }),
+    })));
+    await expect(new ApiLinkSource(DEFAULT_LIMITS).resolveRedirect('Arbeitertum', 'ru'))
+      .rejects.toThrow('Статья «Arbeitertum» не найдена в ru.wikipedia.org');
+  });
 });

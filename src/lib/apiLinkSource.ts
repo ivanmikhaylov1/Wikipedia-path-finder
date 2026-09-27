@@ -153,6 +153,13 @@ export class ApiLinkSource implements LinkSource {
       const incomplete: string[] = [];
       for (const title of group) {
         const page = data.query?.pages?.find(item => item.title === (normalized.get(title) ?? title));
+        if (page?.missing) {
+          // prop=links includes red links. A missing intermediate page has no
+          // outgoing edges; it must not abort the search for a valid endpoint.
+          await this.saveLinks(this.key(lang, title, 'out'), [], true);
+          result.set(title, { links: [], sizeBytes: 0 });
+          continue;
+        }
         const links = (page?.links ?? []).filter(link => link.ns === 0).map(link => link.title);
         if (!page || (data.continue?.plcontinue && links.length < effectiveCap)) {
           incomplete.push(title); continue;
@@ -172,7 +179,12 @@ export class ApiLinkSource implements LinkSource {
             pllimit: String(this.linkCeiling), ...continuation,
           });
           const page = part.query?.pages?.[0];
-          if (!page || page.missing) throw new ArticleNotFoundError(title, lang);
+          if (page?.missing) {
+            links.length = 0;
+            continuation = {};
+            break;
+          }
+          if (!page) throw new ArticleNotFoundError(title, lang);
           pageSize = page.length ?? pageSize;
           links.push(...(page.links ?? []).filter(link => link.ns === 0).map(link => link.title));
           continuation = part.continue ?? {};
