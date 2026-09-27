@@ -18,5 +18,5 @@ export function parseInput(value: string, selectedLang: string): ParsedArticle {
 }
 
 export function validatePair(from: ParsedArticle, to: ParsedArticle): void {
-  if (from.lang !== to.lang) throw new Error('Поиск пути работает в пределах одного языкового раздела. Выберите одинаковый язык для обеих статей.');
+  if (from.lang !== to.lang) throw new Error('Поиск пути работает в пределах одного языкового раздела. Проверьте языки ссылок на статьи.');
 }

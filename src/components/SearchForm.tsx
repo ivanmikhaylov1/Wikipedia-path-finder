@@ -5,10 +5,19 @@ import { WikiApiClient } from '../lib/wikiApi';
 
 const api = new WikiApiClient();
 const languages = [{ code: 'ru', label: 'RU' }, { code: 'en', label: 'EN' }, { code: 'de', label: 'DE' }, { code: 'fr', label: 'FR' }, { code: 'es', label: 'ES' }];
+const examples: Record<string, [string, string]> = {
+  ru: ['Москва', 'Юрий Гагарин'], en: ['London', 'Philosophy'],
+  de: ['Berlin', 'Philosophie'], fr: ['Paris', 'Philosophie'], es: ['Madrid', 'Filosofía'],
+};
 
-function ArticleInput({ label, number, placeholder, value, setValue, lang, setLang, disabled }: {
+function languageFromUrl(value: string): string | null {
+  if (!/^https?:\/\//i.test(value.trim())) return null;
+  try { return parseInput(value, 'ru').lang; } catch { return null; }
+}
+
+function ArticleInput({ label, number, placeholder, value, setValue, lang, disabled }: {
   label: string; number: string; placeholder: string; value: string; setValue: (value: string) => void;
-  lang: string; setLang: (value: string) => void; disabled: boolean;
+  lang: string; disabled: boolean;
 }) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -43,9 +52,6 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, setLa
         }}
         placeholder={placeholder} autoComplete="off" disabled={disabled} role="combobox" aria-expanded={open && suggestions.length > 0} aria-controls={`suggestions-${number}`} aria-autocomplete="list" />
       {value && <button className="clear-field" type="button" onClick={() => { setValue(''); setSuggestions([]); }} aria-label="Очистить поле"><X size={16} /></button>}
-      <select aria-label={`Язык: ${label.toLowerCase()}`} value={lang} onChange={event => setLang(event.target.value)} disabled={disabled}>
-        {languages.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
-      </select>
     </div>
     {open && suggestions.length > 0 && <div className="suggestions" id={`suggestions-${number}`} role="listbox">
       {suggestions.map((item, index) => <button type="button" role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'suggestion active' : 'suggestion'} key={item}
@@ -63,14 +69,21 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
 }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
-  const [fromLang, setFromLang] = useState('ru');
-  const [toLang, setToLang] = useState('ru');
+  const [lang, setLang] = useState('ru');
+  const availableLanguages = languages.some(item => item.code === lang)
+    ? languages : [...languages, { code: lang, label: lang.toUpperCase() }];
+  const [fromExample, toExample] = examples[lang] ?? ['Название статьи', 'Другая статья'];
+  const changeValue = (value: string, setValue: (value: string) => void) => {
+    setValue(value);
+    const urlLanguage = languageFromUrl(value);
+    if (urlLanguage) setLang(urlLanguage);
+  };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const start = parseInput(from, fromLang);
-      const end = parseInput(to, toLang);
+      const start = parseInput(from, lang);
+      const end = parseInput(to, lang);
       validatePair(start, end);
       onValidationError('');
       onSearch(start, end);
@@ -78,10 +91,17 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
   };
 
   return <form className="search-form" onSubmit={submit}>
+    <div className="language-bar">
+      <div className="language-caption"><span>ЯЗЫК ПОИСКА</span><small>Один раздел для обеих статей</small></div>
+      <div className="language-switch" role="group" aria-label="Язык поиска для обеих статей">
+        {availableLanguages.map(item => <button key={item.code} type="button" className={lang === item.code ? 'active' : ''}
+          aria-pressed={lang === item.code} onClick={() => setLang(item.code)}>{item.label}</button>)}
+      </div>
+    </div>
     <div className="fields-grid">
-      <ArticleInput label="Объект А / откуда" number="01" placeholder="Например, Москва" value={from} setValue={setFrom} lang={fromLang} setLang={setFromLang} disabled={false} />
+      <ArticleInput label="Объект А / откуда" number="01" placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={false} />
       <div className="between-fields" aria-hidden="true"><ArrowRight size={20} strokeWidth={1.4} /></div>
-      <ArticleInput label="Объект Б / куда" number="02" placeholder="Например, Юрий Гагарин" value={to} setValue={setTo} lang={toLang} setLang={setToLang} disabled={false} />
+      <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={lang} disabled={false} />
     </div>
     <div className="form-bottom">
       <div className="form-tip">Название статьи или ссылка вида <span>wikipedia.org/wiki/...</span></div>
