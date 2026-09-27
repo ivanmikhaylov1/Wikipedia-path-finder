@@ -211,8 +211,16 @@ export class ApiLinkSource implements LinkSource {
       if (size !== undefined) { sizes.set(title, size); return false; }
       return true;
     });
-    for (let offset = 0; offset < unknown.length; offset += 50) {
-      const group = unknown.slice(offset, offset + 50);
+    const fromDisk = await Promise.all(unknown.map(title => this.cachedLinks(this.key(lang, title, 'out'))));
+    const needInfo = unknown.filter((title, index) => {
+      const size = fromDisk[index]?.sizeBytes;
+      if (size === undefined) return true;
+      sizes.set(title, size);
+      this.sizeCache.set(`${lang}:${title}`, size);
+      return false;
+    });
+    for (let offset = 0; offset < needInfo.length; offset += 50) {
+      const group = needInfo.slice(offset, offset + 50);
       const data = await this.api.query(lang, { prop: 'info', titles: group.join('|') });
       for (const page of data.query?.pages ?? []) {
         if (page.length === undefined) continue;
