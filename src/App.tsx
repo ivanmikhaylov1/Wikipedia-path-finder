@@ -3,7 +3,8 @@ import { ArrowUpRight, GitFork } from 'lucide-react';
 import { Hero } from './components/Hero';
 import { PathVisualizer } from './components/PathVisualizer';
 import { ProgressIndicator } from './components/ProgressIndicator';
-import { PhilosophyHypothesis } from './components/PhilosophyHypothesis';
+import { SpeedrunSection } from './components/SpeedrunSection';
+import type { RacePair } from './components/RaceMode';
 import { ThemeToggle } from './components/ThemeToggle';
 import { Footer } from './components/Footer';
 import type { ParsedArticle } from './lib/parseInput';
@@ -33,6 +34,7 @@ export default function App() {
   const [error, setError] = useState('');
   const [resultLang, setResultLang] = useState('ru');
   const [quickPair, setQuickPair] = useState<QuickPair | null>(null);
+  const [lastPair, setLastPair] = useState<RacePair | null>(null);
   const workerRef = useRef<Worker | null>(null);
   const lastQuery = useRef<{ from: string; to: string; lang: string } | null>(null);
 
@@ -73,6 +75,7 @@ export default function App() {
   };
   const search = (from: ParsedArticle, to: ParsedArticle) => {
     lastQuery.current = { from: from.title, to: to.title, lang: from.lang };
+    setLastPair({ from: from.title, to: to.title, lang: from.lang });
     startWorker(from.title, to.title, from.lang);
   };
   const resumeSearch = () => {
@@ -90,7 +93,7 @@ export default function App() {
       <Hero searching={searching} error={error} quickPair={quickPair} onSearch={search} onCancel={cancel} onValidationError={setError} />
       <PathVisualizer path={result?.status === 'found' ? result.path : candidate?.path ?? null} lang={resultLang} approximate={result?.status !== 'found' || !result.exact ? Boolean(candidate) : false} />
       <ProgressIndicator searching={searching} progress={progress} result={result} candidate={candidate} error={error} canResume={Boolean(resumeState)} onResume={resumeSearch} />
-      <PhilosophyHypothesis onQuickSearch={quickSearch} />
+      <SpeedrunSection pair={lastPair} shortestClicks={result?.status === 'found' && result.exact ? result.path.length - 1 : null} onNewPair={pair => quickSearch(pair.from, pair.to)} />
       <section className="how-section" id="how"><div className="page-width how-inner"><div className="how-left"><span className="how-index">05 / ПОД КАПОТОМ</span><h2>Два шага<br />навстречу<span>.</span></h2><div className="how-symbol"><GitFork size={73} strokeWidth={0.9} /></div></div><div className="how-right"><p className="how-lead">Поиск начинается одновременно с обеих статей: по исходящим ссылкам от первой и по входящим ко второй.</p><p>Как только фронты встречаются, мы собираем цепочку. Алгоритм работает в Web Worker, поэтому страница остаётся отзывчивой. Запросы идут напрямую к MediaWiki API — без нашего сервера.</p><div className="how-note"><span>ВАЖНО ЗНАТЬ</span><p>Для крупных статей мы ограничиваем число ссылок и время поиска. Поэтому найденный маршрут может не быть абсолютно кратчайшим, а отсутствие результата не означает отсутствие пути.</p></div><a href="https://www.mediawiki.org/wiki/API:Main_page" target="_blank" rel="noopener noreferrer">О MEDIAWIKI API <ArrowUpRight size={17} /></a></div></div></section>
     </main>
     <Footer />

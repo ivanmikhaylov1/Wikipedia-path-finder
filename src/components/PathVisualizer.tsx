@@ -1,4 +1,10 @@
-import { ArrowUpRight, Link2 } from 'lucide-react';
+import { useRef } from 'react';
+import { ArrowUpRight } from 'lucide-react';
+import { ConnectionString } from './ConnectionString';
+import pin from '../assets/images/red-pin.png';
+import tape from '../assets/images/masking-tape.png';
+import stamp from '../assets/images/stamp-ink.png';
+import heroBoard from '../assets/images/hero-board.webp';
 
 function transitionCount(count: number): string {
   const lastTwo = count % 100;
@@ -8,21 +14,29 @@ function transitionCount(count: number): string {
 }
 
 export function PathVisualizer({ path, lang, approximate = false }: { path: string[] | null; lang: string; approximate?: boolean }) {
-  return <section className="path-section page-width" id="route" aria-live="polite">
-    <div className="section-kicker"><span>02 / МАРШРУТ</span><span>{path ? transitionCount(path.length - 1) : 'ОЖИДАНИЕ ТОЧЕК'}</span></div>
-    <div className="section-title-row"><h2>Цепочка переходов<span>.</span></h2><p>Каждая карточка — статья. Линия между ними означает прямую гиперссылку.</p></div>
-    {path && approximate && <p className="path-approximate">Быстрый вариант, не обязательно кратчайший. <a href="#philosophy">Как работает первая ссылка ↓</a></p>}
-    {path ? <div className="path-list">
-      {path.map((title, index) => <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 130}ms` }}>
-        {index > 0 && <div className="step-connector"><span /><span>ПЕРЕХОД {String(index).padStart(2, '0')}</span></div>}
-        <a className="path-card" href={`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`} target="_blank" rel="noopener noreferrer">
-          <span className="path-card-index">{String(index + 1).padStart(2, '0')} <span>/ {index === 0 ? 'НАЧАЛО' : index === path.length - 1 ? 'ЦЕЛЬ' : 'СТАТЬЯ'}</span></span>
-          <strong>{title}</strong><ArrowUpRight size={22} strokeWidth={1.5} />
-        </a>
-      </div>)}
-    </div> : <div className="empty-path">
-      <div className="empty-path-art" aria-hidden="true"><span className="ghost-node">01</span><span className="ghost-line" /><span className="ghost-node middle">?</span><span className="ghost-line" /><span className="ghost-node">02</span></div>
-      <Link2 size={21} strokeWidth={1.5} /><p>Задайте две статьи выше — здесь появится<br />маршрут между ними.</p>
-    </div>}
+  const boardRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  return <section className="path-section" id="route" aria-live="polite">
+    <div className="page-width">
+      <div className="section-kicker"><span>02 / ДОСКА УЛИК</span><span>{path ? transitionCount(path.length - 1) : 'МАРШРУТ ЕЩЁ НЕ СОБРАН'}</span></div>
+      <div className="section-title-row"><h2>Улики на нити<span>.</span></h2><p>Каждая карточка — статья. Красная нить соединяет реальные прямые гиперссылки.</p></div>
+      {path && approximate && <p className="path-approximate">Быстрый вариант, не обязательно кратчайший. Поиск более короткой цепочки продолжается.</p>}
+      {path ? <div className="path-board" ref={boardRef}>
+        <ConnectionString containerRef={boardRef} cardRefs={cardRefs} count={path.length} />
+        <div className="path-list">
+          {path.map((title, index) => <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 100}ms` }}>
+            <a ref={element => { cardRefs.current[index] = element; }} className="path-card" href={`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`} target="_blank" rel="noopener noreferrer">
+              <img className="card-pin" src={pin} alt="" aria-hidden="true" />
+              {index % 3 === 1 && <img className="card-tape" src={tape} alt="" aria-hidden="true" style={{ transform: `rotate(${[-6, 4, 7][index % 3]}deg)` }} />}
+              <span className="path-card-index">УЛИКА {String(index + 1).padStart(2, '0')} <em>/ {index === 0 ? 'СТАРТ' : index === path.length - 1 ? 'ЦЕЛЬ' : 'ПЕРЕХОД'}</em></span>
+              <strong>{title}</strong><span className="path-card-foot">ОТКРЫТЬ СТАТЬЮ <ArrowUpRight size={17} /></span>
+            </a>
+          </div>)}
+        </div>
+        <div className="route-stamp" style={{ backgroundImage: `url(${stamp})` }}><span>{approximate ? 'БЫСТРЫЙ ПУТЬ' : 'МАРШРУТ НАЙДЕН'}</span></div>
+      </div> : <div className="empty-path" style={{ backgroundImage: `linear-gradient(90deg, rgba(36,28,21,.76), rgba(36,28,21,.05)), url(${heroBoard})` }}>
+        <div className="empty-path-copy"><span>ДЕЛО № 001 / ОЖИДАНИЕ</span><strong>Две статьи.<br />Одна нить.</strong><p>Укажите начальную и конечную статью — здесь появится доска с маршрутом.</p></div>
+      </div>}
+    </div>
   </section>;
 }

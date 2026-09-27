@@ -89,9 +89,9 @@ export function SearchForm({ searching, error, quickPair, onSearch, onCancel, on
 
   return <form className="search-form" onSubmit={submit}>
     <div className="fields-grid">
-      <ArticleInput label="Откуда" number="01" placeholder="Например, Москва" value={from} setValue={setFrom} lang={fromLang} setLang={setFromLang} disabled={false} />
+      <ArticleInput label="Объект А / откуда" number="01" placeholder="Например, Москва" value={from} setValue={setFrom} lang={fromLang} setLang={setFromLang} disabled={false} />
       <div className="between-fields" aria-hidden="true"><ArrowRight size={20} strokeWidth={1.4} /></div>
-      <ArticleInput label="Куда" number="02" placeholder="Например, Юрий Гагарин" value={to} setValue={setTo} lang={toLang} setLang={setToLang} disabled={false} />
+      <ArticleInput label="Объект Б / куда" number="02" placeholder="Например, Юрий Гагарин" value={to} setValue={setTo} lang={toLang} setLang={setToLang} disabled={false} />
     </div>
     <div className="form-bottom">
       <div className="form-tip">Название статьи или ссылка вида <span>wikipedia.org/wiki/...</span></div>
