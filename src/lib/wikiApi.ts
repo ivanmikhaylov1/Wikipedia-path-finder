@@ -1,4 +1,5 @@
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
+import { RequestBudgetExceededError } from './linkSource';
 
 export interface WikiPage { ns: number; title: string; missing?: boolean; links?: WikiPage[] }
 export interface WikiResponse {
@@ -21,8 +22,9 @@ const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, m
 export class WikiApiClient {
   private active = 0;
   private waiters: Array<() => void> = [];
+  private requestCount = 0;
 
-  constructor(private limits: SearchLimits = DEFAULT_LIMITS) {}
+  constructor(private limits: SearchLimits = DEFAULT_LIMITS, private maxRequests = Infinity) {}
 
   private async slot(): Promise<() => void> {
     if (this.active >= this.limits.concurrency) await new Promise<void>(resolve => this.waiters.push(resolve));
@@ -44,6 +46,8 @@ export class WikiApiClient {
       const release = await this.slot();
       let retryable = false;
       try {
+        if (this.requestCount >= this.maxRequests) throw new RequestBudgetExceededError();
+        this.requestCount++;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), this.limits.requestTimeout);
         try {

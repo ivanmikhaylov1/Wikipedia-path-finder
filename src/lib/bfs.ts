@@ -1,4 +1,4 @@
-import type { LinkSource } from './linkSource';
+import { RequestBudgetExceededError, type LinkSource } from './linkSource';
 import type { SearchLimits } from './searchLimits';
 
 export type NotFoundReason = 'depth' | 'budget' | 'timeout' | 'no_path';
@@ -104,6 +104,7 @@ export async function bidirectionalBfs(
     return { notFound: true, reason: 'no_path' };
   } catch (error) {
     if (error instanceof SearchExpired) return { notFound: true, reason: 'timeout' };
+    if (error instanceof RequestBudgetExceededError) return { notFound: true, reason: 'budget' };
     throw error;
   }
 }

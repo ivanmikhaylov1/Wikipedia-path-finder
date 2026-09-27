@@ -7,7 +7,7 @@ export class ApiLinkSource implements LinkSource {
   private cache = new Map<string, Promise<string[] | string>>();
 
   constructor(private limits: SearchLimits = DEFAULT_LIMITS) {
-    this.api = new WikiApiClient(limits);
+    this.api = new WikiApiClient(limits, limits.maxTotalRequests);
   }
 
   private cached<T extends string[] | string>(key: string, load: () => Promise<T>): Promise<T> {

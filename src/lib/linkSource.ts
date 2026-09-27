@@ -10,3 +10,10 @@ export class ArticleNotFoundError extends Error {
     this.name = 'ArticleNotFoundError';
   }
 }
+
+export class RequestBudgetExceededError extends Error {
+  constructor() {
+    super('Исчерпан лимит запросов к Wikipedia API');
+    this.name = 'RequestBudgetExceededError';
+  }
+}
