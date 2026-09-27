@@ -3,7 +3,6 @@ import { ArrowUpRight } from 'lucide-react';
 import { Hero } from './components/Hero';
 import { PathVisualizer } from './components/PathVisualizer';
 import { ProgressIndicator } from './components/ProgressIndicator';
-import { ThemeToggle } from './components/ThemeToggle';
 import { Footer } from './components/Footer';
 import type { ParsedArticle } from './lib/parseInput';
 import type { BfsResumeState, SearchProgress, SearchResult } from './lib/bfs';
@@ -24,7 +23,6 @@ function browserTestLimits() {
 }
 
 export default function App() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
   const [searching, setSearching] = useState(false);
   const [progress, setProgress] = useState<SearchProgress | null>(null);
   const [result, setResult] = useState<SearchResult | null>(null);
@@ -35,10 +33,6 @@ export default function App() {
   const workerRef = useRef<Worker | null>(null);
   const lastQuery = useRef<{ from: string; to: string; lang: string } | null>(null);
 
-  useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem('theme', theme);
-  }, [theme]);
   useEffect(() => () => workerRef.current?.terminate(), []);
 
   const cancel = () => {
@@ -79,8 +73,8 @@ export default function App() {
     startWorker(lastQuery.current.from, lastQuery.current.to, lastQuery.current.lang, resumeState);
   };
   return <div className="app-shell">
-    <header className="site-header"><div className="page-width header-inner"><a className="brand" href="#top" aria-label="Переходы — наверх"><span className="brand-mark"><i /><i /><i /></span><span>ПЕРЕХОДЫ<span className="brand-period">.</span></span></a><nav aria-label="Основная навигация"><a href="#route">МАРШРУТ</a></nav><div className="header-actions"><a className="header-repo" href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Репозиторий на GitHub"><span>РЕПОЗИТОРИЙ</span><ArrowUpRight size={16} /></a><ThemeToggle theme={theme} onToggle={() => setTheme(current => current === 'light' ? 'dark' : 'light')} /></div></div></header>
-    <main id="top">
+    <a className="side-repo" href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Репозиторий на GitHub"><span>РЕПОЗИТОРИЙ</span><ArrowUpRight size={16} /></a>
+    <main>
       <Hero searching={searching} error={error} onSearch={search} onCancel={cancel} onValidationError={setError} />
       <PathVisualizer path={result?.status === 'found' ? result.path : candidate?.path ?? null} lang={resultLang} approximate={result?.status !== 'found' || !result.exact ? Boolean(candidate) : false} />
       <ProgressIndicator searching={searching} progress={progress} result={result} candidate={candidate} error={error} canResume={Boolean(resumeState)} onResume={resumeSearch} />
