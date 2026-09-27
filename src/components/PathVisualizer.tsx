@@ -1,8 +1,15 @@
 import { ArrowUpRight, Link2 } from 'lucide-react';
 
+function transitionCount(count: number): string {
+  const lastTwo = count % 100;
+  const last = count % 10;
+  const ending = lastTwo >= 11 && lastTwo <= 14 ? 'ОВ' : last === 1 ? '' : last >= 2 && last <= 4 ? 'А' : 'ОВ';
+  return `${count} ПЕРЕХОД${ending}`;
+}
+
 export function PathVisualizer({ path, lang }: { path: string[] | null; lang: string }) {
   return <section className="path-section page-width" id="route" aria-live="polite">
-    <div className="section-kicker"><span>02 / МАРШРУТ</span><span>{path ? `${path.length - 1} ПЕРЕХОД${path.length - 1 === 1 ? '' : 'ОВ'}` : 'ОЖИДАНИЕ ТОЧЕК'}</span></div>
+    <div className="section-kicker"><span>02 / МАРШРУТ</span><span>{path ? transitionCount(path.length - 1) : 'ОЖИДАНИЕ ТОЧЕК'}</span></div>
     <div className="section-title-row"><h2>Цепочка переходов<span>.</span></h2><p>Каждая карточка — статья. Линия между ними означает прямую гиперссылку.</p></div>
     {path ? <div className="path-list">
       {path.map((title, index) => <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 130}ms` }}>

@@ -1,10 +1,12 @@
 import { ArrowDownRight, MoveUpRight } from 'lucide-react';
 import { SearchForm } from './SearchForm';
+import type { QuickPair } from './SearchForm';
 import type { ParsedArticle } from '../lib/parseInput';
 
 interface HeroProps {
   searching: boolean;
   error: string;
+  quickPair: QuickPair | null;
   onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
   onCancel: () => void;
   onValidationError: (message: string) => void;
