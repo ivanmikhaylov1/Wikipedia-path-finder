@@ -6,8 +6,6 @@ import { WikiApiClient } from '../lib/wikiApi';
 const api = new WikiApiClient();
 const languages = [{ code: 'ru', label: 'RU' }, { code: 'en', label: 'EN' }, { code: 'de', label: 'DE' }, { code: 'fr', label: 'FR' }, { code: 'es', label: 'ES' }];
 
-export interface QuickPair { from: string; to: string; sequence: number }
-
 function ArticleInput({ label, number, placeholder, value, setValue, lang, setLang, disabled }: {
   label: string; number: string; placeholder: string; value: string; setValue: (value: string) => void;
   lang: string; setLang: (value: string) => void; disabled: boolean;
@@ -59,22 +57,14 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, setLa
   </div>;
 }
 
-export function SearchForm({ searching, error, quickPair, onSearch, onCancel, onValidationError }: {
-  searching: boolean; error: string; quickPair: QuickPair | null; onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
+export function SearchForm({ searching, error, onSearch, onCancel, onValidationError }: {
+  searching: boolean; error: string; onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
   onCancel: () => void; onValidationError: (message: string) => void;
 }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [fromLang, setFromLang] = useState('ru');
   const [toLang, setToLang] = useState('ru');
-
-  useEffect(() => {
-    if (!quickPair) return;
-    setFrom(quickPair.from);
-    setTo(quickPair.to);
-    setFromLang('ru');
-    setToLang('ru');
-  }, [quickPair]);
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();

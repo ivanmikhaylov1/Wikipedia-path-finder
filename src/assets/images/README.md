@@ -1,6 +1,6 @@
 # Реквизит детективной доски
 
-Все восемь изображений получены встроенной генерацией изображений, затем только уменьшены и сжаты для веба. Общая концовка каждого промпта:
+Все семь изображений получены встроенной генерацией изображений, затем только уменьшены и сжаты для веба. Общая концовка каждого промпта:
 
 > warm desaturated amber lighting, slight film grain, soft single-source shadow from upper left, no visible brand names or readable text, muted vintage color grade, consistent with a 1970s detective case file aesthetic
 
@@ -13,6 +13,5 @@
 | `masking-tape.png` | one torn strip of beige masking tape, isolated on transparent background, slightly wrinkled, faint shadow | PNG с альфой, 200×80 |
 | `red-string.png` | close-up of thin red string/yarn, straight segment, isolated on transparent background, slight fiber texture | PNG с альфой, 400×20 |
 | `stamp-ink.png` | red rubber stamp ink texture only, uneven distressed ink impression shape, no letters, no text, isolated on transparent background, worn edges | PNG с альфой, 400×160 |
-| `stopwatch.png` | vintage mechanical stopwatch face, top-down photo, chrome bezel, cream-colored dial with minute markings, no hands, no text, isolated on transparent background | PNG с альфой, 300×300 |
 
-Надпись на штампе, названия статей и стрелки секундомера сделаны HTML/CSS поверх изображений. Линия маршрута рисуется в SVG по измеренным координатам карточек; `red-string.png` используется как текстурный `<pattern>` для её обводки.
+Надпись на штампе и названия статей сделаны HTML/CSS поверх изображений. Линия маршрута рисуется в SVG по измеренным координатам карточек; `red-string.png` используется как текстурный `<pattern>` для её обводки.
