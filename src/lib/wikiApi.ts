@@ -1,7 +1,7 @@
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
 import { RequestBudgetExceededError } from './linkSource';
 
-export interface WikiPage { ns: number; title: string; missing?: boolean; links?: WikiPage[] }
+export interface WikiPage { ns: number; title: string; missing?: boolean; links?: WikiPage[]; length?: number }
 export interface WikiResponse {
   continue?: Record<string, string>;
   error?: { code: string; info: string };
@@ -9,7 +9,9 @@ export interface WikiResponse {
     pages?: WikiPage[];
     backlinks?: WikiPage[];
     search?: Array<{ title: string }>;
+    normalized?: Array<{ from: string; to: string }>;
   };
+  parse?: { text?: string };
 }
 
 function apiUrl(lang: string): string {
@@ -25,6 +27,8 @@ export class WikiApiClient {
   private requestCount = 0;
 
   constructor(private limits: SearchLimits = DEFAULT_LIMITS, private maxRequests = Infinity) {}
+
+  getRequestCount(): number { return this.requestCount; }
 
   private async slot(): Promise<() => void> {
     if (this.active >= this.limits.concurrency) await new Promise<void>(resolve => this.waiters.push(resolve));

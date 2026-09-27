@@ -7,10 +7,11 @@ function transitionCount(count: number): string {
   return `${count} ПЕРЕХОД${ending}`;
 }
 
-export function PathVisualizer({ path, lang }: { path: string[] | null; lang: string }) {
+export function PathVisualizer({ path, lang, approximate = false }: { path: string[] | null; lang: string; approximate?: boolean }) {
   return <section className="path-section page-width" id="route" aria-live="polite">
     <div className="section-kicker"><span>02 / МАРШРУТ</span><span>{path ? transitionCount(path.length - 1) : 'ОЖИДАНИЕ ТОЧЕК'}</span></div>
     <div className="section-title-row"><h2>Цепочка переходов<span>.</span></h2><p>Каждая карточка — статья. Линия между ними означает прямую гиперссылку.</p></div>
+    {path && approximate && <p className="path-approximate">Быстрый вариант, не обязательно кратчайший. <a href="#philosophy">Как работает первая ссылка ↓</a></p>}
     {path ? <div className="path-list">
       {path.map((title, index) => <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 130}ms` }}>
         {index > 0 && <div className="step-connector"><span /><span>ПЕРЕХОД {String(index).padStart(2, '0')}</span></div>}

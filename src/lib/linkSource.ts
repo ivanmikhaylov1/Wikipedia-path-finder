@@ -1,7 +1,11 @@
 export interface LinkSource {
-  getOutlinks(title: string, lang: string): Promise<string[]>;
-  getInlinks(title: string, lang: string): Promise<string[]>;
+  getOutlinks(title: string, lang: string, cap?: number): Promise<string[]>;
+  getInlinks(title: string, lang: string, cap?: number): Promise<string[]>;
   resolveRedirect(title: string, lang: string): Promise<string>;
+  getOutlinksBatch?(titles: string[], lang: string, cap?: number): Promise<Map<string, { links: string[]; sizeBytes: number }>>;
+  getPageSizesBatch?(titles: string[], lang: string): Promise<Map<string, number>>;
+  getFirstTextLink?(title: string, lang: string): Promise<string | null>;
+  getRequestCount?(): number;
 }
 
 export class ArticleNotFoundError extends Error {
