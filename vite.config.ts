@@ -8,6 +8,6 @@ const repository = process.env.GITHUB_REPOSITORY?.split('/')[1] ?? 'Wikipedia-pa
 
 export default defineConfig({
   plugins: [react(), tailwindcss(), pwa()],
-  base: process.env.GITHUB_ACTIONS ? `/${repository}/` : '/',
-  test: { environment: 'node' },
+  base: process.env.VITE_BASE_PATH ?? (process.env.GITHUB_ACTIONS ? `/${repository}/` : '/'),
+  test: { environment: 'node', include: ['tests/**/*.test.ts'] },
 });
