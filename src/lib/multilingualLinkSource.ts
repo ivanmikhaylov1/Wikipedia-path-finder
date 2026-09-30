@@ -11,16 +11,19 @@ export function articleFromKey(key: string): ParsedArticle {
 /** langlinks are directed. Without an inverse index, use forward BFS rather
  * than inventing reverse translation edges. BFS still sees only LinkSource. */
 export class MultilingualLinkSource implements LinkSource {
+  private calls = 0;
   constructor(private source: LinkSource, private languages: string[]) {
     if (!source.getLanglinks) throw new Error('Межъязыковой поиск требует API-источник с langlinks');
   }
-  getRequestCount(): number { return this.source.getRequestCount?.() ?? 0; }
+  getRequestCount(): number { return this.source.getRequestCount?.() ?? this.calls; }
   async resolveRedirect(key: string): Promise<string> {
     const article = articleFromKey(key);
+    this.calls++;
     return articleKey({ ...article, title: await this.source.resolveRedirect(article.title, article.lang) });
   }
   async getOutlinks(key: string, _lang: string, cap?: number): Promise<string[]> {
     const article = articleFromKey(key);
+    this.calls += 2;
     const [links, translations] = await Promise.all([
       this.source.getOutlinks(article.title, article.lang, cap),
       this.source.getLanglinks!(article.title, article.lang),

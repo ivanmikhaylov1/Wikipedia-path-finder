@@ -74,7 +74,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
   const [lang, setLang] = useState(initial.lang);
   const [copyStatus, setCopyStatus] = useState('');
   const [multilingual, setMultilingual] = useState(initial.multilingual && import.meta.env.VITE_LINK_SOURCE !== 'local');
-  const [toLang, setToLang] = useState('en');
+  const [toLang, setToLang] = useState(languageFromUrl(initial.to) ?? (initial.lang === 'en' ? 'ru' : 'en'));
   const availableLanguages = languages.some(item => item.code === lang)
     ? languages : [...languages, { code: lang, label: lang.toUpperCase() }];
   const [fromExample, toExample] = examples[lang] ?? ['Название статьи', 'Другая статья'];
@@ -98,7 +98,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
 
   return <form className="search-form" onSubmit={submit}>
     <div className="language-bar">
-      <div className="language-caption"><span>ЯЗЫК ПОИСКА</span><small>Один раздел для обеих статей</small></div>
+      <div className="language-caption"><span>ЯЗЫК ПОИСКА</span><small>{multilingual ? 'Раздел начальной статьи' : 'Один раздел для обеих статей'}</small></div>
       <div className="language-switch" role="group" aria-label="Язык поиска для обеих статей">
         {availableLanguages.map(item => <button key={item.code} type="button" className={lang === item.code ? 'active' : ''}
           aria-pressed={lang === item.code} onClick={() => setLang(item.code)}>{item.label}</button>)}
@@ -114,7 +114,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
       <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={multilingual ? toLang : lang} disabled={false} />
     </div>
     <div className="query-actions">
-      <button type="button" onClick={() => { if (multilingual) { setFrom(`https://${parseInput(to, toLang).lang}.wikipedia.org/wiki/${parseInput(to, toLang).title}`); setTo(`https://${parseInput(from, lang).lang}.wikipedia.org/wiki/${parseInput(from, lang).title}`); } else { setFrom(to); setTo(from); } }}>Поменять статьи местами</button>
+      <button type="button" onClick={() => { if (multilingual && from.trim() && to.trim()) { setFrom(`https://${parseInput(to, toLang).lang}.wikipedia.org/wiki/${parseInput(to, toLang).title}`); setTo(`https://${parseInput(from, lang).lang}.wikipedia.org/wiki/${parseInput(from, lang).title}`); } else { setFrom(to); setTo(from); } }}>Поменять статьи местами</button>
       <button type="button" onClick={async () => {
         try { await navigator.clipboard.writeText(queryUrl(parseInput(from, lang), parseInput(to, multilingual ? toLang : lang), multilingual)); setCopyStatus('Ссылка скопирована'); }
         catch { setCopyStatus('Введите статьи; ссылку также можно скопировать из адресной строки после поиска.'); }
@@ -123,7 +123,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
     </div>
     <div className="form-bottom">
       <div className="form-tip">Название статьи или ссылка вида <span>wikipedia.org/wiki/...</span></div>
-      {searching ? <button className="submit-button cancel-button" type="button" onClick={onCancel}>Остановить <X size={18} /></button>
+      {searching ? <button className="submit-button cancel-button" type="button" onClick={event => { event.preventDefault(); onCancel(); }}>Остановить <X size={18} /></button>
         : <button className="submit-button" type="submit">Найти путь <ArrowRight size={19} /></button>}
     </div>
     {error && <p className="form-error" role="alert">{error}</p>}

@@ -6,7 +6,7 @@ import { WikiApiClient } from './wikiApi';
 type Direction = 'out' | 'in';
 type CachedLinks = { links: string[]; sizeBytes?: number; storedAt: number; complete: boolean };
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const DB_NAME = 'wikipedia-path-finder-links';
+const DB_NAME = 'wikipedia-path-finder-links-v2';
 const STORE_NAME = 'links';
 
 /** A missing or blocked IndexedDB never prevents a live API search. */

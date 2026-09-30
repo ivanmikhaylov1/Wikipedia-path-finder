@@ -74,8 +74,10 @@ export default function App() {
     startWorker(lastQuery.current.from, lastQuery.current.to, lastQuery.current.lang, resumeState, lastQuery.current.toLang, lastQuery.current.multilingual);
   };
   return <div className="app-shell">
+    <nav aria-label="Быстрые ссылки">
     <a className="side-repo" href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Репозиторий на GitHub"><span>РЕПОЗИТОРИЙ</span><ArrowUpRight size={16} /></a>
     <a className="skip-link" href="#search">Перейти к поиску</a>
+    </nav>
     <main>
       <Hero searching={searching} error={error} onSearch={search} onCancel={cancel} onValidationError={setError} />
       <PathVisualizer path={result?.status === 'found' ? result.path : candidate?.path ?? null} lang={resultLang} multilingual={resultMultilingual} approximate={result?.status !== 'found' || !result.exact ? Boolean(candidate) : false} />
