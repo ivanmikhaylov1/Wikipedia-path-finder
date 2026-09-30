@@ -5,3 +5,9 @@ dist
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+public/graphs/*.bin.gz
+playwright-report/
+test-results/
+lighthouse-reports/
+dist-local/

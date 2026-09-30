@@ -3,8 +3,10 @@ export interface LinkSource {
   getInlinks(title: string, lang: string, cap?: number): Promise<string[]>;
   resolveRedirect(title: string, lang: string): Promise<string>;
   getOutlinksBatch?(titles: string[], lang: string, cap?: number): Promise<Map<string, { links: string[]; sizeBytes: number }>>;
+  getInlinksBatch?(titles: string[], lang: string, cap?: number): Promise<Map<string, { links: string[]; sizeBytes: number }>>;
   getPageSizesBatch?(titles: string[], lang: string): Promise<Map<string, number>>;
   getFirstTextLink?(title: string, lang: string): Promise<string | null>;
+  getLanglinks?(title: string, lang: string): Promise<Array<{ title: string; lang: string }>>;
   getRequestCount?(): number;
 }
 

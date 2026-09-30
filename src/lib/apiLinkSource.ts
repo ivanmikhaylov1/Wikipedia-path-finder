@@ -6,7 +6,7 @@ import { WikiApiClient } from './wikiApi';
 type Direction = 'out' | 'in';
 type CachedLinks = { links: string[]; sizeBytes?: number; storedAt: number; complete: boolean };
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const DB_NAME = 'wikipedia-path-finder-links';
+const DB_NAME = 'wikipedia-path-finder-links-v2';
 const STORE_NAME = 'links';
 
 /** A missing or blocked IndexedDB never prevents a live API search. */
@@ -130,12 +130,24 @@ export class ApiLinkSource implements LinkSource {
     return results.get(title)?.links ?? [];
   }
 
-  async getOutlinksBatch(titles: string[], lang: string, cap = this.limits.maxLinksPerPage): Promise<Map<string, { links: string[]; sizeBytes: number }>> {
-    const effectiveCap = Math.min(cap, this.linkCeiling);
+  getOutlinksBatch(titles: string[], lang: string, cap = this.limits.maxLinksPerPage): Promise<Map<string, { links: string[]; sizeBytes: number }>> {
+    return this.getLinksBatch(titles, lang, cap, 'out');
+  }
+
+  async getInlinks(title: string, lang: string, cap = this.limits.maxLinksPerPage): Promise<string[]> {
+    return (await this.getInlinksBatch([title], lang, cap)).get(title)?.links ?? [];
+  }
+
+  getInlinksBatch(titles: string[], lang: string, cap = this.limits.maxLinksPerPage): Promise<Map<string, { links: string[]; sizeBytes: number }>> {
+    return this.getLinksBatch(titles, lang, cap, 'in');
+  }
+
+  private async getLinksBatch(titles: string[], lang: string, cap: number, direction: Direction): Promise<Map<string, { links: string[]; sizeBytes: number }>> {
+    const effectiveCap = Math.max(0, Math.min(cap, this.linkCeiling));
     const result = new Map<string, { links: string[]; sizeBytes: number }>();
     const missing: string[] = [];
     for (const title of [...new Set(titles)]) {
-      const saved = await this.cachedLinks(this.key(lang, title, 'out'));
+      const saved = await this.cachedLinks(this.key(lang, title, direction));
       if (saved && (saved.links.length >= effectiveCap || saved.complete)) {
         result.set(title, { links: saved.links.slice(0, effectiveCap), sizeBytes: saved.sizeBytes ?? 0 });
         if (saved.sizeBytes !== undefined) this.sizeCache.set(`${lang}:${title}`, saved.sizeBytes);
@@ -143,77 +155,35 @@ export class ApiLinkSource implements LinkSource {
     }
     for (let offset = 0; offset < missing.length; offset += 50) {
       const group = missing.slice(offset, offset + 50);
-      // MediaWiki applies pllimit to the multi-title response as a whole. One
-      // large article may occupy it, so incomplete pages are fetched separately.
-      const data = await this.api.query(lang, {
-        prop: 'links|info', titles: group.join('|'), plnamespace: '0',
-        pllimit: String(this.linkCeiling),
-      });
-      const normalized = new Map((data.query?.normalized ?? []).map(item => [item.from, item.to]));
-      const incomplete: string[] = [];
-      for (const title of group) {
-        const page = data.query?.pages?.find(item => item.title === (normalized.get(title) ?? title));
-        if (page?.missing) {
-          // prop=links includes red links. A missing intermediate page has no
-          // outgoing edges; it must not abort the search for a valid endpoint.
-          await this.saveLinks(this.key(lang, title, 'out'), [], true);
-          result.set(title, { links: [], sizeBytes: 0 });
-          continue;
-        }
-        const links = (page?.links ?? []).filter(link => link.ns === 0).map(link => link.title);
-        if (!page || (data.continue?.plcontinue && links.length < effectiveCap)) {
-          incomplete.push(title); continue;
-        }
-        const sizeBytes = page.length ?? 0;
-        await this.saveLinks(this.key(lang, title, 'out'), links, !data.continue?.plcontinue, sizeBytes);
-        this.sizeCache.set(`${lang}:${title}`, sizeBytes);
-        result.set(title, { links: links.slice(0, effectiveCap), sizeBytes });
-      }
-      for (const title of incomplete) {
-        const links: string[] = [];
-        let continuation: Record<string, string> = {};
-        let pageSize = 0;
-        do {
-          const part = await this.api.query(lang, {
-            prop: 'links|info', titles: title, plnamespace: '0',
-            pllimit: String(this.linkCeiling), ...continuation,
-          });
-          const page = part.query?.pages?.[0];
-          if (page?.missing) {
-            links.length = 0;
-            continuation = {};
-            break;
+      const collected = new Map(group.map(title => [title, { links: new Set<string>(), sizeBytes: 0 }]));
+      const normalized = new Map<string, string>();
+      let continuation: Record<string, string> = {};
+      do {
+        const params: Record<string, string> = direction === 'out'
+          ? { prop: 'links|info', plnamespace: '0', pllimit: 'max' }
+          : { prop: 'linkshere|info', lhnamespace: '0', lhlimit: 'max', lhshow: '!redirect' };
+        const data = await this.api.query(lang, { ...params, titles: group.join('|'), ...continuation });
+        for (const item of data.query?.normalized ?? []) normalized.set(item.from, item.to);
+        for (const title of group) {
+          const page = data.query?.pages?.find(item => item.title === (normalized.get(title) ?? title));
+          const entry = collected.get(title)!;
+          if (!page || page.missing || page.ns !== 0) continue;
+          entry.sizeBytes = page.length ?? entry.sizeBytes;
+          for (const link of (direction === 'out' ? page.links : page.linkshere) ?? []) {
+            if (link.ns === 0 && entry.links.size < this.linkCeiling) entry.links.add(link.title);
           }
-          if (!page) throw new ArticleNotFoundError(title, lang);
-          pageSize = page.length ?? pageSize;
-          links.push(...(page.links ?? []).filter(link => link.ns === 0).map(link => link.title));
-          continuation = part.continue ?? {};
-        } while (continuation.plcontinue && links.length < this.linkCeiling);
-        await this.saveLinks(this.key(lang, title, 'out'), links, !continuation.plcontinue, pageSize);
-        this.sizeCache.set(`${lang}:${title}`, pageSize);
-        result.set(title, { links: links.slice(0, effectiveCap), sizeBytes: pageSize });
+        }
+        continuation = data.continue ?? {};
+      } while (Object.keys(continuation).length > 0 && group.some(title => collected.get(title)!.links.size < effectiveCap));
+      for (const title of group) {
+        const entry = collected.get(title)!;
+        const links = [...entry.links];
+        await this.saveLinks(this.key(lang, title, direction), links, !Object.keys(continuation).length, entry.sizeBytes);
+        this.sizeCache.set(`${lang}:${title}`, entry.sizeBytes);
+        result.set(title, { links: links.slice(0, effectiveCap), sizeBytes: entry.sizeBytes });
       }
     }
     return result;
-  }
-
-  async getInlinks(title: string, lang: string, cap = this.limits.maxLinksPerPage): Promise<string[]> {
-    const key = this.key(lang, title, 'in');
-    const saved = await this.cachedLinks(key);
-    if (saved && (saved.links.length >= cap || saved.complete)) return saved.links.slice(0, cap);
-    const result: string[] = [];
-    let continuation: Record<string, string> = {};
-    do {
-      const data = await this.api.query(lang, {
-        list: 'backlinks', bltitle: title, blnamespace: '0',
-        bllimit: String(Math.min(500, this.linkCeiling - result.length)),
-        ...continuation,
-      });
-      result.push(...(data.query?.backlinks ?? []).map(link => link.title));
-      continuation = data.continue ?? {};
-    } while (continuation.blcontinue && result.length < this.linkCeiling);
-    await this.saveLinks(key, result, !continuation.blcontinue);
-    return result.slice(0, cap);
   }
 
   async getPageSizesBatch(titles: string[], lang: string): Promise<Map<string, number>> {
@@ -241,6 +211,17 @@ export class ApiLinkSource implements LinkSource {
       }
     }
     return sizes;
+  }
+
+  async getLanglinks(title: string, lang: string): Promise<Array<{ title: string; lang: string }>> {
+    const result: Array<{ title: string; lang: string }> = [];
+    let continuation: Record<string, string> = {};
+    do {
+      const data = await this.api.query(lang, { prop: 'langlinks', titles: title, lllimit: 'max', ...continuation });
+      result.push(...(data.query?.pages?.[0]?.langlinks ?? []));
+      continuation = data.continue ?? {};
+    } while (Object.keys(continuation).length);
+    return result;
   }
 
   getFirstTextLink(title: string, lang: string): Promise<string | null> {

@@ -1,7 +1,7 @@
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
 import { RequestBudgetExceededError } from './linkSource';
 
-export interface WikiPage { ns: number; title: string; missing?: boolean; links?: WikiPage[]; length?: number }
+export interface WikiPage { ns: number; title: string; missing?: boolean; links?: WikiPage[]; linkshere?: WikiPage[]; langlinks?: Array<{ lang: string; title: string }>; length?: number }
 export interface WikiResponse {
   continue?: Record<string, string>;
   error?: { code: string; info: string };
@@ -31,7 +31,7 @@ export class WikiApiClient {
   getRequestCount(): number { return this.requestCount; }
 
   private async slot(): Promise<() => void> {
-    if (this.active >= this.limits.concurrency) await new Promise<void>(resolve => this.waiters.push(resolve));
+    if (this.active >= Math.max(1, Math.min(6, this.limits.concurrency))) await new Promise<void>(resolve => this.waiters.push(resolve));
     else this.active++;
     return () => {
       const next = this.waiters.shift();
@@ -49,14 +49,17 @@ export class WikiApiClient {
     for (let attempt = 0; attempt <= this.limits.retryAttempts; attempt++) {
       const release = await this.slot();
       let retryable = false;
+      let retryAfter = 0;
       try {
         if (this.requestCount >= this.maxRequests) throw new RequestBudgetExceededError();
         this.requestCount++;
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), this.limits.requestTimeout);
         try {
-          const response = await fetch(url, { signal: controller.signal });
+          const response = await fetch(url, { signal: controller.signal, headers: { 'Api-User-Agent': 'Perehody/1.0 (https://github.com/ivanmikhaylov1/Wikipedia-path-finder)' } });
           retryable = response.status === 429 || response.status >= 500;
+          const header = response.headers?.get('Retry-After');
+          if (header) retryAfter = /^\d+$/.test(header) ? Number(header) * 1000 : Math.max(0, Date.parse(header) - Date.now());
           if (!response.ok) throw new Error(`Wikipedia API: HTTP ${response.status}`);
           const data = await response.json() as WikiResponse;
           if (data.error) throw new Error(`Wikipedia API: ${data.error.info}`);
@@ -69,7 +72,7 @@ export class WikiApiClient {
       } finally {
         release();
       }
-      await delay(350 * 2 ** attempt);
+      await delay(Math.max(350 * 2 ** attempt, retryAfter || 0));
     }
     throw new Error('Wikipedia API недоступен');
   }
