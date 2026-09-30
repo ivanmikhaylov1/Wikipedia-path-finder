@@ -64,7 +64,7 @@
 | Lighthouse mobile Best Practices | 100 |
 | Lighthouse mobile SEO | 100 |
 
-Lighthouse: production preview, Chromium из Playwright, mobile simulated throttling; три финальных запуска дали 96/100/100/100. Это замер в текущей среде, не опубликованного GitHub Pages. Отчёты HTML/JSON сохраняются в lighthouse-reports, CI загружает их как artifacts.
+Lighthouse: production preview, Chromium из Playwright, mobile simulated throttling; три финальных запуска дали Performance 96, 93 и 96; остальные три категории — 100 во всех запусках. Это замер в текущей среде, не опубликованного GitHub Pages. Отчёты HTML/JSON сохраняются в lighthouse-reports, CI загружает их как artifacts.
 
 Новых runtime-зависимостей нет. Новые dev-зависимости: @playwright/test для браузера, @axe-core/playwright для a11y, lighthouse для аудита, tsx для типизированного сборщика.
 
@@ -75,3 +75,7 @@ Lighthouse: production preview, Chromium из Playwright, mobile simulated throt
 - Межъязыковый локальный CSR и обратный индекс langlinks: в опциональном режиме используется прямой API-поиск.
 - Safari/Firefox, разные платформы установки PWA и ручная проверка скринридером: браузерная проверка выполнена в Chromium, доступность дополнительно проверена axe.
 - Результаты удалённых GitHub Actions и оценка опубликованного сайта требуют запуска workflow после обновления репозитория; локальные проверки уже выполнены.
+
+## Сохранение результата
+
+Изменения подготовлены в локальной ветке `codex/search-local-graph-quality`, отдельными коммитами. Git push из среды не прошёл HTTPS-аутентификацию. Подключённый GitHub API подтвердил права admin/push, но автоматическая проверка отклонила первый create_blob: публикация нового кода в публичный репозиторий требует явного разрешения. Загрузка через API не выполнена; удалённая ветка и draft PR не созданы, main не изменена. Для переноса сохранены git bundle с историей коммитов и ZIP исходников.
