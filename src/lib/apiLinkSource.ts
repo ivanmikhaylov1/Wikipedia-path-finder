@@ -213,6 +213,17 @@ export class ApiLinkSource implements LinkSource {
     return sizes;
   }
 
+  async getLanglinks(title: string, lang: string): Promise<Array<{ title: string; lang: string }>> {
+    const result: Array<{ title: string; lang: string }> = [];
+    let continuation: Record<string, string> = {};
+    do {
+      const data = await this.api.query(lang, { prop: 'langlinks', titles: title, lllimit: 'max', ...continuation });
+      result.push(...(data.query?.pages?.[0]?.langlinks ?? []));
+      continuation = data.continue ?? {};
+    } while (Object.keys(continuation).length);
+    return result;
+  }
+
   getFirstTextLink(title: string, lang: string): Promise<string | null> {
     const key = `${lang}:${title}`;
     const existing = this.firstLinkCache.get(key);

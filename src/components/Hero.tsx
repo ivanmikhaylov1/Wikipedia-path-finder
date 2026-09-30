@@ -5,7 +5,7 @@ import type { ParsedArticle } from '../lib/parseInput';
 interface HeroProps {
   searching: boolean;
   error: string;
-  onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
+  onSearch: (from: ParsedArticle, to: ParsedArticle, multilingual?: boolean) => void;
   onCancel: () => void;
   onValidationError: (message: string) => void;
 }
@@ -21,7 +21,7 @@ export function Hero(props: HeroProps) {
       </div>
       <div className="hero-visual" aria-hidden="true"><span>АРХИВ СВЯЗЕЙ / ВИКИПЕДИЯ</span></div>
       <div className="hero-form-wrap">
-        <div className="form-heading"><span>ЗАВЕСТИ ДЕЛО / ПОСТРОИТЬ МАРШРУТ</span><span className="form-heading-right">ДВЕ СТАТЬИ · ОДИН ЯЗЫК <ArrowDownRight size={15} /></span></div>
+        <div className="form-heading"><span>ЗАВЕСТИ ДЕЛО / ПОСТРОИТЬ МАРШРУТ</span><span className="form-heading-right">ДВЕ СТАТЬИ · ОДИН МАРШРУТ <ArrowDownRight size={15} /></span></div>
         <SearchForm {...props} />
       </div>
     </div>

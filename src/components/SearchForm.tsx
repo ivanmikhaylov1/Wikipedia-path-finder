@@ -65,7 +65,7 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, disab
 }
 
 export function SearchForm({ searching, error, onSearch, onCancel, onValidationError }: {
-  searching: boolean; error: string; onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
+  searching: boolean; error: string; onSearch: (from: ParsedArticle, to: ParsedArticle, multilingual?: boolean) => void;
   onCancel: () => void; onValidationError: (message: string) => void;
 }) {
   const initial = readSharedQuery(location.search);
@@ -73,24 +73,26 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
   const [to, setTo] = useState(initial.to);
   const [lang, setLang] = useState(initial.lang);
   const [copyStatus, setCopyStatus] = useState('');
+  const [multilingual, setMultilingual] = useState(initial.multilingual && import.meta.env.VITE_LINK_SOURCE !== 'local');
+  const [toLang, setToLang] = useState('en');
   const availableLanguages = languages.some(item => item.code === lang)
     ? languages : [...languages, { code: lang, label: lang.toUpperCase() }];
   const [fromExample, toExample] = examples[lang] ?? ['Название статьи', 'Другая статья'];
   const changeValue = (value: string, setValue: (value: string) => void) => {
     setValue(value);
     const urlLanguage = languageFromUrl(value);
-    if (urlLanguage) setLang(urlLanguage);
+    if (urlLanguage && !multilingual) setLang(urlLanguage);
   };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
     try {
       const start = parseInput(from, lang);
-      const end = parseInput(to, lang);
-      validatePair(start, end);
-      history.replaceState(null, '', queryUrl(start, end));
+      const end = parseInput(to, multilingual ? toLang : lang);
+      if (!multilingual) validatePair(start, end);
+      history.replaceState(null, '', queryUrl(start, end, multilingual));
       onValidationError('');
-      onSearch(start, end);
+      onSearch(start, end, multilingual);
     } catch (error) { onValidationError(error instanceof Error ? error.message : 'Проверьте названия статей'); }
   };
 
@@ -102,15 +104,19 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
           aria-pressed={lang === item.code} onClick={() => setLang(item.code)}>{item.label}</button>)}
       </div>
     </div>
+    {import.meta.env.VITE_LINK_SOURCE !== 'local' && <div className="mode-control">
+      <label><input type="checkbox" checked={multilingual} onChange={event => setMultilingual(event.target.checked)} /> Межъязыковой поиск (langlinks)</label>
+      {multilingual && <label>Язык цели <select value={toLang} onChange={event => setToLang(event.target.value)}>{languages.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}</select></label>}
+    </div>}
     <div className="fields-grid">
       <ArticleInput label="Объект А / откуда" number="01" placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={false} />
       <div className="between-fields" aria-hidden="true"><ArrowRight size={20} strokeWidth={1.4} /></div>
-      <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={lang} disabled={false} />
+      <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={multilingual ? toLang : lang} disabled={false} />
     </div>
     <div className="query-actions">
-      <button type="button" onClick={() => { setFrom(to); setTo(from); }}>Поменять статьи местами</button>
+      <button type="button" onClick={() => { if (multilingual) { setFrom(`https://${parseInput(to, toLang).lang}.wikipedia.org/wiki/${parseInput(to, toLang).title}`); setTo(`https://${parseInput(from, lang).lang}.wikipedia.org/wiki/${parseInput(from, lang).title}`); } else { setFrom(to); setTo(from); } }}>Поменять статьи местами</button>
       <button type="button" onClick={async () => {
-        try { await navigator.clipboard.writeText(queryUrl(parseInput(from, lang), parseInput(to, lang))); setCopyStatus('Ссылка скопирована'); }
+        try { await navigator.clipboard.writeText(queryUrl(parseInput(from, lang), parseInput(to, multilingual ? toLang : lang), multilingual)); setCopyStatus('Ссылка скопирована'); }
         catch { setCopyStatus('Введите статьи; ссылку также можно скопировать из адресной строки после поиска.'); }
       }}>Скопировать ссылку</button>
       <span role="status">{copyStatus}</span>

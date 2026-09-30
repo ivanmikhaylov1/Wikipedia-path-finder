@@ -6,6 +6,7 @@ export interface LinkSource {
   getInlinksBatch?(titles: string[], lang: string, cap?: number): Promise<Map<string, { links: string[]; sizeBytes: number }>>;
   getPageSizesBatch?(titles: string[], lang: string): Promise<Map<string, number>>;
   getFirstTextLink?(title: string, lang: string): Promise<string | null>;
+  getLanglinks?(title: string, lang: string): Promise<Array<{ title: string; lang: string }>>;
   getRequestCount?(): number;
 }
 

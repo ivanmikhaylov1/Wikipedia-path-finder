@@ -1,3 +1,4 @@
+import { articleFromKey } from '../lib/multilingualLinkSource';
 import { useRef } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { ConnectionString } from './ConnectionString';
@@ -13,7 +14,7 @@ function transitionCount(count: number): string {
   return `${count} ПЕРЕХОД${ending}`;
 }
 
-export function PathVisualizer({ path, lang, approximate = false }: { path: string[] | null; lang: string; approximate?: boolean }) {
+export function PathVisualizer({ path, lang, multilingual = false, approximate = false }: { path: string[] | null; lang: string; multilingual?: boolean; approximate?: boolean }) {
   const boardRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLAnchorElement | null>>([]);
   return <section className="path-section" id="route" aria-live="polite">
@@ -24,14 +25,14 @@ export function PathVisualizer({ path, lang, approximate = false }: { path: stri
       {path ? <div className="path-board" ref={boardRef}>
         <ConnectionString containerRef={boardRef} cardRefs={cardRefs} count={path.length} />
         <div className="path-list">
-          {path.map((title, index) => <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 100}ms` }}>
-            <a ref={element => { cardRefs.current[index] = element; }} className="path-card" href={`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`} target="_blank" rel="noopener noreferrer">
+          {path.map((key, index) => { const { title, lang: articleLang } = multilingual ? articleFromKey(key) : { title: key, lang }; return <div className="path-step" key={`${title}-${index}`} style={{ animationDelay: `${index * 100}ms` }}>
+            <a ref={element => { cardRefs.current[index] = element; }} className="path-card" href={`https://${articleLang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`} target="_blank" rel="noopener noreferrer">
               <img className="card-pin" src={pin} alt="" aria-hidden="true" />
               {index % 3 === 1 && <img className="card-tape" src={tape} alt="" aria-hidden="true" style={{ transform: `rotate(${[-6, 4, 7][index % 3]}deg)` }} />}
               <span className="path-card-index">УЛИКА {String(index + 1).padStart(2, '0')} <em>/ {index === 0 ? 'СТАРТ' : index === path.length - 1 ? 'ЦЕЛЬ' : 'ПЕРЕХОД'}</em></span>
-              <strong>{title}</strong><span className="path-card-foot">ОТКРЫТЬ СТАТЬЮ <ArrowUpRight size={17} /></span>
+              <strong>{title}</strong>{multilingual && <span>{articleLang.toUpperCase()}</span>}<span className="path-card-foot">ОТКРЫТЬ СТАТЬЮ <ArrowUpRight size={17} /></span>
             </a>
-          </div>)}
+          </div>; })}
         </div>
         <div className="route-stamp" style={{ backgroundImage: `url(${stamp})` }}><span>{approximate ? 'БЫСТРЫЙ ПУТЬ' : 'МАРШРУТ НАЙДЕН'}</span></div>
       </div> : <div className="empty-path" style={{ backgroundImage: `linear-gradient(90deg, rgba(36,28,21,.76), rgba(36,28,21,.05)), url(${heroBoard})` }}>
