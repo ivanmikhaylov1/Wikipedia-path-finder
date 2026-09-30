@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "build:graph": "tsx scripts/build-graph.ts"
+    "build:graph": "tsx scripts/build-graph.ts",
+    "test:e2e": "playwright test",
+    "test:lighthouse": "node scripts/lighthouse.mjs",
+    "test:local": "npm run build:graph -- --lang en --page tests/fixtures/page.sql --pagelinks tests/fixtures/pagelinks.sql --linktarget tests/fixtures/linktarget.sql --redirect tests/fixtures/redirect.sql --out public/graphs/en.bin.gz && VITE_LINK_SOURCE=local VITE_BASE_PATH=/ vite build --outDir dist-local && playwright test --config playwright.local.config.ts"
   },
   "dependencies": {
     "linkedom": "^0.18.13",

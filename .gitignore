@@ -10,3 +10,4 @@ public/graphs/*.bin.gz
 playwright-report/
 test-results/
 lighthouse-reports/
+dist-local/
