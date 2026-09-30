@@ -8,7 +8,7 @@ const url = process.env.LIGHTHOUSE_URL ?? 'http://127.0.0.1:4173/';
 const categories = ['performance', 'accessibility', 'best-practices', 'seo'];
 let server;
 try { await fetch(url); } catch {
-  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { stdio: 'ignore' });
+  server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--config', 'vite.config.ts', '--base', '/', '--host', '127.0.0.1', '--port', '4173', '--strictPort'], { stdio: 'ignore' });
   for (let attempt = 0; attempt < 100; attempt++) {
     try { await fetch(url); break; } catch { await new Promise(resolve => setTimeout(resolve, 100)); }
   }
