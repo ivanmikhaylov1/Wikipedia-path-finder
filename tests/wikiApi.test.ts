@@ -23,3 +23,27 @@ describe('WikiApiClient request budget', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
+
+it('clamps transport concurrency to six and sends the application identity', async () => {
+  let active = 0, peak = 0;
+  const fetchMock = vi.fn(async (_url: URL, init: RequestInit) => {
+    expect((init.headers as Record<string, string>)['Api-User-Agent']).toContain('Perehody/1.0');
+    active++; peak = Math.max(peak, active);
+    await new Promise(resolve => setTimeout(resolve, 5));
+    active--;
+    return { ok: true, status: 200, json: async () => ({ query: {} }) };
+  });
+  vi.stubGlobal('fetch', fetchMock);
+  const client = new WikiApiClient({ ...DEFAULT_LIMITS, concurrency: 99 });
+  await Promise.all(Array.from({ length: 18 }, (_, i) => client.query('en', { titles: String(i) })));
+  expect(peak).toBe(6);
+  expect(client.getRequestCount()).toBe(18);
+});
+
+it('retries a server error successfully and counts both attempts', async () => {
+  const fetchMock = vi.fn().mockResolvedValueOnce({ ok: false, status: 503 }).mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ query: {} }) });
+  vi.stubGlobal('fetch', fetchMock);
+  const client = new WikiApiClient(DEFAULT_LIMITS, 2);
+  await expect(client.query('en', { titles: 'A' })).resolves.toEqual({ query: {} });
+  expect(client.getRequestCount()).toBe(2);
+});

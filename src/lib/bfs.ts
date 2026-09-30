@@ -171,7 +171,7 @@ export async function bidirectionalBfs(
       const cap = caps[state.roundIndex];
       const frontier = (nodes: Map<string, SearchNode>, expanded: Map<string, number>) => {
         const eligible = [...nodes.values()].filter(node => node.depth < limits.maxDepth && (expanded.get(node.title) ?? 0) < cap);
-        const depth = Math.min(...eligible.map(node => node.depth));
+        const depth = eligible.reduce((minimum, node) => Math.min(minimum, node.depth), Infinity);
         return eligible.filter(node => node.depth === depth);
       };
       if (state.pending === null) {
