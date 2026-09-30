@@ -18,7 +18,8 @@ self.onmessage = async (event: MessageEvent<WorkerInput>) => {
   const limits = local ? { ...requestedLimits, maxLinksPerPage: Number.MAX_SAFE_INTEGER, widening: [Number.MAX_SAFE_INTEGER] } : requestedLimits;
   const baseSource = import.meta.env.VITE_LINK_SOURCE === 'local'
     ? new LocalDatasetLinkSource()
-    : new ApiLinkSource(limits);
+    // Five search slots plus one suggestion slot keep the entire app at six.
+    : new ApiLinkSource({ ...limits, concurrency: Math.min(5, limits.concurrency) });
   try {
     const source = multilingual ? new MultilingualLinkSource(baseSource, [...new Set([lang, toLang])]) : baseSource;
     const start = multilingual ? articleKey({ title: from, lang }) : from;

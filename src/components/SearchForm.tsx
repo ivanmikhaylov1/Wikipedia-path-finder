@@ -3,8 +3,10 @@ import { ArrowRight, CornerDownLeft, Search, X } from 'lucide-react';
 import { parseInput, validatePair, type ParsedArticle } from '../lib/parseInput';
 import { readSharedQuery, queryUrl } from '../lib/shareQuery';
 import { WikiApiClient } from '../lib/wikiApi';
+import { DEFAULT_LIMITS } from '../lib/searchLimits';
 
-const api = new WikiApiClient();
+// Reserve one transport slot for suggestions across both inputs.
+const api = new WikiApiClient({ ...DEFAULT_LIMITS, concurrency: 1 });
 const languages = [{ code: 'ru', label: 'RU' }, { code: 'en', label: 'EN' }, { code: 'de', label: 'DE' }, { code: 'fr', label: 'FR' }, { code: 'es', label: 'ES' }];
 const examples: Record<string, [string, string]> = {
   ru: ['Москва', 'Юрий Гагарин'], en: ['London', 'Philosophy'],
