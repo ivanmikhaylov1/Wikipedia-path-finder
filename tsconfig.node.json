@@ -4,8 +4,16 @@
     "skipLibCheck": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"],
-    "strict": true
+    "types": [
+      "node"
+    ],
+    "strict": true,
+    "target": "ES2022",
+    "noEmit": true
   },
-  "include": ["vite.config.ts", "scripts/pwa.ts"]
+  "include": [
+    "vite.config.ts",
+    "scripts/*.ts",
+    "src/lib/graphFormat.ts"
+  ]
 }

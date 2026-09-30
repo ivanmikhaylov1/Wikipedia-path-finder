@@ -42,7 +42,7 @@ function reconstruct(meeting: string, forward: Map<string, SearchNode>, backward
 }
 
 function currentCaps(limits: SearchLimits): number[] {
-  return [...new Set(limits.widening.map(cap => Math.min(cap, limits.maxLinksPerPage, 500)).filter(cap => cap > 0))]
+  return [...new Set(limits.widening.map(cap => Math.min(cap, limits.maxLinksPerPage)).filter(cap => cap > 0))]
     .sort((a, b) => a - b);
 }
 
@@ -168,7 +168,6 @@ export async function bidirectionalBfs(
 
     while (state.roundIndex < caps.length) {
       if (Date.now() >= deadline) throw new SearchExpired();
-      if (requestCount >= limits.maxTotalRequests) throw new RequestBudgetExceededError();
       const cap = caps[state.roundIndex];
       const frontier = (nodes: Map<string, SearchNode>, expanded: Map<string, number>) => {
         const eligible = [...nodes.values()].filter(node => node.depth < limits.maxDepth && (expanded.get(node.title) ?? 0) < cap);
@@ -210,6 +209,7 @@ export async function bidirectionalBfs(
         progress();
         continue;
       }
+      if (requestCount >= limits.maxTotalRequests) throw new RequestBudgetExceededError();
       const remaining = limits.maxTotalRequests - requestCount;
       const batchMethod = state.side === 'forward' ? source.getOutlinksBatch : source.getInlinksBatch;
       const size = batchMethod ? Math.min(50, remaining) : Math.min(6, limits.concurrency, remaining);
