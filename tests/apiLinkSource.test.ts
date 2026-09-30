@@ -40,7 +40,7 @@ describe('ApiLinkSource', () => {
     vi.stubGlobal('indexedDB', new IDBFactory());
     const fetchMock = vi.fn(async () => ({
       ok: true, status: 200,
-      json: async () => ({ query: { backlinks: [{ title: 'Source', ns: 0 }] } }),
+      json: async () => ({ query: { pages: [{ title: 'Target', ns: 0, linkshere: [{ title: 'Source', ns: 0 }] }] } }),
     }));
     vi.stubGlobal('fetch', fetchMock);
     expect(await new ApiLinkSource(DEFAULT_LIMITS).getInlinks('Target', 'ru', 50)).toEqual(['Source']);
@@ -50,8 +50,8 @@ describe('ApiLinkSource', () => {
 
   it('fills a second page when a hub occupies the first batched response', async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const titles = new URL(String(input)).searchParams.get('titles');
-      const response = titles === 'Hub|Small'
+      const url = new URL(String(input));
+      const response = !url.searchParams.has('plcontinue')
         ? { continue: { plcontinue: '1|0|Next', continue: '||info' }, query: { pages: [
           { title: 'Hub', ns: 0, length: 9000, links: Array.from({ length: 500 }, (_, i) => ({ title: `H${i}`, ns: 0 })) },
           { title: 'Small', ns: 0, length: 100 },
@@ -70,7 +70,6 @@ describe('ApiLinkSource', () => {
     const fetchMock = vi.fn(async () => ({
       ok: true, status: 200,
       json: async () => ({
-        continue: { plcontinue: '1|0|Next', continue: '||info' },
         query: { pages: [
           { title: 'Existing', ns: 0, length: 5000, links: Array.from({ length: 50 }, (_, i) => ({ title: `Page ${i}`, ns: 0 })) },
           { title: 'Arbeitertum', ns: 0, missing: true },
@@ -87,8 +86,8 @@ describe('ApiLinkSource', () => {
 
   it('also skips a red link that is absent from the first batch page', async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
-      const title = new URL(String(input)).searchParams.get('titles');
-      return { ok: true, status: 200, json: async () => title === 'Existing|Arbeitertum'
+      const url = new URL(String(input));
+      return { ok: true, status: 200, json: async () => !url.searchParams.has('plcontinue')
         ? { continue: { plcontinue: '1|0|Next', continue: '||info' }, query: { pages: [
           { title: 'Existing', ns: 0, length: 5000, links: Array.from({ length: 50 }, (_, i) => ({ title: `Page ${i}`, ns: 0 })) },
         ] } }
