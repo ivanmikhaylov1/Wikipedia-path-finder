@@ -46,7 +46,7 @@ function currentCaps(limits: SearchLimits): number[] {
     .sort((a, b) => a - b);
 }
 
-/** Directed bidirectional BFS. Rounds reuse discovered nodes and expand them at larger caps. */
+/** Directed BFS with complete layers, smaller-frontier expansion and cached widening rounds. */
 export async function bidirectionalBfs(
   source: LinkSource,
   from: string,
@@ -83,8 +83,15 @@ export async function bidirectionalBfs(
     if (state.start !== from || state.end !== to) throw new Error('Состояние продолжения не соответствует статьям');
   } else {
     if (limits.maxTotalRequests < 2) return { status: 'not_found', reason: 'budget' };
-    const start = await timed(() => source.resolveRedirect(from, lang));
-    const end = await timed(() => source.resolveRedirect(to, lang));
+    let start: string, end: string;
+    try {
+      start = await timed(() => source.resolveRedirect(from, lang));
+      end = await timed(() => source.resolveRedirect(to, lang));
+    } catch (error) {
+      if (error instanceof RequestBudgetExceededError) return { status: 'not_found', reason: 'budget' };
+      if (error instanceof SearchExpired) return { status: 'not_found', reason: 'timeout' };
+      throw error;
+    }
     if (start === end) return { status: 'found', path: [start], exact: true };
     state = {
       start, end,
@@ -163,57 +170,54 @@ export async function bidirectionalBfs(
       if (Date.now() >= deadline) throw new SearchExpired();
       if (requestCount >= limits.maxTotalRequests) throw new RequestBudgetExceededError();
       const cap = caps[state.roundIndex];
-      const roundThreshold = Math.floor(limits.maxTotalRequests * (state.roundIndex + 1) / caps.length);
-      if (requestCount >= roundThreshold && state.roundIndex < caps.length - 1) {
-        state.roundIndex++; state.depth = 0; state.side = 'forward';
-        state.pending = null; state.pendingIndex = 0; state.bestMeeting = null;
-        progress();
-        continue;
-      }
-      if (state.depth >= limits.maxDepth) {
-        if (state.roundIndex < caps.length - 1) {
-          state.roundIndex++; state.depth = 0; state.side = 'forward';
-          state.pending = null; state.pendingIndex = 0; state.bestMeeting = null;
-          progress();
-          continue;
-        }
-        const reachedDepthLimit = [...forward.values(), ...backward.values()].some(node => node.depth >= limits.maxDepth);
-        return { status: 'not_found', reason: reachedDepthLimit ? 'depth' : 'no_path' };
-      }
-      const own = state.side === 'forward' ? forward : backward;
-      const other = state.side === 'forward' ? backward : forward;
-      const expanded = state.side === 'forward' ? expandedForward : expandedBackward;
+      const frontier = (nodes: Map<string, SearchNode>, expanded: Map<string, number>) => {
+        const eligible = [...nodes.values()].filter(node => node.depth < limits.maxDepth && (expanded.get(node.title) ?? 0) < cap);
+        const depth = Math.min(...eligible.map(node => node.depth));
+        return eligible.filter(node => node.depth === depth);
+      };
       if (state.pending === null) {
-        const candidates = [...own.values()].filter(node => node.depth === state.depth && (expanded.get(node.title) ?? 0) < cap);
-        if (source.getPageSizesBatch && candidates.length > 1) {
-          for (let offset = 0; offset < candidates.length; offset += 50) {
-            const group = candidates.slice(offset, offset + 50).filter(node => node.sizeBytes === undefined);
-            if (!group.length) continue;
-            const sizes = await timed(() => source.getPageSizesBatch!(group.map(node => node.title), lang));
-            for (const node of group) node.sizeBytes = sizes.get(node.title);
+        const left = frontier(forward, expandedForward);
+        const right = frontier(backward, expandedBackward);
+        if (!left.length && !right.length) {
+          if (state.roundIndex < caps.length - 1) {
+            state.roundIndex++;
+            // Larger caps introduce edges at earlier depths. Rebuild BFS layers
+            // while LinkSource keeps its cache; old parent depths are not reused.
+            forward.clear(); backward.clear(); expandedForward.clear(); expandedBackward.clear();
+            forward.set(state.start, { title: state.start, parent: null, depth: 0 });
+            backward.set(state.end, { title: state.end, parent: null, depth: 0 });
+            state.bestMeeting = null;
+            continue;
           }
+          const reachedDepthLimit = [...forward.values(), ...backward.values()].some(node => node.depth >= limits.maxDepth);
+          return { status: 'not_found', reason: reachedDepthLimit ? 'depth' : 'no_path' };
         }
+        state.side = !right.length || (left.length > 0 && left.length <= right.length) ? 'forward' : 'backward';
+        const candidates = state.side === 'forward' ? left : right;
+        state.depth = candidates[0].depth;
+        // Order only within a layer. Fetching info for an entire large frontier
+        // would consume the search budget before traversing any links.
         candidates.sort((a, b) => (a.sizeBytes ?? Infinity) - (b.sizeBytes ?? Infinity));
         state.pending = candidates.map(node => node.title);
         state.pendingIndex = 0;
       }
+      const own = state.side === 'forward' ? forward : backward;
+      const other = state.side === 'forward' ? backward : forward;
+      const expanded = state.side === 'forward' ? expandedForward : expandedBackward;
       if (state.pendingIndex >= state.pending.length) {
         state.pending = null; state.pendingIndex = 0;
-        if (state.side === 'forward') state.side = 'backward';
-        else {
-          if (state.bestMeeting) return { status: 'found', path: reconstruct(state.bestMeeting, forward, backward), exact: true };
-          state.side = 'forward'; state.depth++;
-          progress();
-        }
+        if (state.bestMeeting) return { status: 'found', path: reconstruct(state.bestMeeting, forward, backward), exact: true };
+        progress();
         continue;
       }
       const remaining = limits.maxTotalRequests - requestCount;
-      const size = state.side === 'forward' && source.getOutlinksBatch ? Math.min(50, remaining) : Math.min(limits.concurrency, remaining);
+      const batchMethod = state.side === 'forward' ? source.getOutlinksBatch : source.getInlinksBatch;
+      const size = batchMethod ? Math.min(50, remaining) : Math.min(6, limits.concurrency, remaining);
       const batch = state.pending.slice(state.pendingIndex, state.pendingIndex + size);
       if (!batch.length) throw new RequestBudgetExceededError();
       let lists: Array<{ links: string[]; sizeBytes?: number }>;
-      if (state.side === 'forward' && source.getOutlinksBatch) {
-        const data = await timed(() => source.getOutlinksBatch!(batch, lang, cap));
+      if (batchMethod) {
+        const data = await timed(() => batchMethod.call(source, batch, lang, cap));
         lists = batch.map(title => data.get(title) ?? { links: [] });
       } else {
         const received = await Promise.all(batch.map(title => timed(() => state.side === 'forward'
