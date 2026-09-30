@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, CornerDownLeft, Search, X } from 'lucide-react';
 import { parseInput, validatePair, type ParsedArticle } from '../lib/parseInput';
+import { readSharedQuery, queryUrl } from '../lib/shareQuery';
 import { WikiApiClient } from '../lib/wikiApi';
 
 const api = new WikiApiClient();
@@ -26,7 +27,7 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, disab
 
   useEffect(() => {
     let live = true;
-    if (value.trim().length < 2 || /^https?:\/\//i.test(value)) { setSuggestions([]); return; }
+    if (import.meta.env.VITE_LINK_SOURCE === 'local' || value.trim().length < 2 || /^https?:\/\//i.test(value)) { setSuggestions([]); return; }
     const timer = setTimeout(() => {
       api.suggest(value, lang).then(items => { if (live) setSuggestions(items); }).catch(() => { if (live) setSuggestions([]); });
     }, 280);
@@ -44,17 +45,17 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, disab
     <div className="field-control">
       <Search size={20} strokeWidth={1.6} className="field-icon" />
       <input id={`article-${number}`} type="text" value={value} onChange={event => { setValue(event.target.value); setOpen(true); setActiveIndex(-1); }}
-        onFocus={() => setOpen(true)} onKeyDown={event => {
-          if (event.key === 'ArrowDown' && suggestions.length) { event.preventDefault(); setActiveIndex(i => (i + 1) % suggestions.length); }
-          if (event.key === 'ArrowUp' && suggestions.length) { event.preventDefault(); setActiveIndex(i => (i <= 0 ? suggestions.length - 1 : i - 1)); }
-          if (event.key === 'Escape') setOpen(false);
+        onFocus={() => setOpen(true)} onBlur={event => { if (!root.current?.contains(event.relatedTarget)) setOpen(false); }} onKeyDown={event => {
+          if (event.key === 'ArrowDown' && suggestions.length) { event.preventDefault(); setOpen(true); setActiveIndex(i => (i + 1) % suggestions.length); }
+          if (event.key === 'ArrowUp' && suggestions.length) { event.preventDefault(); setOpen(true); setActiveIndex(i => (i <= 0 ? suggestions.length - 1 : i - 1)); }
+          if (event.key === 'Escape') { setOpen(false); setActiveIndex(-1); }
           if (event.key === 'Enter' && open && activeIndex >= 0) { event.preventDefault(); setValue(suggestions[activeIndex]); setOpen(false); }
         }}
-        placeholder={placeholder} autoComplete="off" disabled={disabled} role="combobox" aria-expanded={open && suggestions.length > 0} aria-controls={`suggestions-${number}`} aria-autocomplete="list" />
+        placeholder={placeholder} autoComplete="off" disabled={disabled} role="combobox" aria-expanded={open && suggestions.length > 0} aria-controls={`suggestions-${number}`} aria-autocomplete="list" aria-activedescendant={open && activeIndex >= 0 && activeIndex < suggestions.length ? `option-${number}-${activeIndex}` : undefined} />
       {value && <button className="clear-field" type="button" onClick={() => { setValue(''); setSuggestions([]); }} aria-label="Очистить поле"><X size={16} /></button>}
     </div>
     {open && suggestions.length > 0 && <div className="suggestions" id={`suggestions-${number}`} role="listbox">
-      {suggestions.map((item, index) => <button type="button" role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'suggestion active' : 'suggestion'} key={item}
+      {suggestions.map((item, index) => <button id={`option-${number}-${index}`} tabIndex={-1} type="button" role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'suggestion active' : 'suggestion'} key={item}
         onMouseDown={event => event.preventDefault()} onClick={() => { setValue(item); setOpen(false); setActiveIndex(-1); }}>
         <span>{item}</span><CornerDownLeft size={15} />
       </button>)}
@@ -67,9 +68,11 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
   searching: boolean; error: string; onSearch: (from: ParsedArticle, to: ParsedArticle) => void;
   onCancel: () => void; onValidationError: (message: string) => void;
 }) {
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
-  const [lang, setLang] = useState('ru');
+  const initial = readSharedQuery(location.search);
+  const [from, setFrom] = useState(initial.from);
+  const [to, setTo] = useState(initial.to);
+  const [lang, setLang] = useState(initial.lang);
+  const [copyStatus, setCopyStatus] = useState('');
   const availableLanguages = languages.some(item => item.code === lang)
     ? languages : [...languages, { code: lang, label: lang.toUpperCase() }];
   const [fromExample, toExample] = examples[lang] ?? ['Название статьи', 'Другая статья'];
@@ -85,6 +88,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
       const start = parseInput(from, lang);
       const end = parseInput(to, lang);
       validatePair(start, end);
+      history.replaceState(null, '', queryUrl(start, end));
       onValidationError('');
       onSearch(start, end);
     } catch (error) { onValidationError(error instanceof Error ? error.message : 'Проверьте названия статей'); }
@@ -102,6 +106,14 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
       <ArticleInput label="Объект А / откуда" number="01" placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={false} />
       <div className="between-fields" aria-hidden="true"><ArrowRight size={20} strokeWidth={1.4} /></div>
       <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={lang} disabled={false} />
+    </div>
+    <div className="query-actions">
+      <button type="button" onClick={() => { setFrom(to); setTo(from); }}>Поменять статьи местами</button>
+      <button type="button" onClick={async () => {
+        try { await navigator.clipboard.writeText(queryUrl(parseInput(from, lang), parseInput(to, lang))); setCopyStatus('Ссылка скопирована'); }
+        catch { setCopyStatus('Введите статьи; ссылку также можно скопировать из адресной строки после поиска.'); }
+      }}>Скопировать ссылку</button>
+      <span role="status">{copyStatus}</span>
     </div>
     <div className="form-bottom">
       <div className="form-tip">Название статьи или ссылка вида <span>wikipedia.org/wiki/...</span></div>

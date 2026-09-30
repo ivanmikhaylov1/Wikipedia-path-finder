@@ -74,6 +74,7 @@ export default function App() {
   };
   return <div className="app-shell">
     <a className="side-repo" href={githubUrl} target="_blank" rel="noopener noreferrer" aria-label="Репозиторий на GitHub"><span>РЕПОЗИТОРИЙ</span><ArrowUpRight size={16} /></a>
+    <a className="skip-link" href="#search">Перейти к поиску</a>
     <main>
       <Hero searching={searching} error={error} onSearch={search} onCancel={cancel} onValidationError={setError} />
       <PathVisualizer path={result?.status === 'found' ? result.path : candidate?.path ?? null} lang={resultLang} approximate={result?.status !== 'found' || !result.exact ? Boolean(candidate) : false} />
