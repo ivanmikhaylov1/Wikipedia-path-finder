@@ -1,4 +1,3 @@
-import { parseHTML } from 'linkedom';
 import { ArticleNotFoundError, type LinkSource } from './linkSource';
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
 import { WikiApiClient } from './wikiApi';
@@ -6,7 +5,7 @@ import { WikiApiClient } from './wikiApi';
 type Direction = 'out' | 'in';
 type CachedLinks = { links: string[]; sizeBytes?: number; storedAt: number; complete: boolean };
 const TTL_MS = 30 * 24 * 60 * 60 * 1000;
-const DB_NAME = 'wikipedia-path-finder-links-v2';
+const DB_NAME = 'wikipedia-path-finder-links-v3';
 const STORE_NAME = 'links';
 
 /** A missing or blocked IndexedDB never prevents a live API search. */
@@ -49,46 +48,11 @@ class PersistentLinks {
   }
 }
 
-function firstTextLink(html: string): string | null {
-  const { document } = parseHTML(html);
-  const paragraphs = document.querySelectorAll('.mw-parser-output > p, .mw-parser-output > section > p');
-  for (const paragraph of Array.from(paragraphs)) {
-    let parentheses = 0;
-    let found: string | null = null;
-    const walk = (node: Node): void => {
-      if (found) return;
-      if (node.nodeType === 3) {
-        for (const char of node.textContent ?? '') {
-          if (char === '(' || char === '（') parentheses++;
-          if (char === ')' || char === '）') parentheses = Math.max(0, parentheses - 1);
-        }
-        return;
-      }
-      if (node.nodeType !== 1) return;
-      const element = node as Element;
-      const tag = element.localName;
-      if (tag === 'i' || tag === 'em' || tag === 'sup' || tag === 'table') return;
-      if (tag === 'a' && parentheses === 0 && !element.classList.contains('new')) {
-        const href = element.getAttribute('href') ?? '';
-        if (href.startsWith('/wiki/') && !href.includes('#')) {
-          const title = element.getAttribute('title') ?? decodeURIComponent(href.slice(6)).replaceAll('_', ' ');
-          if (title && !title.includes(':')) { found = title; return; }
-        }
-      }
-      for (const child of Array.from(element.childNodes)) walk(child);
-    };
-    for (const child of Array.from(paragraph.childNodes)) walk(child);
-    if (found) return found;
-  }
-  return null;
-}
-
 export class ApiLinkSource implements LinkSource {
   private api: WikiApiClient;
   private persistent = new PersistentLinks();
   private linkCache = new Map<string, CachedLinks>();
   private resolveCache = new Map<string, Promise<string>>();
-  private firstLinkCache = new Map<string, Promise<string | null>>();
   private sizeCache = new Map<string, number>();
   private linkCeiling: number;
 
@@ -98,7 +62,7 @@ export class ApiLinkSource implements LinkSource {
   }
 
   getRequestCount(): number { return this.api.getRequestCount(); }
-  private key(lang: string, title: string, direction: Direction): string { return `${lang}:${title}:${direction}`; }
+  private key(lang: string, title: string, direction: Direction, cap = this.linkCeiling): string { return JSON.stringify([lang, title, direction, cap]); }
   private async cachedLinks(key: string): Promise<CachedLinks | null> {
     const memory = this.linkCache.get(key);
     if (memory) return memory;
@@ -147,7 +111,7 @@ export class ApiLinkSource implements LinkSource {
     const result = new Map<string, { links: string[]; sizeBytes: number }>();
     const missing: string[] = [];
     for (const title of [...new Set(titles)]) {
-      const saved = await this.cachedLinks(this.key(lang, title, direction));
+      const saved = await this.cachedLinks(this.key(lang, title, direction, effectiveCap));
       if (saved && (saved.links.length >= effectiveCap || saved.complete)) {
         result.set(title, { links: saved.links.slice(0, effectiveCap), sizeBytes: saved.sizeBytes ?? 0 });
         if (saved.sizeBytes !== undefined) this.sizeCache.set(`${lang}:${title}`, saved.sizeBytes);
@@ -178,7 +142,7 @@ export class ApiLinkSource implements LinkSource {
       for (const title of group) {
         const entry = collected.get(title)!;
         const links = [...entry.links];
-        await this.saveLinks(this.key(lang, title, direction), links, !Object.keys(continuation).length, entry.sizeBytes);
+        await this.saveLinks(this.key(lang, title, direction, effectiveCap), links, !Object.keys(continuation).length, entry.sizeBytes);
         this.sizeCache.set(`${lang}:${title}`, entry.sizeBytes);
         result.set(title, { links: links.slice(0, effectiveCap), sizeBytes: entry.sizeBytes });
       }
@@ -224,14 +188,4 @@ export class ApiLinkSource implements LinkSource {
     return result;
   }
 
-  getFirstTextLink(title: string, lang: string): Promise<string | null> {
-    const key = `${lang}:${title}`;
-    const existing = this.firstLinkCache.get(key);
-    if (existing) return existing;
-    const promise = this.api.query(lang, { action: 'parse', page: title, prop: 'text' })
-      .then(data => firstTextLink(data.parse?.text ?? ''))
-      .catch(error => { this.firstLinkCache.delete(key); throw error; });
-    this.firstLinkCache.set(key, promise);
-    return promise;
-  }
 }

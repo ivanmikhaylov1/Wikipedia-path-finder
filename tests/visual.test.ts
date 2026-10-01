@@ -1,16 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { makeStringPath } from '../src/components/ConnectionString';
-
-describe('доска улик', () => {
-  it('строит кривую между точными координатами соседних булавок', () => {
-    const points = [
-      { x: 10, y: 20 }, { x: 110, y: 35 }, { x: 210, y: 25 },
-      { x: 10, y: 230 }, { x: 110, y: 245 }, { x: 210, y: 235 },
-    ];
-    const paths = points.slice(1).map((point, index) => makeStringPath(points[index], point));
-    expect(paths).toHaveLength(5);
-    expect(paths[0]).toMatch(/^M 10\.0 20\.0 Q .* 110\.0 35\.0$/);
-    expect(paths[2]).toMatch(/^M 210\.0 25\.0 Q .* 10\.0 230\.0$/);
-    expect(paths[4]).toMatch(/^M 110\.0 245\.0 Q .* 210\.0 235\.0$/);
+import { pathPoints, sampleCurve } from '../src/lib/threadMotion';
+describe('relative stage layout', () => {
+  it('keeps long and single-article paths inside the stage at every width', () => {
+    for (const count of [1, 2, 5, 13, 31]) for (const width of [328, 716, 1200]) {
+      const points = pathPoints(count), curve = sampleCurve(points);
+      expect(points).toHaveLength(count);
+      expect(curve.every(p => p.x * width > 0 && p.x * width < width && p.y * 300 > 0 && p.y * 300 < 300)).toBe(true);
+    }
   });
 });
