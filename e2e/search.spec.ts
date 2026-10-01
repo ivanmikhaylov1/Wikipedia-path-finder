@@ -3,6 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 const edges: Record<string, string[]> = { A: ['B'], B: ['D'], D: [] };
 async function mockApi(context: BrowserContext, mode: 'normal' | 'slow' | 'error' = 'normal') {
+  await context.route('https://*.wikipedia.org/api/rest_v1/**', route => route.fulfill({ json: { description: 'Статья в Википедии' } }));
   await context.route('https://*.wikipedia.org/w/api.php?*', async route => {
     if (route.request().method() === 'OPTIONS') { await route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } }); return; }
     const url = new URL(route.request().url());
@@ -25,37 +26,37 @@ async function mockApi(context: BrowserContext, mode: 'normal' | 'slow' | 'error
 test('search builds a clickable shortest route and a shareable URL', async ({ page, context }) => {
   await mockApi(context);
   await page.goto('/');
-  await page.getByRole('combobox', { name: 'Объект А / откуда' }).fill('A');
-  await page.getByRole('combobox', { name: 'Объект Б / куда' }).fill('D');
-  await page.getByRole('button', { name: 'Найти путь' }).click();
-  await expect(page.locator('.path-card')).toHaveCount(3);
-  await expect(page.locator('.path-card strong')).toHaveText(['A', 'B', 'D']);
-  await expect(page.locator('.path-card').last()).toHaveAttribute('href', 'https://ru.wikipedia.org/wiki/D');
+  await page.getByRole('combobox', { name: 'Откуда' }).fill('A');
+  await page.getByRole('combobox', { name: 'Куда', exact: true }).fill('D');
+  await page.getByRole('button', { name: 'Найти нить' }).click();
+  await expect(page.locator('.path-step')).toHaveCount(3);
+  await expect(page.locator('.path-step h3 a')).toHaveText(['A', 'B', 'D']);
+  await expect(page.locator('.path-step h3 a').last()).toHaveAttribute('href', 'https://ru.wikipedia.org/wiki/D');
   expect(new URL(page.url()).searchParams.get('from')).toBe('A');
-  await expect(page.getByText('Маршрут построен', { exact: true })).toBeVisible();
+  await expect(page.locator('.status-message strong')).toHaveText('Нить найдена');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('cancels the active worker and can start another search', async ({ page, context }) => {
   await mockApi(context, 'slow');
   await page.goto('/?from=A&to=D&lang=ru');
-  await page.getByRole('button', { name: 'Найти путь' }).click();
+  await page.getByRole('button', { name: 'Найти нить' }).click();
   await page.getByRole('button', { name: 'Остановить' }).click();
-  await expect(page.getByRole('alert')).toHaveText('Поиск остановлен.');
-  await expect(page.getByRole('button', { name: 'Найти путь' })).toBeVisible();
-  await page.getByRole('button', { name: 'Найти путь' }).click();
-  await expect(page.locator('.path-card')).toHaveCount(3);
+  await expect(page.getByRole('alert')).toContainText('Поиск остановлен.');
+  await expect(page.getByRole('button', { name: 'Найти нить' })).toBeVisible();
+  await page.getByRole('button', { name: 'Найти нить' }).click();
+  await expect(page.locator('.path-step')).toHaveCount(3);
 });
 
 test('shows API and missing endpoint errors', async ({ page, context }) => {
   await mockApi(context, 'error');
   await page.goto('/?from=A&to=D&lang=ru');
-  await page.getByRole('button', { name: 'Найти путь' }).click();
+  await page.getByRole('button', { name: 'Найти нить' }).click();
   await expect(page.getByRole('alert')).toContainText('HTTP 400');
   await context.unrouteAll({ behavior: 'wait' });
   await mockApi(context);
-  await page.getByRole('combobox', { name: 'Объект А / откуда' }).fill('Missing');
-  await page.getByRole('button', { name: 'Найти путь' }).click();
+  await page.getByRole('combobox', { name: 'Откуда' }).fill('Missing');
+  await page.getByRole('button', { name: 'Найти нить' }).click();
   await expect(page.getByRole('alert')).toContainText('не найдена');
 });
 
@@ -63,9 +64,9 @@ test('shared query is restored; autocomplete is operable with the keyboard at 36
   await mockApi(context);
   await page.setViewportSize({ width: 360, height: 800 });
   await page.goto('/?from=A&to=D&lang=en');
-  const start = page.getByRole('combobox', { name: 'Объект А / откуда' });
+  const start = page.getByRole('combobox', { name: 'Откуда' });
   await expect(start).toHaveValue('A');
-  await expect(page.getByRole('button', { name: 'EN', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Раздел Википедии' })).toHaveValue('en');
   await start.fill('Al');
   await expect(page.getByRole('option', { name: 'Alpha', exact: true })).toBeVisible();
   await start.press('ArrowDown');
@@ -83,9 +84,9 @@ test('shared query is restored; autocomplete is operable with the keyboard at 36
 test('optional langlinks mode renders language-specific article links', async ({ page, context }) => {
   await mockApi(context);
   await page.goto('/?from=A&to=D&lang=ru&mode=multilingual');
-  await page.getByRole('button', { name: 'Найти путь' }).click();
-  await expect(page.locator('.path-card')).toHaveCount(2);
-  await expect(page.locator('.path-card').last()).toHaveAttribute('href', 'https://en.wikipedia.org/wiki/D');
+  await page.getByRole('button', { name: 'Найти нить' }).click();
+  await expect(page.locator('.path-step')).toHaveCount(2);
+  await expect(page.locator('.path-step h3 a').last()).toHaveAttribute('href', 'https://en.wikipedia.org/wiki/D');
 });
 
 test('PWA shell reloads offline after its first online load', async ({ browser }) => {
@@ -96,7 +97,7 @@ test('PWA shell reloads offline after its first online load', async ({ browser }
     await page.evaluate(async () => { await navigator.serviceWorker.ready; if (!navigator.serviceWorker.controller) await new Promise<void>(resolve => navigator.serviceWorker.addEventListener('controllerchange', () => resolve(), { once: true })); });
     await context.setOffline(true);
     await page.reload();
-    await expect(page.getByRole('button', { name: 'Найти путь' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Найти нить' })).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => document.fonts.check('400 16px "Unbounded"'))).toBe(true);
   } finally { await context.close(); }
