@@ -2,15 +2,41 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ad3028" />
-    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
-    <link rel="icon" type="image/svg+xml" href="%BASE_URL%icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f3ecdf" />
     <meta name="description" content="Найдите цепочку гиперссылок между двумя статьями Википедии. Двунаправленный поиск работает прямо в браузере." />
+    <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
+    <link rel="canonical" href="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="Переходы — нить между статьями" />
+    <meta property="og:description" content="Выберите две статьи Википедии — найдём цепочку ссылок между ними." />
+    <meta property="og:url" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/" />
+    <meta property="og:image" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/images/og.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Переходы. Красная нить связывает узлы на тёмной карте." />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Переходы — путь между статьями Википедии</title>
+    <link rel="preload" href="/src/assets/fonts/Yq6W-LOTXCb04q32xlpwv8ZfrxE.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/Yq6W-LOTXCb04q32xlpwu8Zf.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/q5uCsoe9Lv5t7Meb31EcExd8hLxR.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/q5uCsoe9Lv5t7Meb31EcExN8hA.woff2" as="font" type="font/woff2" crossorigin />
+    <script>
+      try { const t = localStorage.getItem('perehody-theme'); document.documentElement.dataset.theme = t === 'dark' || t === 'light' ? t : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main style="max-width:1200px;margin:auto;padding:32px;font-family:system-ui,sans-serif">
+        <h1>Переходы — нить между статьями</h1>
+        <p>Чтобы искать связи в Википедии, включите JavaScript в настройках браузера и обновите страницу.</p>
+        <img src="%BASE_URL%images/knowledge-map.webp" width="2400" height="1400" alt="Карта знаний: красная нить соединяет узлы на тёмном поле." style="width:100%;height:auto;border-radius:22px" />
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
