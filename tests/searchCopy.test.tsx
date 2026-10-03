@@ -10,8 +10,8 @@ it('explains bounded search and language sections without promising reachability
   const html = renderToStaticMarkup(<Hero searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
   expect(html).toContain('Найдите цепочку ссылок между двумя статьями');
   expect(html).toContain('путь есть не всегда, найденный не обязательно кратчайший');
-  expect(html).toContain('ru.wikipedia.org');
-  expect(html).toContain('en.wikipedia.org');
+  expect(html).toContain('Раздел Википедии RU');
+  expect(html).toContain('Раздел Википедии EN');
   expect(html).not.toContain('любыми');
 });
 it('marks only steps crossing language sections', () => {
@@ -30,6 +30,6 @@ it('uses the genitive singular for a one-step path', () => {
 it('explains sections in local mode without offering unavailable language search', () => {
   vi.stubGlobal('location', { search: '' }); vi.stubEnv('VITE_LINK_SOURCE', 'local');
   const html = renderToStaticMarkup(<Hero searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
-  expect(html).toContain('ru.wikipedia.org');
+  expect(html).toContain('Локальный граф: раздел RU');
   expect(html).not.toContain('включите межъязыковой поиск');
 });

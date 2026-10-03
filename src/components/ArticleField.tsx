@@ -1,0 +1,64 @@
+import { useEffect, useRef, useState } from 'react';
+import { resolveArticleSelection, type ArticleSelection } from '../lib/articleSelection';
+import type { ParsedArticle } from '../lib/parseInput';
+import { useArticleSuggestions } from './useArticleSuggestions';
+
+export interface ArticleFieldProps {
+  id: 'article-01' | 'article-02'; label: string; number: '01' | '02';
+  selection: ArticleSelection; onChange(selection: ArticleSelection): void;
+  disabled: boolean; localLang?: string; error?: string;
+}
+
+export function ArticleField({ id, label, number, selection, onChange, disabled, localLang, error }: ArticleFieldProps) {
+  const input = useRef<HTMLInputElement>(null);
+  const [editing, setEditing] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const { articles, loading, failed } = useArticleSuggestions(selection.value, editing && !disabled && localLang === undefined && !selection.selected);
+  useEffect(() => { setActiveIndex(-1); }, [articles]);
+  let lang = localLang ?? 'ru', title = selection.value;
+  try { const article = resolveArticleSelection(selection, localLang); lang = article.lang; title = article.title; } catch { /* Keep invalid text editable. */ }
+  const expanded = open && !disabled && articles.length > 0;
+  const active = expanded && activeIndex >= 0 && activeIndex < articles.length ? activeIndex : -1;
+  const choose = (article: ParsedArticle) => {
+    onChange({ value: article.title, selected: article });
+    setOpen(false); setActiveIndex(-1);
+  };
+  const description = [error && `${id}-error`, failed && `${id}-suggestion-status`].filter(Boolean).join(' ') || undefined;
+
+  return <div className={`article-field${editing ? ' is-editing' : ''}${selection.selected ? ' is-selected' : ''}`}>
+    <div className="field-top">
+      <span className="field-folio" aria-hidden="true">{number}</span>
+      <label className="field-label" htmlFor={id}>{label}</label>
+      <span className="language-badge" aria-label={`Раздел Википедии ${lang.toUpperCase()}`}>{lang.toUpperCase()}</span>
+    </div>
+    <div className="field-control">
+      <div className="article-display" aria-hidden="true">{title || 'Название статьи'}</div>
+      <input ref={input} id={id} className="article-editor" type="text" role="combobox" value={selection.value}
+        disabled={disabled} autoComplete="off" placeholder="Название или ссылка Википедии"
+        aria-autocomplete="list" aria-expanded={expanded} aria-controls={expanded ? `${id}-suggestions` : undefined}
+        aria-activedescendant={active >= 0 ? `${id}-option-${active}` : undefined}
+        aria-invalid={Boolean(error) || undefined} aria-describedby={description}
+        onChange={event => { onChange({ value: event.target.value, selected: null }); setOpen(true); setActiveIndex(-1); }}
+        onFocus={() => { setEditing(true); setOpen(true); }}
+        onBlur={event => { if (!event.currentTarget.parentElement?.parentElement?.contains(event.relatedTarget)) { setEditing(false); setOpen(false); setActiveIndex(-1); } }}
+        onKeyDown={event => {
+          if (event.key === 'ArrowDown' && articles.length) { event.preventDefault(); setOpen(true); setActiveIndex(index => (index + 1) % articles.length); }
+          else if (event.key === 'ArrowUp' && articles.length) { event.preventDefault(); setOpen(true); setActiveIndex(index => index <= 0 ? articles.length - 1 : index - 1); }
+          else if (event.key === 'Escape') { event.preventDefault(); setOpen(false); setActiveIndex(-1); }
+          else if (event.key === 'Enter' && active >= 0) { event.preventDefault(); choose(articles[active]); }
+        }} />
+      <button className="article-edit-button" type="button" disabled={disabled} aria-label={`Изменить: ${label}`} onClick={() => input.current?.focus()}>Изменить</button>
+    </div>
+    {expanded && <div className="suggestions" id={`${id}-suggestions`} role="listbox" aria-label={`Варианты: ${label}`}>
+      {articles.map((article, index) => <button key={JSON.stringify([article.lang, article.title])} id={`${id}-option-${index}`} type="button" role="option" tabIndex={-1}
+        aria-selected={index === active} className={`suggestion${index === active ? ' active' : ''}`}
+        onMouseDown={event => event.preventDefault()} onClick={() => choose(article)}>
+        <span>{article.title}</span><span className="language-badge">{article.lang.toUpperCase()}</span>
+      </button>)}
+    </div>}
+    {loading && <p className="suggestion-status" role="status">Ищем статьи…</p>}
+    {failed && <p className="suggestion-status" id={`${id}-suggestion-status`} role="status">Подсказки недоступны. Введите название или ссылку Википедии.</p>}
+    {error && <p id={`${id}-error`} className="field-error" role="alert">{error}</p>}
+  </div>;
+}
