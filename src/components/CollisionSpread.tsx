@@ -24,20 +24,25 @@ export function CollisionSpread({ pair: suppliedPair, onPairChange, searchId, pr
   const lastSearch = useRef(searchId);
   const [colliding, setColliding] = useState(false);
   useEffect(() => {
+    if (!formProps.searching) {
+      lastSearch.current = searchId;
+      setColliding(false);
+      return;
+    }
     if (lastSearch.current === searchId) return;
     lastSearch.current = searchId;
     setColliding(true);
     const timer = window.setTimeout(() => setColliding(false), 750);
     return () => window.clearTimeout(timer);
-  }, [searchId]);
+  }, [searchId, formProps.searching]);
   const octopus = isArticle(pair, 'from', 'Осьминоги', 'ru');
   const bauhaus = isArticle(pair, 'to', 'Bauhaus', 'en');
-  return <section className={`collision-spread${colliding ? ' is-colliding' : ''}${formProps.searching ? ' is-searching' : ''}`} id="search">
+  return <section className={`collision-spread${colliding && formProps.searching ? ' is-colliding' : ''}${formProps.searching ? ' is-searching' : ''}`} id="search">
     <header className="publisher-margin"><PublisherMark /><p>Две статьи /<br />одна связь</p></header>
     <h1 className="sr-only">Найдите цепочку ссылок между двумя статьями</h1>
     <div className="spread-art" key={searchId} aria-hidden="true">
       <div className={`paper-fragment paper-fragment--from${octopus ? ' has-octopus' : ' abstract-print'}`}>
-        {octopus && <img className="octopus-cutout" src={`${import.meta.env.BASE_URL}images/collision/octopus.webp`} srcSet={`${import.meta.env.BASE_URL}images/collision/octopus-small.webp 600w, ${import.meta.env.BASE_URL}images/collision/octopus.webp 1086w`} sizes="(max-width: 719px) 300px, 55vw" width="1086" height="1448" alt="" />}
+        {octopus && <img className="octopus-cutout" src={`${import.meta.env.BASE_URL}images/collision/octopus.webp`} srcSet={`${import.meta.env.BASE_URL}images/collision/octopus-small.webp 600w, ${import.meta.env.BASE_URL}images/collision/octopus.webp 1086w`} sizes="(max-width: 767px) 300px, 55vw" width="1086" height="1448" alt="" />}
       </div>
       <div className={`paper-fragment paper-fragment--to${bauhaus ? ' has-bauhaus' : ' abstract-print'}`}>
         {bauhaus && <div className="bauhaus-print"><i className="blue-disc" /><i className="black-bar" /><i className="registration-line" /></div>}
