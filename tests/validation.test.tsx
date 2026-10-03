@@ -7,7 +7,7 @@ import { SearchForm } from '../src/components/SearchForm';
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 it('associates field errors with the affected combobox', () => {
-  const html = renderToStaticMarkup(<ArticleField id="article-01" label="Первая статья" number="01" selection={{ value: '', selected: null }} onChange={() => {}} disabled={false} error="Введите статью" />);
+  const html = renderToStaticMarkup(<ArticleField id="article-01" label="Откуда" number="01" selection={{ value: '', selected: null }} onChange={() => {}} disabled={false} error="Введите статью" />);
   const { document } = parseHTML(html);
   const input = document.querySelector('input')!;
   expect(input.getAttribute('aria-invalid')).toBe('true');

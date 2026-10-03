@@ -26,7 +26,8 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
   };
   const description = [error && `${id}-error`, failed && `${id}-suggestion-status`].filter(Boolean).join(' ') || undefined;
 
-  return <div className={`article-field${editing ? ' is-editing' : ''}${selection.selected ? ' is-selected' : ''}`}>
+  const titleSize = title.length > 60 ? 'long' : title.length > 22 ? 'medium' : 'short';
+  return <div data-side={number === '01' ? 'from' : 'to'} data-title-size={titleSize} className={`article-field${editing ? ' is-editing' : ''}${selection.selected ? ' is-selected' : ''}`}>
     <div className="field-top">
       <span className="field-folio" aria-hidden="true">{number}</span>
       <label className="field-label" htmlFor={id}>{label}</label>
@@ -48,7 +49,7 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
           else if (event.key === 'Escape') { event.preventDefault(); setOpen(false); setActiveIndex(-1); }
           else if (event.key === 'Enter' && active >= 0) { event.preventDefault(); choose(articles[active]); }
         }} />
-      <button className="article-edit-button" type="button" disabled={disabled} aria-label={`Изменить: ${label}`} onClick={() => input.current?.focus()}>Изменить</button>
+      <button className="article-edit-button" type="button" disabled={disabled} aria-label={`Изменить: ${label}`} onClick={() => input.current?.focus()}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-4-4L5 15l-1 5Z" /></svg><span>Изменить</span></button>
     </div>
     {expanded && <div className="suggestions" id={`${id}-suggestions`} role="listbox" aria-label={`Варианты: ${label}`}>
       {articles.map((article, index) => <button key={JSON.stringify([article.lang, article.title])} id={`${id}-option-${index}`} type="button" role="option" tabIndex={-1}

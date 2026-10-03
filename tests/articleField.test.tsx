@@ -5,7 +5,7 @@ import type { ArticleSelection } from '../src/lib/articleSelection';
 import { ArticleField } from '../src/components/ArticleField';
 
 function render(selection: ArticleSelection = { value: 'Bauhaus', selected: { title: 'Bauhaus', lang: 'en' } }, localLang?: string, disabled = false) {
-  return parseHTML(renderToStaticMarkup(<ArticleField id="article-01" label="Первая статья" number="01" selection={selection} onChange={() => {}} disabled={disabled} localLang={localLang} />)).document;
+  return parseHTML(renderToStaticMarkup(<ArticleField id="article-01" label="Откуда" number="01" selection={selection} onChange={() => {}} disabled={disabled} localLang={localLang} />)).document;
 }
 
 it('labels a real combobox and exposes its full selected title and language', () => {
@@ -14,7 +14,7 @@ it('labels a real combobox and exposes its full selected title and language', ()
   const input = document.querySelector('input')!;
   expect(input.getAttribute('role')).toBe('combobox');
   expect(input.getAttribute('value')).toBe(title);
-  expect(document.querySelector(`label[for="${input.id}"]`)?.textContent).toContain('Первая статья');
+  expect(document.querySelector(`label[for="${input.id}"]`)?.textContent).toContain('Откуда');
   expect(document.querySelector('.language-badge')?.textContent).toContain('DE');
   expect(document.querySelector('.article-display')?.textContent).toBe(title);
 });

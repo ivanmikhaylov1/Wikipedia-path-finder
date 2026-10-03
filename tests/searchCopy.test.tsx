@@ -1,13 +1,13 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { Hero } from '../src/components/Hero';
+import { CollisionSpread } from '../src/components/CollisionSpread';
 import { PathSteps } from '../src/components/PathSteps';
 import { PathVisualizer } from '../src/components/PathVisualizer';
 
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 it('explains bounded search and language sections without promising reachability', () => {
   vi.stubGlobal('location', { search: '' });
-  const html = renderToStaticMarkup(<Hero searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
+  const html = renderToStaticMarkup(<CollisionSpread searchId={0} progress={null} canResume={false} onResume={() => {}} searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
   expect(html).toContain('Найдите цепочку ссылок между двумя статьями');
   expect(html).toContain('путь есть не всегда, найденный не обязательно кратчайший');
   expect(html).toContain('Раздел Википедии RU');
@@ -29,7 +29,7 @@ it('uses the genitive singular for a one-step path', () => {
 });
 it('explains sections in local mode without offering unavailable language search', () => {
   vi.stubGlobal('location', { search: '' }); vi.stubEnv('VITE_LINK_SOURCE', 'local');
-  const html = renderToStaticMarkup(<Hero searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
+  const html = renderToStaticMarkup(<CollisionSpread searchId={0} progress={null} canResume={false} onResume={() => {}} searching={false} error="" onSearch={() => {}} onCancel={() => {}} onValidationError={() => {}} />);
   expect(html).toContain('Локальный граф: раздел RU');
   expect(html).not.toContain('включите межъязыковой поиск');
 });
