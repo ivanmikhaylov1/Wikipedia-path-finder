@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { articleFromKey } from '../lib/multilingualLinkSource';
 
 interface Summary { description?: string; extract?: string; thumbnail?: { source: string; width: number; height: number } }
-function ArticleStep({ title, lang, index, lit }: { title: string; lang: string; index: number; lit: boolean }) {
+function ArticleStep({ title, lang, index, lit, crossLanguage }: { title: string; lang: string; index: number; lit: boolean; crossLanguage: boolean }) {
   const root = useRef<HTMLLIElement>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +28,7 @@ function ArticleStep({ title, lang, index, lit }: { title: string; lang: string;
   const description = summary?.description || summary?.extract?.split(/(?<=[.!?])\s/)[0];
   return <li ref={root} className={`path-step ${lit ? 'is-lit' : ''}`}>
     <small>{index === 0 ? 'Старт' : `Шаг ${index}`}</small>
+    {crossLanguage && <span className="transition-label">межъязыковой переход</span>}
     <h3><a href={`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(title.replaceAll(' ', '_'))}`} target="_blank" rel="noopener noreferrer">{title}</a></h3>
     <div className="summary-media" aria-busy={loading}>
       {loading ? <div className="summary-skeleton" aria-hidden="true" /> : summary?.thumbnail ? <img src={summary.thumbnail.source} alt={`Иллюстрация к статье «${title}»`} width={summary.thumbnail.width} height={summary.thumbnail.height} loading="lazy" decoding="async" /> : <div className="summary-placeholder" aria-hidden="true" />}
@@ -37,6 +38,6 @@ function ArticleStep({ title, lang, index, lit }: { title: string; lang: string;
 }
 export function PathSteps({ path, lang, multilingual = false, litCount }: { path: string[]; lang: string; multilingual?: boolean; litCount: number }) {
   return <ol className="path-list" aria-label="Последовательность статей" style={{ '--columns': Math.min(5, path.length) } as CSSProperties}>
-    {path.map((key, index) => { const article = multilingual ? articleFromKey(key) : { title: key, lang }; return <ArticleStep key={`${key}-${index}`} title={article.title} lang={article.lang} index={index} lit={index < litCount} />; })}
+    {path.map((key, index) => { const article = multilingual ? articleFromKey(key) : { title: key, lang }; return <ArticleStep key={`${key}-${index}`} title={article.title} lang={article.lang} index={index} lit={index < litCount} crossLanguage={index > 0 && multilingual && articleFromKey(path[index - 1]).lang !== article.lang} />; })}
   </ol>;
 }

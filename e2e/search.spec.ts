@@ -23,7 +23,7 @@ async function mockApi(context: BrowserContext, mode: 'normal' | 'slow' | 'error
   });
 }
 
-test('search builds a clickable shortest route and a shareable URL', async ({ page, context }) => {
+test('search builds a clickable route and a shareable URL', async ({ page, context }) => {
   await mockApi(context);
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Откуда' }).fill('A');
@@ -83,10 +83,22 @@ test('shared query is restored; autocomplete is operable with the keyboard at 36
 
 test('optional langlinks mode renders language-specific article links', async ({ page, context }) => {
   await mockApi(context);
+  await page.addInitScript(() => {
+    const original = CanvasRenderingContext2D.prototype.setLineDash;
+    Object.defineProperty(window, 'threadDashes', { value: [] });
+    CanvasRenderingContext2D.prototype.setLineDash = function(segments) {
+      if (segments.length) Reflect.get(window, 'threadDashes').push(segments);
+      original.call(this, segments);
+    };
+  });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/?from=A&to=D&lang=ru&mode=multilingual');
   await page.getByRole('button', { name: 'Найти нить' }).click();
   await expect(page.locator('.path-step')).toHaveCount(2);
   await expect(page.locator('.path-step h3 a').last()).toHaveAttribute('href', 'https://en.wikipedia.org/wiki/D');
+  await expect(page.locator('.transition-label')).toHaveText('межъязыковой переход');
+  await expect(page.locator('.stage')).toHaveAttribute('data-phase', 'done');
+  expect(await page.evaluate(() => Reflect.get(window, 'threadDashes'))).toContainEqual([8, 7]);
 });
 
 test('PWA shell reloads offline after its first online load', async ({ browser }) => {

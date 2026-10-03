@@ -101,8 +101,9 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
       </select>
     </label>
     {import.meta.env.VITE_LINK_SOURCE !== 'local' && <div className="mode-control">
-      <label><input type="checkbox" checked={multilingual} onChange={event => setMultilingual(event.target.checked)} /> Межъязыковой поиск</label>
+      <label><input type="checkbox" aria-describedby="section-help" checked={multilingual} onChange={event => setMultilingual(event.target.checked)} /> Межъязыковой поиск</label>
       {multilingual && <label>Язык цели <select value={toLang} onChange={event => setToLang(event.target.value)}>{languages.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}</select></label>}
+      <p id="section-help" className="section-help">Раздел Википедии — её версия на определённом языке: ru.wikipedia.org на русском, en.wikipedia.org на английском.</p>
     </div>}
     <div className="fields-grid">
       <ArticleInput label="Откуда" number="01" placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={searching} />

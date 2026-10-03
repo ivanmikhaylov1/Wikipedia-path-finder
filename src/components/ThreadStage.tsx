@@ -3,7 +3,7 @@ import type { ThreadProgress } from '../lib/bfs.worker';
 import { clamp01, curveLengths, DRAW_MS, easeInOut, knowledgeNodes, MEET_MS, nearestEdges, pathPoints, phaseAt, sampleCurve, SEARCH_MIN_MS, waveRadius, type Phase, type Point } from '../lib/threadMotion';
 
 interface Props {
-  searchId: number; searching: boolean; path: string[] | null;
+  searchId: number; searching: boolean; path: string[] | null; transitions?: boolean[];
   progress: ThreadProgress | null; from: string; to: string;
   onLitCount: (count: number) => void; onPhase: (phase: Phase) => void;
 }
@@ -61,13 +61,19 @@ export function ThreadStage(props: Props) {
       ctx.globalAlpha = alpha; ctx.strokeStyle = accent; ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
       ctx.shadowColor = accent; ctx.shadowBlur = 16; ctx.beginPath(); ctx.moveTo(samples[0].x * width, samples[0].y * height);
       for (let i = 1; i < samples.length; i++) {
+        // sampleCurve uses 40 samples per article-to-article segment.
+        if ((i - 1) % 40 === 0) {
+          ctx.stroke(); ctx.beginPath();
+          ctx.setLineDash(current.current.transitions?.[Math.floor((i - 1) / 40)] ? [8, 7] : []);
+          ctx.moveTo(samples[i - 1].x * width, samples[i - 1].y * height);
+        }
         if (arc[i] > fraction) {
           const mix = clamp01((fraction - arc[i - 1]) / Math.max(.00001, arc[i] - arc[i - 1]));
           ctx.lineTo((samples[i - 1].x + (samples[i].x - samples[i - 1].x) * mix) * width, (samples[i - 1].y + (samples[i].y - samples[i - 1].y) * mix) * height); break;
         }
         ctx.lineTo(samples[i].x * width, samples[i].y * height);
       }
-      ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur = 0;
     };
     const label = (title: string, p: Point, index: number, count: number) => {
       ctx.globalAlpha = .9; ctx.fillStyle = ink; ctx.font = `${width < 500 ? 10 : 12}px ${displayFont}`;
@@ -163,7 +169,7 @@ export function ThreadStage(props: Props) {
 
   return <div className={`stage ${ready ? 'is-ready' : ''}`} data-phase={phase}>
     <div className="stage-fallback" aria-hidden="true" />
-    <canvas ref={canvasRef} className="thread-canvas" role="img" aria-label={props.path ? `Карта пути: ${props.path.join(', ')}` : 'Карта знаний. Поиск распространяется от начальной и конечной статей.'} />
+    <canvas ref={canvasRef} className="thread-canvas" role="img" aria-label={props.path ? `Карта пути: ${props.path.join(', ')}${props.transitions?.some(Boolean) ? '. Пунктир — межъязыковой переход.' : ''}` : 'Карта знаний. Поиск распространяется от начальной и конечной статей.'} />
     <p className="stage-note">{phase === 'search' ? 'Ищем связь между статьями' : phase === 'meet' ? 'Нашли точку встречи' : phase === 'draw' ? 'Протягиваем нить' : phase === 'done' ? 'Нить найдена' : 'Введите две статьи, чтобы увидеть связь.'}</p>
     <div className="stage-counters" aria-hidden="true"><div><DrumNumber value={props.progress?.depth ?? 0} /><span>Глубина</span></div><div><DrumNumber value={props.progress?.visited ?? 0} /><span>Статей просмотрено</span></div></div>
   </div>;
