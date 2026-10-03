@@ -8,6 +8,7 @@ import type { ParsedArticle } from './lib/parseInput';
 import type { BfsResumeState, SearchResult } from './lib/bfs';
 import type { ThreadProgress, WorkerMessage } from './lib/bfs.worker';
 import { DEFAULT_LIMITS } from './lib/searchLimits';
+import { limitsHitFromReason, type NotFoundState } from './lib/searchOutcome';
 import type { Phase } from './lib/threadMotion';
 
 export default function App() {
@@ -15,6 +16,8 @@ export default function App() {
   const [progress, setProgress] = useState<ThreadProgress | null>(null);
   const [result, setResult] = useState<SearchResult | null>(null);
   const [candidate, setCandidate] = useState<Extract<SearchResult, { status: 'found' }> | null>(null);
+  const [notFound, setNotFound] = useState<NotFoundState | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState('');
   const [query, setQuery] = useState({ from: '', to: '', lang: 'ru', toLang: 'ru', multilingual: false });
   const [searchId, setSearchId] = useState(0);
@@ -25,12 +28,12 @@ export default function App() {
 
   const cancel = () => {
     workerRef.current?.terminate(); workerRef.current = null;
-    setSearching(false); setResult(null); setCandidate(null); setProgress(null); setPhase('idle');
+    setNotFound(null); setSearching(false); setResult(null); setCandidate(null); setProgress(null); setPhase('idle');
     setError('Поиск остановлен. Можно изменить статьи и попробовать снова.');
   };
   const startWorker = (from: string, to: string, lang: string, resume?: BfsResumeState, multilingual = false, toLang = lang) => {
     workerRef.current?.terminate();
-    setSearching(true); setProgress(null); setResult(null); setError(''); setPhase('search');
+    setNotFound(null); setSearching(true); setProgress(null); setResult(null); setError(''); setPhase('search');
     setQuery({ from, to, lang, toLang, multilingual }); setSearchId(id => id + 1);
     if (!resume) setCandidate(null);
     resumeState.current = undefined;
@@ -45,6 +48,8 @@ export default function App() {
         case 'candidate': setCandidate({ status: 'found', path: message.path, exact: false }); break;
         case 'found': setResult({ status: 'found', path: message.path, exact: true }); finish(); break;
         case 'notFound':
+          setNotFound({ limitsHit: limitsHitFromReason(message.reason), visited: message.visited, depth: message.depth });
+          setProgress(previous => ({ ...previous, depth: message.depth, visited: message.visited, frontierA: 0, frontierB: 0 }));
           setResult({ status: 'not_found', reason: message.reason, resumeState: message.resumeState });
           resumeState.current = message.resumeState; finish(); break;
         case 'error': setError(`${message.message} Проверьте статьи и повторите поиск.`); setCandidate(null); finish(); break;
@@ -66,11 +71,13 @@ export default function App() {
   return <div className="app-shell">
     <a className="skip-link" href="#main">Перейти к поиску</a><Header />
     <main id="main">
-      <Hero searching={searching} error={error} onSearch={search} onCancel={cancel} onValidationError={setError} />
+      <Hero formRef={formRef} searching={searching} error={error} onSearch={search} onCancel={cancel} onValidationError={setError} />
       <PathVisualizer path={path} lang={query.lang} multilingual={query.multilingual} approximate={result?.status !== 'found' && Boolean(candidate)}
-        searchId={searchId} searching={searching} progress={progress} from={query.from} to={query.to} onPhase={setPhase} />
+        notFound={Boolean(notFound) && !path} searchId={searchId} searching={searching} progress={progress} from={query.from} to={query.to} onPhase={setPhase} />
       <ProgressIndicator searching={searching} phase={phase} progress={progress} result={result} candidate={candidate} error={error}
-        canResume={Boolean(resumeState.current)} onResume={resumeSearch} />
+        notFound={notFound} canResume={Boolean(resumeState.current)} onResume={resumeSearch}
+        onEdit={() => { formRef.current?.querySelector<HTMLInputElement>('#article-01')?.focus(); }}
+        onSwap={() => { formRef.current?.querySelector<HTMLButtonElement>('[data-swap]')?.click(); formRef.current?.querySelector<HTMLInputElement>('#article-01')?.focus(); }} />
     </main><Footer />
   </div>;
 }

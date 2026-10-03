@@ -30,3 +30,5 @@
 .mode-control,.query-actions{display:flex;flex-wrap:wrap;gap:12px 20px;margin:16px 0;color:var(--muted);font-size:13px;line-height:1.6}.mode-control label{display:flex;align-items:center;gap:8px}.mode-control input{accent-color:var(--accent)}.query-actions button{border:0;border-bottom:1px solid var(--line);padding:4px 0;color:var(--ink);background:transparent}.hero h1{font-weight:500}
 
 .section-help{flex-basis:100%;margin:0;max-width:65ch}.transition-label{display:block;color:var(--muted);font-size:13px;line-height:1.6;margin-top:6px}
+
+.recovery-actions{display:flex;flex-wrap:wrap;gap:12px}

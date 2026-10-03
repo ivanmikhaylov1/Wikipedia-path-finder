@@ -2,6 +2,7 @@ import { SearchForm } from './SearchForm';
 import type { ParsedArticle } from '../lib/parseInput';
 
 interface HeroProps {
+  formRef?: React.Ref<HTMLFormElement>;
   searching: boolean;
   error: string;
   onSearch: (from: ParsedArticle, to: ParsedArticle, multilingual?: boolean) => void;

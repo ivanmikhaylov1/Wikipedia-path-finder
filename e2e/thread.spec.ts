@@ -6,7 +6,7 @@ test('not found and language validation explain how to recover', async ({page, c
   await page.getByLabel('Откуда', {exact:true}).fill(PATH[0]);
   await page.getByLabel('Куда', {exact:true}).fill(PATH.at(-1)!);
   await page.getByRole('button', {name:'Найти нить',exact:true}).click();
-  await expect(page.getByText('В пределах лимитов путь не найден.',{exact:true})).toBeVisible();
+  await expect(page.locator('.status-message strong')).toHaveText('Путь не найден');
   await expect(page.locator('.path-step')).toHaveCount(0);
   await page.getByLabel('Откуда', {exact:true}).fill('https://ru.wikipedia.org/wiki/A');
   await page.getByLabel('Куда', {exact:true}).fill('https://en.wikipedia.org/wiki/D');

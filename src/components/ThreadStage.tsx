@@ -3,7 +3,7 @@ import type { ThreadProgress } from '../lib/bfs.worker';
 import { clamp01, curveLengths, DRAW_MS, easeInOut, knowledgeNodes, MEET_MS, nearestEdges, pathPoints, phaseAt, sampleCurve, SEARCH_MIN_MS, waveRadius, type Phase, type Point } from '../lib/threadMotion';
 
 interface Props {
-  searchId: number; searching: boolean; path: string[] | null; transitions?: boolean[];
+  searchId: number; searching: boolean; path: string[] | null; transitions?: boolean[]; notFound?: boolean;
   progress: ThreadProgress | null; from: string; to: string;
   onLitCount: (count: number) => void; onPhase: (phase: Phase) => void;
 }
@@ -25,7 +25,7 @@ export function ThreadStage(props: Props) {
     if (!canvas || !parent || !context) return;
     const ctx = context;
     let painted = false;
-    let disposed = false, raf = 0, lastTime = 0, elapsed = 0, foundAt: number | null = null;
+    let disposed = false, raf = 0, lastTime = 0, elapsed = 0, foundAt: number | null = null, stoppedAt: number | null = null;
     let id = current.current.searchId, lastPhase: Phase = 'idle', lastLit = -1;
     let width = 1, height = 1, dpr = 1, oldCurve: Point[] = [], lastFraction = -1;
     let points: Point[] = [], curve: Point[] = [], lengths: number[] = [], titles: string[] | null = null;
@@ -91,7 +91,7 @@ export function ThreadStage(props: Props) {
       let delta = lastTime ? Math.min(64, time - lastTime) : 0;
       lastTime = time;
       if (data.searchId !== id) {
-        delta = 0; oldCurve = lastFraction >= 0 ? curve.filter((_, i) => (lengths[i] ?? 0) <= lastFraction) : []; lastFraction = -1; id = data.searchId; elapsed = 0; foundAt = null; titles = null;
+        delta = 0; oldCurve = lastFraction >= 0 ? curve.filter((_, i) => (lengths[i] ?? 0) <= lastFraction) : []; lastFraction = -1; id = data.searchId; elapsed = 0; foundAt = null; stoppedAt = null; titles = null;
         points = []; curve = []; lengths = []; radius = 0; observedDepth = 0; observedVisited = 0; lastLit = -1;
       }
       elapsed += delta;
@@ -100,7 +100,10 @@ export function ThreadStage(props: Props) {
         lengths = curveLengths(curve, width, height); foundAt = elapsed;
       }
       if (!data.searching && !data.path) { foundAt = null; titles = null; points = []; curve = []; lengths = []; }
-      const nextPhase = phaseAt(elapsed, foundAt, data.searching, reduced.matches);
+      if (data.notFound) { stoppedAt ??= elapsed; oldCurve = []; }
+      else stoppedAt = null;
+      const fade = data.notFound ? reduced.matches ? 0 : clamp01(1 - (elapsed - (stoppedAt ?? elapsed)) / 400) : 1;
+      const nextPhase = data.notFound ? 'notFound' : phaseAt(elapsed, foundAt, data.searching, reduced.matches);
       if (nextPhase !== lastPhase) { lastPhase = nextPhase; setPhase(nextPhase); data.onPhase(nextPhase); }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = surface; ctx.fillRect(0, 0, width, height);
@@ -113,22 +116,22 @@ export function ThreadStage(props: Props) {
       observedVisited = Math.max(observedVisited, data.progress?.visited ?? 0);
       const target = waveRadius(observedDepth, observedVisited, elapsed, foundAt !== null);
       radius += (target - radius) * (1 - Math.exp(-delta / 180));
-      const wave = !reduced.matches && (nextPhase === 'search' || nextPhase === 'meet');
+      const wave = !reduced.matches && (nextPhase === 'search' || nextPhase === 'meet' || (nextPhase === 'notFound' && fade > 0));
       const waveSize = radius * width;
       nodes.forEach((p, i) => {
-        let color = ink, alpha = .16 + (reduced.matches ? 0 : (Math.sin(time / 1900 + i * 1.4) + 1) * .06);
+        let color = ink, alpha = .16 + (reduced.matches || data.notFound ? 0 : (Math.sin(time / 1900 + i * 1.4) + 1) * .06);
         if (wave && waveSize > 0) {
           const a = Math.hypot((p.x - startPoint.x) * width, (p.y - startPoint.y) * height);
           const b = Math.hypot((p.x - endPoint.x) * width, (p.y - endPoint.y) * height);
-          if (Math.min(a, b) < waveSize) { color = b < a ? accent : ink; alpha = .2 + Math.min(1, Math.min(a, b) / waveSize) * .55; }
+          if (Math.min(a, b) < waveSize) { color = b < a ? accent : ink; alpha = .2 + Math.min(1, Math.min(a, b) / waveSize) * .55 * fade; }
         }
         dot(p, i % 7 === 0 ? 1.8 : 1.1, color, alpha);
       });
       if (wave) {
         const pulse = elapsed > SEARCH_MIN_MS && foundAt === null ? 1 + Math.sin(time / 700) * .018 : 1;
-        ring(startPoint, waveSize * pulse, ink, .38); ring(endPoint, waveSize * pulse, accent, .55);
+        ring(startPoint, waveSize * pulse, ink, .38 * fade); ring(endPoint, waveSize * pulse, accent, .55 * fade);
       }
-      if (nextPhase === 'idle' || nextPhase === 'search') {
+      if (nextPhase === 'idle' || nextPhase === 'search' || nextPhase === 'notFound') {
         dot(startPoint, 4, ink, .8); dot(endPoint, 4, accent, .9);
         label(data.from || 'Начало', startPoint, 0, 2); label(data.to || 'Конец', endPoint, 1, 2);
       }
@@ -151,7 +154,7 @@ export function ThreadStage(props: Props) {
       if (lit !== lastLit) { lastLit = lit; data.onLitCount(lit); }
       ctx.globalAlpha = 1;
       if (!painted) { painted = true; setReady(true); }
-      if (!reduced.matches && ['search', 'meet', 'draw'].includes(nextPhase)) raf = requestAnimationFrame(frame);
+      if (!reduced.matches && (['search', 'meet', 'draw'].includes(nextPhase) || (nextPhase === 'notFound' && fade > 0))) raf = requestAnimationFrame(frame);
     }
     function start() { if (!disposed && !document.hidden && !raf) raf = requestAnimationFrame(frame); }
     const visibility = () => { cancelAnimationFrame(raf); raf = 0; lastTime = 0; start(); };
@@ -165,12 +168,12 @@ export function ThreadStage(props: Props) {
       document.removeEventListener('visibilitychange', visibility); reduced.removeEventListener('change', motion); parent.removeEventListener('thread-update', start);
     };
   }, []);
-  useEffect(() => { canvasRef.current?.parentElement?.dispatchEvent(new Event('thread-update')); }, [props.searchId, props.path, props.searching, props.progress]);
+  useEffect(() => { canvasRef.current?.parentElement?.dispatchEvent(new Event('thread-update')); }, [props.searchId, props.path, props.searching, props.progress, props.notFound]);
 
-  return <div className={`stage ${ready ? 'is-ready' : ''}`} data-phase={phase}>
+  return <div className={`stage ${ready ? 'is-ready' : ''}`} data-phase={props.notFound ? 'notFound' : phase}>
     <div className="stage-fallback" aria-hidden="true" />
-    <canvas ref={canvasRef} className="thread-canvas" role="img" aria-label={props.path ? `Карта пути: ${props.path.join(', ')}${props.transitions?.some(Boolean) ? '. Пунктир — межъязыковой переход.' : ''}` : 'Карта знаний. Поиск распространяется от начальной и конечной статей.'} />
-    <p className="stage-note">{phase === 'search' ? 'Ищем связь между статьями' : phase === 'meet' ? 'Нашли точку встречи' : phase === 'draw' ? 'Протягиваем нить' : phase === 'done' ? 'Нить найдена' : 'Введите две статьи, чтобы увидеть связь.'}</p>
+    <canvas ref={canvasRef} className="thread-canvas" role="img" aria-label={props.path ? `Карта пути: ${props.path.join(', ')}${props.transitions?.some(Boolean) ? '. Пунктир — межъязыковой переход.' : ''}` : props.notFound ? 'Карта знаний. Путь не найден.' : 'Карта знаний. Поиск распространяется от начальной и конечной статей.'} />
+    <p className="stage-note">{props.notFound ? 'Путь не найден' : phase === 'search' ? 'Ищем связь между статьями' : phase === 'meet' ? 'Нашли точку встречи' : phase === 'draw' ? 'Протягиваем нить' : phase === 'done' ? 'Нить найдена' : 'Введите две статьи, чтобы увидеть связь.'}</p>
     <div className="stage-counters" aria-hidden="true"><div><DrumNumber value={props.progress?.depth ?? 0} /><span>Глубина</span></div><div><DrumNumber value={props.progress?.visited ?? 0} /><span>Статей просмотрено</span></div></div>
   </div>;
 }

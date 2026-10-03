@@ -1,5 +1,5 @@
 export interface Point { x: number; y: number }
-export type Phase = 'idle' | 'search' | 'meet' | 'draw' | 'done';
+export type Phase = 'idle' | 'search' | 'meet' | 'draw' | 'done' | 'notFound';
 export const SEARCH_MIN_MS = 2400;
 export const MEET_MS = 700;
 export const DRAW_MS = 1800;
