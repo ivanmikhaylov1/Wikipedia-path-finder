@@ -1,8 +1,8 @@
 {
   "baselineCommit": "903cd3e3ae65b2d809e295ec51cdc6bd708e94e6",
   "baselineBytes": 474655,
-  "totalBytes": 279852,
-  "deltaBytes": -194803,
+  "totalBytes": 279974,
+  "deltaBytes": -194681,
   "maxGrowthBytes": 30000,
   "files": [
     {
@@ -10,12 +10,12 @@
       "gzip": 5401
     },
     {
-      "file": "index-BMT_U7hB.css",
-      "gzip": 6642
+      "file": "index-3hGLJlyS.js",
+      "gzip": 78991
     },
     {
-      "file": "index-BabrrgTn.js",
-      "gzip": 78872
+      "file": "index-Cp0b5cnb.css",
+      "gzip": 6645
     },
     {
       "file": "oswald-700-CM4Tt9Ci.ttf",

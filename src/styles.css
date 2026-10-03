@@ -42,7 +42,7 @@ input { caret-color: var(--accent); }
 .collision-spread::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 8; background: url('/images/grain.webp') repeat; opacity: .055; }
 .publisher-margin { position: relative; z-index: 3; display: flex; align-items: start; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
 .publisher-mark { width: min(355px, 45%); }
-.publisher-mark a { display: flex; gap: 22px; align-items: baseline; font: 400 clamp(25px, 2.3vw, 36px)/1.1 var(--serif); text-decoration: none; }
+.publisher-mark a { display: flex; min-height: 44px; gap: 22px; align-items: baseline; font: 400 clamp(25px, 2.3vw, 36px)/1.1 var(--serif); text-decoration: none; }
 .publisher-mark a::after { content: ''; height: 1px; background: var(--ink); flex: 1; }
 .publisher-mark > span { display: block; font-size: 9px; letter-spacing: .34em; text-transform: uppercase; margin-top: 7px; }
 .publisher-margin > p { margin: 0; text-align: right; font-size: 10px; line-height: 1.6; letter-spacing: .2em; text-transform: uppercase; }

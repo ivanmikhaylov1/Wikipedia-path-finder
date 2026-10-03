@@ -11,6 +11,7 @@ export interface ArticleFieldProps {
 
 export function ArticleField({ id, label, number, selection, onChange, disabled, localLang, error }: ArticleFieldProps) {
   const input = useRef<HTMLInputElement>(null);
+  const suggestions = useRef<HTMLDivElement>(null);
   const [editing, setEditing] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -20,6 +21,17 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
   try { const article = resolveArticleSelection(selection, localLang); lang = article.lang; title = article.title; } catch { /* Keep invalid text editable. */ }
   const expanded = open && !disabled && articles.length > 0;
   const active = expanded && activeIndex >= 0 && activeIndex < articles.length ? activeIndex : -1;
+  useEffect(() => {
+    const list = suggestions.current;
+    const option = active >= 0 ? list?.children.item(active) : null;
+    if (!list || !option) return;
+    // Reveal only the nearest clipped edge inside the listbox. Scrolling this
+    // container directly preserves combobox focus and the page's scroll position.
+    const viewport = list.getBoundingClientRect(), row = option.getBoundingClientRect();
+    const top = viewport.top + list.clientTop, bottom = top + list.clientHeight;
+    if (row.top < top) list.scrollTop += Math.floor(row.top - top);
+    else if (row.bottom > bottom) list.scrollTop += Math.ceil(row.bottom - bottom);
+  }, [active]);
   const choose = (article: ParsedArticle) => {
     onChange({ value: article.title, selected: article });
     setOpen(false); setActiveIndex(-1);
@@ -50,7 +62,7 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
         }} />
       <button className="article-edit-button" type="button" disabled={disabled} aria-label={`Изменить: ${label}`} onClick={() => input.current?.focus()}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="m15 4 5 5M4 20l5-1L21 7a2 2 0 0 0-4-4L5 15l-1 5Z" /></svg><span>Изменить</span></button>
     </div>
-    {expanded && <div className="suggestions" id={`${id}-suggestions`} role="listbox" aria-label={`Варианты: ${label}`}>
+    {expanded && <div ref={suggestions} className="suggestions" id={`${id}-suggestions`} role="listbox" aria-label={`Варианты: ${label}`}>
       {articles.map((article, index) => <button key={JSON.stringify([article.lang, article.title])} id={`${id}-option-${index}`} type="button" role="option" tabIndex={-1}
         aria-selected={index === active} className={`suggestion${index === active ? ' active' : ''}`}
         onMouseDown={event => event.preventDefault()} onClick={() => choose(article)}>

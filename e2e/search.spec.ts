@@ -288,3 +288,28 @@ test('autocomplete retains an available language when the other sections fail', 
   await expect(from).toHaveValue('Available article');
   await expect(page.locator('[data-side=from] .language-badge').first()).toHaveText('EN');
 });
+
+test('keyboard suggestions reveal the last option and wrap without scrolling the page', async ({ page, context }) => {
+  await page.setViewportSize({ width: 360, height: 900 }); await mockApi(context); await page.goto('/');
+  await page.evaluate(() => document.fonts.ready);
+  const input = page.getByRole('combobox', { name: 'Откуда' }); await input.fill('Al');
+  await expect(page.getByRole('option')).toHaveCount(8);
+  const pageScroll = await page.evaluate(() => window.scrollY);
+  const fullyVisible = async () => {
+    await expect(input).toBeFocused();
+    await expect.poll(() => input.evaluate(element => {
+      const list = document.getElementById(element.getAttribute('aria-controls')!);
+      const option = document.getElementById(element.getAttribute('aria-activedescendant')!);
+      if (!list || !option) return false;
+      const viewport = list.getBoundingClientRect(), row = option.getBoundingClientRect();
+      return row.top >= viewport.top + list.clientTop - .5 && row.bottom <= viewport.top + list.clientTop + list.clientHeight + .5;
+    })).toBe(true);
+    expect(await page.evaluate(() => window.scrollY)).toBe(pageScroll);
+  };
+  for (let index = 0; index < 8; index++) await input.press('ArrowDown');
+  await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-7'); await fullyVisible();
+  await input.press('ArrowDown'); await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-0'); await fullyVisible();
+  await input.press('ArrowUp'); await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-7'); await fullyVisible();
+  await input.press('Escape'); await expect(input).toHaveAttribute('aria-expanded', 'false');
+  await input.press('ArrowUp'); await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-7'); await fullyVisible();
+});

@@ -18,9 +18,9 @@ for (const width of [360, 1280]) for (const state of ['idle', 'searching', 'foun
     else if (state === 'searching') await expect(page.locator('.search-counts')).toContainText('Проверено статей:');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()).violations).toEqual([]);
-    for (const button of await page.getByRole('button').all()) {
-      if (!await button.isVisible()) continue;
-      const bounds = await button.boundingBox();
+    for (const target of await page.locator('button, a[href]').all()) {
+      if (!await target.isVisible()) continue;
+      const bounds = await target.boundingBox();
       expect(bounds!.height).toBeGreaterThanOrEqual(44);
     }
     await page.evaluate(() => window.scrollTo(0, 0));
