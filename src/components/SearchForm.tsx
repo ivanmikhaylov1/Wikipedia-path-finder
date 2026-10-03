@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, CornerDownLeft, Search, X } from 'lucide-react';
 import { parseInput, validatePair, type ParsedArticle } from '../lib/parseInput';
 import { readSharedQuery, queryUrl } from '../lib/shareQuery';
-import { WikiApiClient } from '../lib/wikiApi';
 import { DEFAULT_LIMITS } from '../lib/searchLimits';
+import { WikiApiClient } from '../lib/wikiApi';
 
-// Reserve one transport slot for suggestions across both inputs.
 const api = new WikiApiClient({ ...DEFAULT_LIMITS, concurrency: 1 });
-const languages = [{ code: 'ru', label: 'RU' }, { code: 'en', label: 'EN' }, { code: 'de', label: 'DE' }, { code: 'fr', label: 'FR' }, { code: 'es', label: 'ES' }];
+const sectionHelp = 'Раздел Википедии — её версия на определённом языке: ru.wikipedia.org на русском, en.wikipedia.org на английском.';
+const languages = [{ code: 'ru', label: 'Русский' }, { code: 'en', label: 'Английский' }, { code: 'de', label: 'Немецкий' }, { code: 'fr', label: 'Французский' }, { code: 'es', label: 'Испанский' }];
 const examples: Record<string, [string, string]> = {
   ru: ['Москва', 'Юрий Гагарин'], en: ['London', 'Philosophy'],
   de: ['Berlin', 'Philosophie'], fr: ['Paris', 'Philosophie'], es: ['Madrid', 'Filosofía'],
@@ -18,9 +17,9 @@ function languageFromUrl(value: string): string | null {
   try { return parseInput(value, 'ru').lang; } catch { return null; }
 }
 
-function ArticleInput({ label, number, placeholder, value, setValue, lang, disabled }: {
+export function ArticleInput({ label, number, placeholder, value, setValue, lang, disabled, error, pairErrorId }: {
   label: string; number: string; placeholder: string; value: string; setValue: (value: string) => void;
-  lang: string; disabled: boolean;
+  lang: string; disabled: boolean; error?: string; pairErrorId?: string;
 }) {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
@@ -43,37 +42,39 @@ function ArticleInput({ label, number, placeholder, value, setValue, lang, disab
   }, []);
 
   return <div className="article-input" ref={root}>
-    <div className="field-top"><span className="field-number">{number}</span><label htmlFor={`article-${number}`}>{label}</label></div>
+    <div className="field-top"><label htmlFor={`article-${number}`}>{label}</label></div>
     <div className="field-control">
-      <Search size={20} strokeWidth={1.6} className="field-icon" />
       <input id={`article-${number}`} type="text" value={value} onChange={event => { setValue(event.target.value); setOpen(true); setActiveIndex(-1); }}
         onFocus={() => setOpen(true)} onBlur={event => { if (!root.current?.contains(event.relatedTarget)) setOpen(false); }} onKeyDown={event => {
           if (event.key === 'ArrowDown' && suggestions.length) { event.preventDefault(); setOpen(true); setActiveIndex(i => (i + 1) % suggestions.length); }
           if (event.key === 'ArrowUp' && suggestions.length) { event.preventDefault(); setOpen(true); setActiveIndex(i => (i <= 0 ? suggestions.length - 1 : i - 1)); }
-          if (event.key === 'Escape') { setOpen(false); setActiveIndex(-1); }
+          if (event.key === 'Escape') setOpen(false);
           if (event.key === 'Enter' && open && activeIndex >= 0) { event.preventDefault(); setValue(suggestions[activeIndex]); setOpen(false); }
         }}
-        placeholder={placeholder} autoComplete="off" disabled={disabled} role="combobox" aria-expanded={open && suggestions.length > 0} aria-controls={`suggestions-${number}`} aria-autocomplete="list" aria-activedescendant={open && activeIndex >= 0 && activeIndex < suggestions.length ? `option-${number}-${activeIndex}` : undefined} />
-      {value && <button className="clear-field" type="button" onClick={() => { setValue(''); setSuggestions([]); }} aria-label="Очистить поле"><X size={16} /></button>}
+        aria-invalid={Boolean(error || pairErrorId) || undefined} aria-describedby={error ? `error-${number}` : pairErrorId}
+        placeholder={placeholder} autoComplete="off" disabled={disabled} role="combobox" aria-expanded={open && suggestions.length > 0} aria-controls={open && suggestions.length ? `suggestions-${number}` : undefined} aria-activedescendant={open && activeIndex >= 0 ? `option-${number}-${activeIndex}` : undefined} aria-autocomplete="list" />
     </div>
+    {error && <p id={`error-${number}`} className="form-error" role="alert">{error}</p>}
     {open && suggestions.length > 0 && <div className="suggestions" id={`suggestions-${number}`} role="listbox">
-      {suggestions.map((item, index) => <button id={`option-${number}-${index}`} tabIndex={-1} type="button" role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'suggestion active' : 'suggestion'} key={item}
+      {suggestions.map((item, index) => <button type="button" tabIndex={-1} id={`option-${number}-${index}`} role="option" aria-selected={index === activeIndex} className={index === activeIndex ? 'suggestion active' : 'suggestion'} key={item}
         onMouseDown={event => event.preventDefault()} onClick={() => { setValue(item); setOpen(false); setActiveIndex(-1); }}>
-        <span>{item}</span><CornerDownLeft size={15} />
+        <span>{item}</span>
       </button>)}
-      <div className="suggestion-foot">ПОДСКАЗКИ ИЗ ВИКИПЕДИИ</div>
     </div>}
   </div>;
 }
 
-export function SearchForm({ searching, error, onSearch, onCancel, onValidationError }: {
+export function SearchForm({ searching, error, onSearch, onCancel, onValidationError, formRef }: {
+  formRef?: React.Ref<HTMLFormElement>;
   searching: boolean; error: string; onSearch: (from: ParsedArticle, to: ParsedArticle, multilingual?: boolean) => void;
   onCancel: () => void; onValidationError: (message: string) => void;
 }) {
+  const local = import.meta.env.VITE_LINK_SOURCE === 'local';
   const initial = readSharedQuery(location.search);
   const [from, setFrom] = useState(initial.from);
   const [to, setTo] = useState(initial.to);
   const [lang, setLang] = useState(initial.lang);
+  const [validation, setValidation] = useState<{ from?: string; to?: string; pair?: string }>({});
   const [copyStatus, setCopyStatus] = useState('');
   const [multilingual, setMultilingual] = useState(initial.multilingual && import.meta.env.VITE_LINK_SOURCE !== 'local');
   const [toLang, setToLang] = useState(languageFromUrl(initial.to) ?? (initial.lang === 'en' ? 'ru' : 'en'));
@@ -81,42 +82,55 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
     ? languages : [...languages, { code: lang, label: lang.toUpperCase() }];
   const [fromExample, toExample] = examples[lang] ?? ['Название статьи', 'Другая статья'];
   const changeValue = (value: string, setValue: (value: string) => void) => {
-    setValue(value);
+    setValidation({}); setValue(value);
     const urlLanguage = languageFromUrl(value);
     if (urlLanguage && !multilingual) setLang(urlLanguage);
   };
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
-    try {
-      const start = parseInput(from, lang);
-      const end = parseInput(to, multilingual ? toLang : lang);
-      if (!multilingual) validatePair(start, end);
+    const errors: { from?: string; to?: string; pair?: string } = {};
+    let start: ParsedArticle | undefined, end: ParsedArticle | undefined;
+    try { start = parseInput(from, lang); } catch (error) { errors.from = error instanceof Error ? error.message : 'Введите начальную статью'; }
+    try { end = parseInput(to, multilingual ? toLang : lang); } catch (error) { errors.to = error instanceof Error ? error.message : 'Введите конечную статью'; }
+    if (start && end && !multilingual) {
+      try {
+        if (start.lang !== end.lang) throw new Error(`Статьи из разных языковых разделов. Выберите обе из одного${local ? '.' : ' или включите межъязыковой поиск.'}`);
+        validatePair(start, end);
+      } catch (error) { errors.pair = error instanceof Error ? error.message : 'Проверьте пару статей'; }
+    }
+    setValidation(errors); onValidationError('');
+    if (errors.from || errors.to || errors.pair) {
+      document.getElementById(errors.from || errors.pair ? 'article-01' : 'article-02')?.focus();
+      return;
+    }
+    if (start && end) {
       history.replaceState(null, '', queryUrl(start, end, multilingual));
-      onValidationError('');
       onSearch(start, end, multilingual);
-    } catch (error) { onValidationError(error instanceof Error ? error.message : 'Проверьте названия статей'); }
+    }
   };
 
-  return <form className="search-form" onSubmit={submit}>
-    <div className="language-bar">
-      <div className="language-caption"><span>ЯЗЫК ПОИСКА</span><small>{multilingual ? 'Раздел начальной статьи' : 'Один раздел для обеих статей'}</small></div>
-      <div className="language-switch" role="group" aria-label="Язык поиска для обеих статей">
-        {availableLanguages.map(item => <button key={item.code} type="button" className={lang === item.code ? 'active' : ''}
-          aria-pressed={lang === item.code} onClick={() => setLang(item.code)}>{item.label}</button>)}
-      </div>
-    </div>
+  return <form ref={formRef} className="search-form" onSubmit={submit}>
+    <label className="language-bar">Раздел Википедии
+      <select aria-label="Раздел Википедии" disabled={searching} value={lang} onChange={event => { setValidation({}); setLang(event.target.value); }}>
+        {availableLanguages.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}
+      </select>
+    </label>
     {import.meta.env.VITE_LINK_SOURCE !== 'local' && <div className="mode-control">
-      <label><input type="checkbox" checked={multilingual} onChange={event => setMultilingual(event.target.checked)} /> Межъязыковой поиск (langlinks)</label>
+      <label><input type="checkbox" aria-describedby="section-help" checked={multilingual} onChange={event => { setValidation({}); setMultilingual(event.target.checked); }} /> Межъязыковой поиск</label>
       {multilingual && <label>Язык цели <select value={toLang} onChange={event => setToLang(event.target.value)}>{languages.map(item => <option key={item.code} value={item.code}>{item.label}</option>)}</select></label>}
+      <p id="section-help" className="section-help">{sectionHelp}</p>
     </div>}
+    {local && <p id="section-help" className="section-help">{sectionHelp}</p>}
     <div className="fields-grid">
-      <ArticleInput label="Объект А / откуда" number="01" placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={false} />
-      <div className="between-fields" aria-hidden="true"><ArrowRight size={20} strokeWidth={1.4} /></div>
-      <ArticleInput label="Объект Б / куда" number="02" placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={multilingual ? toLang : lang} disabled={false} />
+      <ArticleInput label="Откуда" number="01" error={validation.from} pairErrorId={validation.pair ? "pair-error" : undefined} placeholder={`Например, ${fromExample}`} value={from} setValue={value => changeValue(value, setFrom)} lang={lang} disabled={searching} />
+      <ArticleInput label="Куда" number="02" error={validation.to} pairErrorId={validation.pair ? "pair-error" : undefined} placeholder={`Например, ${toExample}`} value={to} setValue={value => changeValue(value, setTo)} lang={multilingual ? toLang : lang} disabled={searching} />
+      {searching ? <button key="cancel" className="submit-button cancel-button" type="button" onClick={event => { event.preventDefault(); onCancel(); }}>Остановить</button>
+        : <button key="submit" className="submit-button" type="submit">Найти нить</button>}
     </div>
+    {validation.pair && <p id="pair-error" className="form-error" role="alert">{validation.pair}</p>}
     <div className="query-actions">
-      <button type="button" onClick={() => { if (multilingual && from.trim() && to.trim()) { setFrom(`https://${parseInput(to, toLang).lang}.wikipedia.org/wiki/${parseInput(to, toLang).title}`); setTo(`https://${parseInput(from, lang).lang}.wikipedia.org/wiki/${parseInput(from, lang).title}`); } else { setFrom(to); setTo(from); } }}>Поменять статьи местами</button>
+      <button data-swap type="button" disabled={searching} onClick={() => { setValidation({}); if (multilingual && from.trim() && to.trim()) { try { setFrom(`https://${parseInput(to, toLang).lang}.wikipedia.org/wiki/${parseInput(to, toLang).title}`); setTo(`https://${parseInput(from, lang).lang}.wikipedia.org/wiki/${parseInput(from, lang).title}`); } catch { setFrom(to); setTo(from); } } else { setFrom(to); setTo(from); } }}>Поменять статьи местами</button>
       <button type="button" onClick={async () => {
         try { await navigator.clipboard.writeText(queryUrl(parseInput(from, lang), parseInput(to, multilingual ? toLang : lang), multilingual)); setCopyStatus('Ссылка скопирована'); }
         catch { setCopyStatus('Введите статьи; ссылку также можно скопировать из адресной строки после поиска.'); }
@@ -124,9 +138,7 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
       <span role="status">{copyStatus}</span>
     </div>
     <div className="form-bottom">
-      <div className="form-tip">Название статьи или ссылка вида <span>wikipedia.org/wiki/...</span></div>
-      {searching ? <button className="submit-button cancel-button" type="button" onClick={event => { event.preventDefault(); onCancel(); }}>Остановить <X size={18} /></button>
-        : <button className="submit-button" type="submit">Найти путь <ArrowRight size={19} /></button>}
+      <div className="form-tip">Введите название или ссылку.{!local && ' Для разных разделов включите межъязыковой поиск.'}</div>
     </div>
     {error && <p className="form-error" role="alert">{error}</p>}
   </form>;

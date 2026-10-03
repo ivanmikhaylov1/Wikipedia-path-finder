@@ -1,27 +1,26 @@
-import { Activity, AlertCircle, Check, LoaderCircle } from 'lucide-react';
-import type { SearchProgress, SearchResult } from '../lib/bfs';
-
-const reasons = {
-  depth: 'Путь не найден в пределах лимита глубины. Возможно, он длиннее.',
-  budget: 'Путь не найден в пределах лимита поиска, но, возможно, существует более длинный.',
-  timeout: 'Поиск достиг лимита времени. Попробуйте другую пару статей.',
-  no_path: 'Путь между этими статьями не найден.',
-};
-
-export function ProgressIndicator({ searching, progress, result, candidate, error, canResume, onResume }: {
-  searching: boolean; progress: SearchProgress | null; result: SearchResult | null;
+import type { SearchResult } from '../lib/bfs';
+import type { ThreadProgress } from '../lib/bfs.worker';
+import { stopExplanation, type NotFoundState } from '../lib/searchOutcome';
+import type { Phase } from '../lib/threadMotion';
+export function ProgressIndicator({ searching, phase, progress, result, candidate, error, canResume, onResume, notFound, onEdit, onSwap }: {
+  searching: boolean; phase: Phase; progress: ThreadProgress | null; result: SearchResult | null;
   candidate: Extract<SearchResult, { status: 'found' }> | null;
+  notFound?: NotFoundState | null; onEdit?: () => void; onSwap?: () => void;
   error: string; canResume: boolean; onResume: () => void;
 }) {
-  const found = result?.status === 'found' || Boolean(candidate);
-  const detail = error || (result?.status === 'not_found' ? reasons[result.reason] : '');
-  const quick = Boolean(candidate && result?.status !== 'found');
-  return <section className="status-section page-width" aria-live="polite">
-    <div className="status-top"><span><Activity size={16} /> 03 / СОСТОЯНИЕ ПОИСКА</span><span>LIVE STATUS</span></div>
-    <div className={`status-panel ${searching ? 'is-searching' : ''} ${detail ? 'has-error' : ''}`}>
-      <div className="status-icon">{searching ? <LoaderCircle className="spin" size={23} /> : found ? <Check size={23} /> : detail ? <AlertCircle size={23} /> : <span className="status-idle-dot" />}</div>
-      <div className="status-message"><strong>{searching ? candidate ? 'Быстрый маршрут найден. Ищем короче…' : 'Ищем точку встречи…' : quick ? 'Быстрый маршрут найден' : found ? 'Маршрут построен' : detail ? 'Поиск завершён' : 'Готов к поиску'}</strong><p>{searching ? `Раунд ${progress?.round ?? 1} из ${progress?.roundCount ?? 3}, до ${progress?.linkCap ?? 50} ссылок на статью.` : quick ? 'Поиск кратчайшего маршрута пока не завершён.' : found ? 'Откройте любую статью из цепочки выше.' : detail || 'Введите две статьи и запустите поиск.'}</p>{canResume && !searching && <button type="button" className="resume-button" onClick={onResume}>{candidate ? 'ИСКАТЬ ТОЧНЕЕ' : 'ИСКАТЬ ДАЛЬШЕ'} →</button>}</div>
-      <div className="status-stats"><div><span>ПРОВЕРЕНО СТАТЕЙ</span><strong>{progress?.visitedCount.toLocaleString('ru-RU') ?? '—'}</strong></div><div><span>ГЛУБИНА</span><strong>{progress?.depth ?? '—'}</strong></div></div>
+  const found = result?.status === 'found' || (!searching && Boolean(candidate) && !error);
+  const missing = notFound && !searching && !found && !error;
+  const resumable = missing && canResume && notFound.limitsHit !== 'no_path';
+  return <section className="status-section page-width">
+    <div className="sr-only" aria-live="polite" aria-atomic="true">{searching ? `Глубина ${progress?.depth ?? 0}, просмотрено ${progress?.visited ?? 0} статей.` : ''}</div>
+    {(!searching && !found && !error) && <img className="empty-illustration" src={`${import.meta.env.BASE_URL}images/empty.webp`} alt={missing ? 'Путь не найден' : 'Нить выходит из созвездия и продолжается в свободное пространство.'} width="800" height="500" loading="lazy" decoding="async" />}
+    <div className="status-message" aria-live="polite" aria-atomic="true"><strong>{searching ? candidate ? 'Есть быстрая цепочка. Ищем короче…' : 'Ищем точку встречи…' : error ? 'Поиск остановлен' : missing ? 'Путь не найден' : found ? phase === 'done' ? 'Нить найдена' : 'Связь найдена. Протягиваем нить…' : 'Две статьи. Одна нить.'}</strong>
+      <p>{searching ? 'Поиск идёт от двух статей навстречу друг другу.' : error || (missing ? `Проверено статей: ${notFound.visited}. Достигнутая глубина: ${notFound.depth}. ${stopExplanation[notFound.limitsHit]}` : found ? 'Внутри одного раздела шаг — гиперссылка; между разделами — переход к языковой версии статьи. Откройте статьи из цепочки.' : 'Назовите начало и конец — остальное свяжем.')}</p>
+      {resumable && <button type="button" className="resume-button" onClick={onResume}>Искать глубже</button>}
+      {missing && !resumable && <div className="recovery-actions">
+        <button type="button" className="resume-button" onClick={onEdit}>Изменить статьи</button>
+        <button type="button" className="resume-button" onClick={onSwap}>Поменять местами</button>
+      </div>}
     </div>
   </section>;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { bidirectionalBfs, type SearchResult } from '../src/lib/bfs';
+import { bidirectionalBfs } from '../src/lib/bfs';
 import type { LinkSource } from '../src/lib/linkSource';
 import { DEFAULT_LIMITS } from '../src/lib/searchLimits';
 
@@ -20,35 +20,8 @@ describe('bidirectionalBfs', () => {
     expect(progress.mock.calls.every(([value]) => value.round === 1 && value.linkCap === 50)).toBe(true);
     expect(source.getOutlinksBatch).toHaveBeenCalled();
     expect(source.getOutlinks).not.toHaveBeenCalled();
-  });
-
-  it('emits a directed quick path before a shorter BFS result', async () => {
-    const source = graph({ A: ['B', 'X'], B: ['D'], X: ['Y'], Y: ['D'], D: [] });
-    const firstLinks: Record<string, string | null> = { A: 'X', X: 'Y', Y: 'D', D: null };
-    source.getFirstTextLink = vi.fn(async title => firstLinks[title] ?? null);
-    const candidates: SearchResult[] = [];
-    const result = await bidirectionalBfs(source, 'A', 'D', 'ru', DEFAULT_LIMITS, undefined,
-      { onCandidate: candidate => { expect(source.getOutlinks).not.toHaveBeenCalled(); candidates.push(candidate); } });
-    expect(candidates).toEqual([{ status: 'found', path: ['A', 'X', 'Y', 'D'], exact: false }]);
-    expect(result).toEqual({ status: 'found', path: ['A', 'B', 'D'], exact: true });
-  });
-
-  it('never reverses an unverified first-link chain', async () => {
-    const source = graph({ A: ['Shared'], Z: ['Shared'], Shared: [] });
-    source.getFirstTextLink = vi.fn(async title => ({ A: 'Shared', Z: 'Shared' } as Record<string, string>)[title] ?? null);
-    const candidate = vi.fn();
-    const result = await bidirectionalBfs(source, 'A', 'Z', 'ru', { ...DEFAULT_LIMITS, maxDepth: 1 }, undefined, { onCandidate: candidate });
-    expect(candidate).not.toHaveBeenCalled();
-    expect(result.status).toBe('not_found');
-  });
-
-  it('uses a shared first-link node only after verifying reverse edges', async () => {
-    const source = graph({ A: ['Shared'], Z: ['Shared'], Shared: ['Z'] });
-    source.getFirstTextLink = vi.fn(async title => ({ A: 'Shared', Z: 'Shared' } as Record<string, string>)[title] ?? null);
-    source.getOutlinksBatch = vi.fn(async (titles: string[]) => new Map<string, { links: string[]; sizeBytes: number }>(titles.map(title => [title, { links: title === 'Shared' ? ['Z'] : [], sizeBytes: 100 }])));
-    const candidate = vi.fn();
-    await bidirectionalBfs(source, 'A', 'Z', 'ru', DEFAULT_LIMITS, undefined, { onCandidate: candidate });
-    expect(candidate).toHaveBeenCalledWith({ status: 'found', path: ['A', 'Shared', 'Z'], exact: false });
+    expect(progress.mock.calls[0][0]).toMatchObject({ visitedCount: 2, frontierA: 1, frontierB: 1, sampleTitles: ['A', 'D'] });
+    expect(progress.mock.calls.every(([value]) => value.frontierA >= 0 && value.frontierB >= 0 && value.sampleTitles.length <= 6)).toBe(true);
   });
 
   it('resumes after the request budget with retained visited nodes', async () => {

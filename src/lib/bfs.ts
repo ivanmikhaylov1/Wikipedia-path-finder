@@ -27,6 +27,9 @@ export interface SearchProgress {
   round: number;
   roundCount: number;
   linkCap: number;
+  frontierA?: number;
+  frontierB?: number;
+  sampleTitles?: string[];
 }
 
 class SearchExpired extends Error {}
@@ -112,60 +115,25 @@ export async function bidirectionalBfs(
     forward: [...forward.values()], backward: [...backward.values()],
     expandedForward: [...expandedForward], expandedBackward: [...expandedBackward],
   });
+  const frontierSize = (nodes: Map<string, SearchNode>, expanded: Map<string, number>) => {
+    const eligible = [...nodes.values()].filter(node => node.depth < limits.maxDepth && (expanded.get(node.title) ?? 0) < caps[state.roundIndex]);
+    const depth = eligible.reduce((minimum, node) => Math.min(minimum, node.depth), Infinity);
+    return eligible.filter(node => node.depth === depth).length;
+  };
   const progress = () => onProgress({
     depth: state.depth,
     visitedCount: allVisited.size,
     round: state.roundIndex + 1,
     roundCount: caps.length,
     linkCap: caps[state.roundIndex],
+    // Observability only: expose the existing frontiers without changing expansion.
+    frontierA: frontierSize(forward, expandedForward),
+    frontierB: frontierSize(backward, expandedBackward),
+    sampleTitles: [...allVisited].slice(-6),
   });
   progress();
 
   try {
-    if (!state.fallbackDone && source.getFirstTextLink) {
-      state.fallbackDone = true;
-      const fallbackDeadline = Math.min(deadline, Date.now() + limits.fallbackTimeBudget);
-      const chain = async (start: string, target: string): Promise<string[]> => {
-        const path = [start];
-        const seen = new Set(path);
-        for (let step = 0; step < limits.fallbackChainMaxSteps && Date.now() < fallbackDeadline; step++) {
-          let next: string | null;
-          try { next = await timed(() => source.getFirstTextLink!(path[path.length - 1], lang)); }
-          catch (error) {
-            if (error instanceof RequestBudgetExceededError || error instanceof SearchExpired) throw error;
-            break; // Parse failures must not prevent the ordinary BFS.
-          }
-          if (!next || seen.has(next)) break;
-          path.push(next); seen.add(next);
-          if (next === target) break;
-        }
-        return path;
-      };
-      const [fromChain, toChain] = await Promise.all([
-        chain(state.start, state.end), chain(state.end, state.start),
-      ]);
-      if (fromChain.includes(state.end)) {
-        options.onCandidate?.({ status: 'found', path: fromChain.slice(0, fromChain.indexOf(state.end) + 1), exact: false });
-      } else {
-        // Both first-link chains run forward. Reversing the target chain is valid
-        // only when every reverse edge is verified as a real hyperlink.
-        const shared = fromChain.find(title => toChain.includes(title));
-        if (shared && source.getOutlinksBatch) {
-          const targetSegment = toChain.slice(0, toChain.indexOf(shared) + 1);
-          if (targetSegment.length > 1) {
-            const reversePages = targetSegment.slice(1);
-            const lists = await timed(() => source.getOutlinksBatch!(reversePages, lang, limits.maxLinksPerPage));
-            const valid = reversePages.every((page, i) => lists.get(page)?.links.includes(targetSegment[i]));
-            if (valid) options.onCandidate?.({
-              status: 'found',
-              path: [...fromChain.slice(0, fromChain.indexOf(shared) + 1), ...targetSegment.slice(0, -1).reverse()],
-              exact: false,
-            });
-          }
-        }
-      }
-    }
-
     while (state.roundIndex < caps.length) {
       if (Date.now() >= deadline) throw new SearchExpired();
       const cap = caps[state.roundIndex];

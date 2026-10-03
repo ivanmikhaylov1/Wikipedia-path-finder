@@ -27,15 +27,6 @@ describe('ApiLinkSource', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it('skips parenthetical and italic links in the first main-text paragraph', async () => {
-    const fetchMock = vi.fn(async () => ({
-      ok: true, status: 200,
-      json: async () => ({ parse: { text: '<div class="mw-parser-output"><table><tr><td><a href="/wiki/Infobox">x</a></td></tr></table><p>(<a href="/wiki/Skipped">x</a>) <i><a href="/wiki/Italic">x</a></i> <a href="/wiki/Chosen" title="Chosen">chosen</a></p></div>' } }),
-    }));
-    vi.stubGlobal('fetch', fetchMock);
-    expect(await new ApiLinkSource(DEFAULT_LIMITS).getFirstTextLink('A', 'en')).toBe('Chosen');
-  });
-
   it('reuses a fresh IndexedDB entry across source instances', async () => {
     vi.stubGlobal('indexedDB', new IDBFactory());
     const fetchMock = vi.fn(async () => ({
@@ -141,4 +132,19 @@ it('splits both directions into groups of at most fifty titles', async () => {
   expect((await source.getOutlinksBatch(titles, 'en')).size).toBe(101);
   expect((await source.getInlinksBatch(titles, 'en')).size).toBe(101);
   expect(source.getRequestCount()).toBe(6);
+});
+
+it.each(['out', 'in'] as const)('isolates persistent %s cache entries by the effective link cap', async direction => {
+  vi.stubGlobal('indexedDB', new IDBFactory());
+  const links = Array.from({ length: 500 }, (_, i) => ({ title: `Node ${i}`, ns: 0 }));
+  const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ query: { pages: [{ title: 'Hub', ns: 0, length: 100, links, linkshere: links }] } }) }));
+  vi.stubGlobal('fetch', fetchMock);
+  for (const cap of [50, 200, 500]) {
+    const source = new ApiLinkSource({ ...DEFAULT_LIMITS, maxLinksPerPage: cap });
+    const result = direction === 'out' ? await source.getOutlinks('Hub', 'en', cap) : await source.getInlinks('Hub', 'en', cap);
+    expect(result).toHaveLength(cap);
+    const cached = new ApiLinkSource({ ...DEFAULT_LIMITS, maxLinksPerPage: cap });
+    expect(direction === 'out' ? await cached.getOutlinks('Hub', 'en', cap) : await cached.getInlinks('Hub', 'en', cap)).toHaveLength(cap);
+  }
+  expect(fetchMock).toHaveBeenCalledTimes(3);
 });

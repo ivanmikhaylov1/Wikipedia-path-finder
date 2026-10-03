@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test';
 export default defineConfig({
+  outputDir: 'test-results/local',
   testDir: './e2e',
   testMatch: 'local.spec.ts',
   reporter: 'list',
