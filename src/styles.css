@@ -68,7 +68,7 @@ input { caret-color: var(--accent); }
 .language-badge { display: inline-grid; place-items: center; min-width: 40px; min-height: 28px; padding: 3px 8px; border: 1px solid var(--ink); color: var(--ink); background: var(--paper); font: 400 15px/1.2 var(--serif); }
 .field-control { position: relative; min-width: 0; }
 .article-display { font: 400 clamp(68px, 21cqw, 165px)/.96 var(--serif); letter-spacing: -.04em; text-transform: uppercase; overflow-wrap: anywhere; padding-bottom: 12px; }
-.article-field[data-side=to] .article-display { font-family: var(--condensed); font-weight: 700; font-size: clamp(92px, 29cqw, 230px); color: var(--accent); line-height: 1.04; letter-spacing: -.035em; }
+.article-field[data-side=to] .article-display { font-family: var(--condensed); font-weight: 700; font-size: clamp(80px, 25cqw, 210px); color: var(--accent); line-height: 1.04; letter-spacing: -.035em; }
 .article-field[data-title-size=medium] .article-display { font-size: clamp(42px, 12cqw, 96px); line-height: 1.1; }
 .article-field[data-title-size=long] .article-display { font-size: clamp(28px, 7cqw, 56px); line-height: 1.22; text-transform: none; letter-spacing: -.02em; }
 .article-editor { position: absolute; inset: 0 0 44px; width: 100%; height: calc(100% - 44px); border: 0; padding: 0; background: transparent; color: transparent; caret-color: transparent; opacity: 0; }
@@ -125,7 +125,7 @@ input { caret-color: var(--accent); }
   .field-top { gap: 12px; }
   .field-label { min-width: 62px; font-size: 10px; }
   .article-display { font-size: 21cqw; }
-  .article-field[data-side=to][data-title-size=short] .article-display { font-size: 29cqw; }
+  .article-field[data-side=to][data-title-size=short] .article-display { font-size: 25cqw; }
   .field-folio { font-size: 36px; }
   .collision-form::before { width: 85px; }
   .octopus-cutout { top: 43%; }
@@ -146,7 +146,7 @@ input { caret-color: var(--accent); }
   .field-label { font-size: 10px; min-width: 70px; }
   .language-badge { min-width: 34px; min-height: 26px; font-size: 13px; padding: 3px 6px; }
   .article-display { font-size: 23cqw; line-height: .99; }
-  .article-field[data-side=to] .article-display { font-size: 30cqw; line-height: 1.03; }
+  .article-field[data-side=to] .article-display { font-size: 25cqw; line-height: 1.03; }
   .article-field[data-title-size=medium] .article-display { font-size: 13cqw; line-height: 1.15; }
   .article-field[data-title-size=long] .article-display { font-size: 9cqw; line-height: 1.25; }
   .article-edit-button { font-size: 11px; min-height: 44px; }
@@ -196,18 +196,21 @@ input { caret-color: var(--accent); }
 .ribbon-bauhaus { position: absolute; width: 34%; height: 340px; right: -5%; top: 40%; }
 .ribbon-endword { position: absolute; bottom: 50px; left: 0; max-width: 90%; font: 700 clamp(80px, 16vw, 260px)/1 var(--condensed); color: var(--accent); text-transform: uppercase; overflow: hidden; white-space: nowrap; opacity: .85; }
 .ribbon-heading { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, .55fr); align-items: center; gap: 28px; margin: -20px 0 35px 33%; }
-.ribbon-heading h1 { margin: 0; font: 400 clamp(68px, 8.8vw, 155px)/.95 var(--serif); letter-spacing: -.055em; }
+.route-ribbon .publisher-mark { position: relative; z-index: 2; background: var(--paper); padding: 0 8px 7px 0; }
+.ribbon-heading h1 { container-type: inline-size; margin: 0; font: 400 clamp(68px, 8.8vw, 155px)/.95 var(--serif); letter-spacing: -.055em; }
 .ribbon-heading h1 span, .ribbon-heading h1 strong { display: block; }
-.ribbon-heading h1 strong { font: 700 clamp(88px, 12vw, 208px)/1 var(--condensed); color: var(--accent); text-transform: uppercase; letter-spacing: -.045em; }
+.ribbon-heading h1 strong { font: 700 clamp(70px, 24cqw, 208px)/1 var(--condensed); color: var(--accent); text-transform: uppercase; letter-spacing: -.045em; }
 .ribbon-caption { font: 400 clamp(17px, 1.6vw, 26px)/1.35 var(--serif); }
 .ribbon-caption p { margin: 0 0 24px; }
 .ribbon-caption .route-counts { font-size: clamp(21px, 2.2vw, 34px); }
 .ribbon-route { position: relative; margin: 0 32px 120px; }
 .route-list { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 84px 24px; list-style: none; margin: 0; padding: 0; }
 .route-strip { --strip-tilt: -2deg; position: relative; isolation: isolate; grid-row: var(--route-row); grid-column: var(--route-column); display: flex; align-items: center; gap: 18px; min-width: 0; min-height: 180px; padding: 32px 16px 62px; }
-.route-strip::before { content: ''; position: absolute; z-index: -1; inset: -8px -24px; background: var(--paper); clip-path: polygon(0 5%, 6% 3%, 9% 5%, 17% 1%, 24% 4%, 31% 0, 38% 3%, 43% 1%, 53% 4%, 61% 0, 72% 3%, 79% 1%, 87% 4%, 96% 2%, 100% 5%, 99% 95%, 92% 99%, 83% 96%, 74% 100%, 64% 97%, 57% 100%, 48% 97%, 39% 100%, 28% 97%, 19% 100%, 11% 96%, 0 99%); transform: rotate(var(--strip-tilt)); filter: drop-shadow(0 6px 2px #11110f22); }
+/* A small authored displacement mask gives every strip fibrous, irregular edges. */
+.route-strip::before, .route-strip::after { content: ''; position: absolute; pointer-events: none; mask: url('/images/collision/paper-strip.svg') center / 100% 100% no-repeat; }
+.route-strip::before { z-index: -1; inset: -8px -24px; background: var(--paper) url('/images/grain.webp') repeat; background-blend-mode: soft-light; transform: rotate(var(--strip-tilt)); }
 .route-strip:nth-child(3n + 2) { --strip-tilt: 2deg; }
-.route-strip::after { content: ''; position: absolute; z-index: -2; inset: -17px -24px; background: var(--ink); transform: rotate(2.5deg); clip-path: polygon(0 11%, 19% 0, 41% 6%, 62% 0, 83% 7%, 100% 2%, 99% 90%, 72% 97%, 40% 94%, 20% 100%, 0 95%); }
+.route-strip::after { z-index: -2; inset: -12px -24px; background: var(--ink); transform: rotate(2.5deg); }
 .route-folio { flex: none; align-self: flex-start; font: 400 clamp(40px, 5.8vw, 88px)/1 var(--serif); letter-spacing: -.065em; }
 .route-article { position: relative; z-index: 2; min-width: 0; }
 .route-article .language-badge { margin-bottom: 9px; min-width: 35px; min-height: 25px; font-size: 13px; }

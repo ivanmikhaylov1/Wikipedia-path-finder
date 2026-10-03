@@ -27,7 +27,7 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
   const description = [error && `${id}-error`, failed && `${id}-suggestion-status`].filter(Boolean).join(' ') || undefined;
 
   const titleSize = title.length > 60 ? 'long' : title.length > 22 ? 'medium' : 'short';
-  return <div data-side={number === '01' ? 'from' : 'to'} data-title-size={titleSize} className={`article-field${editing ? ' is-editing' : ''}${selection.selected ? ' is-selected' : ''}`}>
+  return <div onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) { setEditing(false); setOpen(false); setActiveIndex(-1); } }} data-side={number === '01' ? 'from' : 'to'} data-title-size={titleSize} className={`article-field${editing ? ' is-editing' : ''}${selection.selected ? ' is-selected' : ''}`}>
     <div className="field-top">
       <span className="field-folio" aria-hidden="true">{number}</span>
       <label className="field-label" htmlFor={id}>{label}</label>
@@ -42,7 +42,6 @@ export function ArticleField({ id, label, number, selection, onChange, disabled,
         aria-invalid={Boolean(error) || undefined} aria-describedby={description}
         onChange={event => { onChange({ value: event.target.value, selected: null }); setOpen(true); setActiveIndex(-1); }}
         onFocus={() => { setEditing(true); setOpen(true); }}
-        onBlur={event => { if (!event.currentTarget.parentElement?.parentElement?.contains(event.relatedTarget)) { setEditing(false); setOpen(false); setActiveIndex(-1); } }}
         onKeyDown={event => {
           if (event.key === 'ArrowDown' && articles.length) { event.preventDefault(); setOpen(true); setActiveIndex(index => (index + 1) % articles.length); }
           else if (event.key === 'ArrowUp' && articles.length) { event.preventDefault(); setOpen(true); setActiveIndex(index => index <= 0 ? articles.length - 1 : index - 1); }

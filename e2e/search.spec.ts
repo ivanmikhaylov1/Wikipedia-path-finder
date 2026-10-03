@@ -241,3 +241,50 @@ test('PWA shell reloads offline after its first online load', async ({ browser }
     expect(await octopus.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   } finally { await context.close(); }
 });
+
+test('tabbing through the edit button closes the field editor and its listbox', async ({ page, context }) => {
+  await mockApi(context); await page.goto('/');
+  const from = page.getByRole('combobox', { name: 'Откуда' });
+  await from.fill('Al'); await expect(page.getByRole('option', { name: 'Alpha RU', exact: true })).toBeVisible();
+  await from.press('Tab'); await expect(page.getByRole('button', { name: 'Изменить: Откуда' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  // Chromium also focuses the scrollable listbox; continue until leaving the wrapper.
+  if (await page.getByRole('listbox', { name: 'Варианты: Откуда' }).evaluate(el => el === document.activeElement)) await page.keyboard.press('Tab');
+  await expect(page.locator('[data-side=from] :focus')).toHaveCount(0);
+  await expect(page.locator('[data-side=from]')).not.toHaveClass(/is-editing/);
+  await expect(from).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('listbox', { name: 'Варианты: Откуда' })).toHaveCount(0);
+});
+
+test('late autocomplete response cannot replace newer text or select a stale article', async ({ page, context }) => {
+  let oldStarted = false;
+  await context.route('https://*.wikipedia.org/**', async route => {
+    if (route.request().method() === 'OPTIONS') { await route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } }); return; }
+    const q = new URL(route.request().url()).searchParams;
+    const text = q.get('srsearch');
+    if (text === 'Old') { oldStarted = true; await new Promise(resolve => setTimeout(resolve, 600)); }
+    await route.fulfill({ json: { query: { search: [{ title: text === 'Old' ? 'Stale article' : 'Fresh article' }] } }, headers: { 'access-control-allow-origin': '*' } });
+  });
+  await page.goto('/'); const from = page.getByRole('combobox', { name: 'Откуда' });
+  await from.fill('Old'); await expect.poll(() => oldStarted).toBe(true);
+  await from.fill('Fresh');
+  await expect(page.getByRole('option', { name: 'Fresh article RU', exact: true })).toBeVisible();
+  await expect(page.getByRole('option', { name: /Stale article/ })).toHaveCount(0);
+  await from.press('ArrowDown'); await from.press('Enter');
+  await expect(from).toHaveValue('Fresh article');
+  await expect(page.locator('[data-side=from] .language-badge').first()).toHaveText('RU');
+});
+
+test('autocomplete retains an available language when the other sections fail', async ({ page, context }) => {
+  await context.route('https://*.wikipedia.org/**', async route => {
+    if (route.request().method() === 'OPTIONS') { await route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } }); return; }
+    const lang = new URL(route.request().url()).hostname.split('.')[0];
+    await route.fulfill({ status: lang === 'en' ? 200 : 400, json: lang === 'en' ? { query: { search: [{ title: 'Available article' }] } } : { error: { code: 'failed' } }, headers: { 'access-control-allow-origin': '*' } });
+  });
+  await page.goto('/'); const from = page.getByRole('combobox', { name: 'Откуда' }); await from.fill('Available');
+  await expect(page.getByRole('option', { name: 'Available article EN', exact: true })).toBeVisible();
+  await expect(page.getByText('Подсказки недоступны.', { exact: false })).toHaveCount(0);
+  await from.press('ArrowDown'); await from.press('Enter');
+  await expect(from).toHaveValue('Available article');
+  await expect(page.locator('[data-side=from] .language-badge').first()).toHaveText('EN');
+});
