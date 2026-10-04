@@ -23,3 +23,19 @@ export class RequestBudgetExceededError extends Error {
     this.name = 'RequestBudgetExceededError';
   }
 }
+
+export type LinkDirection = 'out' | 'in';
+export type QueryPurpose = 'explore' | 'validate';
+export interface CanonicalArticle { lang: string; title: string; pageId?: number }
+export interface LinkEvidence { from: CanonicalArticle; to: CanonicalArticle; rawTarget: string; fresh: boolean }
+export interface LinkPage { edges: LinkEvidence[]; complete: boolean; cursor?: Record<string, string> }
+export interface AnytimeLinkSource extends LinkSource {
+  readonly forwardOnly?: boolean;
+  canonicalize(titles: string[], lang: string, purpose?: QueryPurpose): Promise<Map<string, CanonicalArticle | null>>;
+  readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose): Promise<LinkPage>;
+  probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose): Promise<LinkEvidence[]>;
+  validateEdges(edges: LinkEvidence[]): Promise<boolean>;
+  getRemainingRequests(): number;
+  setDeadline(deadline: number): void;
+}
+export const articleIdentity = (article: CanonicalArticle) => JSON.stringify([article.lang, article.title]);
