@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { stopHeading } from '../src/lib/searchOutcome';
 import { mockWiki, PATH, searchBudget, watchFrames, expectRest } from './wikiMock';
 
 for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'no_path', 'depth', 'time', 'invalid', 'empty'] as const) {
@@ -22,9 +23,9 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
       }
       await expect(from).toBeFocused();
     } else {
-      await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: stopHeading[state === 'requests' || state === 'noResume' ? 'requests' : state === 'time' ? 'time' : state === 'depth' ? 'depth' : 'no_path'] })).toBeVisible();
       const stats = { requests: [3, 1], noResume: [0, 0], no_path: [2, 0], depth: [5, 2], time: [2, 0] }[state];
-      await expect(page.locator('.search-status')).toContainText(`Проверено статей: ${stats[0]}. Достигнутая глубина: ${stats[1]}.`);
+      await expect(page.locator('.search-status')).toContainText(`Обнаружено статей: ${stats[0]}. Достигнутая глубина: ${stats[1]}.`);
       await expect(page.locator('.route-strip')).toHaveCount(0);
       await expect(page.locator('.collision-stage')).toHaveCount(0);
       if (state === 'requests' || state === 'time') {
@@ -44,7 +45,7 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
     if (state === 'requests' || state === 'time') {
       fixture.release(); await page.getByRole('button', { name: 'Искать глубже' }).click();
       if (state === 'time') await expect(page.locator('.route-strip')).toHaveCount(PATH.length);
-      else { await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible(); await expect(page.locator('.search-status')).toContainText('Проверено статей: 5. Достигнутая глубина: 3.'); }
+      else { await expect(page.getByRole('heading', { name: stopHeading[state === 'requests' || state === 'noResume' ? 'requests' : state === 'time' ? 'time' : state === 'depth' ? 'depth' : 'no_path'] })).toBeVisible(); await expect(page.locator('.search-status')).toContainText('Обнаружено статей: 5. Достигнутая глубина: 3.'); }
     } else if (state === 'no_path') {
       await page.getByRole('button', { name: 'Изменить статьи', exact: true }).click(); await expect(from).toBeFocused();
       await page.getByRole('button', { name: 'Поменять статьи местами' }).click();
@@ -56,5 +57,5 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
 test('notFound finishes its finite collision entrance and requests no frames at rest', async ({ page, context }) => {
   await watchFrames(page); await mockWiki(context, 'notFound'); await page.goto('/?from=Москва&to=Философия&lang=ru');
   await page.getByRole('button', { name: 'Столкнуть' }).click();
-  await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible(); await expectRest(page);
+  await expect(page.getByRole('heading', { name: stopHeading.no_path })).toBeVisible(); await expectRest(page);
 });

@@ -20,12 +20,13 @@ export async function mockWiki(context: BrowserContext, mode: MockMode = 'found'
     else if (q.get('list') === 'search') data = { query: { search: [{title: lang === 'ru' ? 'Москва' : 'Moscow'}, {title: lang === 'ru' ? 'Московская область' : 'Moscow Oblast'}] } };
     else if (q.get('action') === 'parse') data = { parse: { text: '<div class="mw-parser-output"><p>Без ссылок</p></div>' } };
     else if (q.get('list') === 'backlinks') data = { query: { backlinks: nodes.filter(node => node.lang === lang && graph.get(key(node))?.some(next => next.lang === lang && next.title === q.get('bltitle'))).map(node => ({ title: node.title, ns: 0 })) } };
+    else if (q.get('list') === 'langbacklinks') data = { query: { langbacklinks: nodes.filter(node=>node.lang===lang&&graph.get(key(node))?.some(next=>next.lang===q.get('lbllang')&&next.title===q.get('lbltitle'))).map(node=>({title:node.title,ns:0})) } };
     else if (q.get('generator') === 'links') data = { query: { pages: (graph.get(key({title:q.get('titles') ?? '',lang})) ?? []).filter(node=>node.lang===lang).map(node=>({title:node.title,ns:0,...(mode==='missing'?{missing:true}:{})})) } };
     else data = { query: { pages: (q.get('titles') ?? '').split('|').map(title => ({
       title, ns: 0, length: 100, ...(mode === 'missing' ? { missing: true } : {}),
       links: (graph.get(key({title, lang})) ?? []).filter(node => node.lang === lang).map(node => ({ title: node.title, ns: 0 })),
       linkshere: nodes.filter(node => node.lang === lang && graph.get(key(node))?.some(next => next.lang === lang && next.title === title)).map(node => ({title: node.title, ns: 0})),
-      langlinks: nodes.filter(node => node.lang !== lang && (graph.get(key({title, lang}))?.some(next => key(next) === key(node)) || graph.get(key(node))?.some(next => next.lang === lang && next.title === title))).map(node => ({lang: node.lang, title: node.title})),
+      langlinks: nodes.filter(node => node.lang !== lang && graph.get(key({title, lang}))?.some(next => key(next) === key(node))).map(node => ({lang: node.lang, title: node.title})),
     })) } };
     await route.fulfill({ json: data, headers: { 'access-control-allow-origin': '*' } }).catch(() => {});
   });

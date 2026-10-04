@@ -1,0 +1,71 @@
+{
+  "date": "2026-10-04",
+  "pair": {
+    "from": {
+      "title": "Осьминоги",
+      "lang": "ru"
+    },
+    "to": {
+      "title": "Bauhaus",
+      "lang": "en"
+    }
+  },
+  "cache": "cold, no IndexedDB",
+  "limits": {
+    "improvementTimeout": 8000,
+    "improvementMaxRequests": 80,
+    "maxDepth": 6,
+    "maxLinksPerPage": 500,
+    "maxTotalRequests": 4000,
+    "concurrency": 5,
+    "requestTimeout": 10000,
+    "searchTimeout": 90000,
+    "retryAttempts": 2,
+    "widening": [
+      50,
+      200,
+      500
+    ],
+    "fallbackChainMaxSteps": 30,
+    "fallbackTimeBudget": 12000
+  },
+  "candidates": [
+    {
+      "path": [
+        "[\"ru\",\"Осьминоги\"]",
+        "[\"ru\",\"XIX век\"]",
+        "[\"ru\",\"1888 год\"]",
+        "[\"ru\",\"Баухаус\"]",
+        "[\"en\",\"Bauhaus\"]"
+      ],
+      "ms": 6108.304667,
+      "requests": 17
+    },
+    {
+      "path": [
+        "[\"ru\",\"Осьминоги\"]",
+        "[\"en\",\"Octopus\"]",
+        "[\"en\",\"Pablo Picasso\"]",
+        "[\"en\",\"Bauhaus\"]"
+      ],
+      "ms": 8111.531833999999,
+      "requests": 23
+    }
+  ],
+  "result": {
+    "status": "found",
+    "path": [
+      "[\"ru\",\"Осьминоги\"]",
+      "[\"en\",\"Octopus\"]",
+      "[\"en\",\"Pablo Picasso\"]",
+      "[\"en\",\"Bauhaus\"]"
+    ],
+    "exact": false,
+    "reason": "improvement",
+    "canResume": true
+  },
+  "durationMs": 14112.816292,
+  "searchRequests": 49,
+  "independentlyVerified": true,
+  "validationRequests": 6
+}

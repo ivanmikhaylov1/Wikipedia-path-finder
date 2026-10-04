@@ -7,7 +7,7 @@ export function RouteSearchStatus({searching,progress,explanation,canResume,onCa
  const latest=useRef(progress);latest.current=progress;const [summary,setSummary]=useState('');
  useEffect(()=>{
   setSummary('');if(!searching)return;
-  const timer=window.setInterval(()=>{const value=latest.current;if(value)setSummary(`Проверено статей: ${value.visited}. Глубина: ${value.depth}.`);},2000);
+  const timer=window.setInterval(()=>{const value=latest.current;if(value)setSummary(`Обнаружено статей: ${value.visited}. Глубина: ${value.depth}.`);},2000);
   return ()=>window.clearInterval(timer);
  },[searching]);
  return <section className="route-search-status" aria-label="Улучшение маршрута">

@@ -1,14 +1,14 @@
 import { expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { SearchStatus } from '../src/components/SearchStatus';
-import { limitsHitFromReason } from '../src/lib/searchOutcome';
+import { limitsHitFromReason, stopHeading } from '../src/lib/searchOutcome';
 
 for (const reason of ['depth', 'requests', 'time', 'no_path'] as const) {
   for (const canResume of [true, false]) it(`${reason}, resume=${canResume}: explains the stop and offers available actions`, () => {
     const html = renderToStaticMarkup(<SearchStatus searching={false} error=""
       notFound={{ limitsHit: reason, visited: 42, depth: 6 }} canResume={canResume} onResume={() => {}} onEdit={() => {}} onSwap={() => {}} />);
-    expect(html).toContain('Путь не найден');
-    expect(html).toContain('Проверено статей: 42. Достигнутая глубина: 6.');
+    expect(html).toContain(stopHeading[reason]);
+    expect(html).toContain('Обнаружено статей: 42. Достигнутая глубина: 6.');
     expect(html).toContain({ depth: 'Достигнут предел глубины', requests: 'Исчерпан лимит запросов', time: 'Истекло время поиска', no_path: 'Доступные связи проверены' }[reason]);
     expect(html).not.toContain('Назовите начало');
     if (canResume && reason !== 'no_path') {

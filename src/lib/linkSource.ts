@@ -7,6 +7,8 @@ export interface LinkSource {
   getPageSizesBatch?(titles: string[], lang: string): Promise<Map<string, number>>;
   getFirstTextLink?(title: string, lang: string): Promise<string | null>;
   getLanglinks?(title: string, lang: string): Promise<Array<{ title: string; lang: string }>>;
+  getLanglinksBatch?(titles:string[],lang:string):Promise<Map<string,Array<{title:string;lang:string}>>>;
+  getLangbacklinks?(title: string, targetLang: string, sourceLang: string): Promise<Array<{ title: string; lang: string }>>;
   getRequestCount?(): number;
 }
 
@@ -33,6 +35,10 @@ export interface LinkEvidence { from: CanonicalArticle; to: CanonicalArticle; ra
 export interface LinkPage { completeFresh?: boolean; newEdges?: LinkEvidence[]; edges: LinkEvidence[]; complete: boolean; cursor?: Record<string, string>; invalidatedEdges?: LinkEvidence[] }
 export interface AnytimeLinkSource extends LinkSource {
   readonly forwardOnly?: boolean;
+  readonly articleKeys?: boolean;
+  readonly incompleteReverse?: boolean;
+  readonly searchLanguages?: readonly string[];
+  prepareSearch?(start:CanonicalArticle,end:CanonicalArticle,onEvidence?:(edges:LinkEvidence[])=>Promise<void>):Promise<LinkEvidence[]>;
   canonicalize(titles: string[], lang: string, purpose?: QueryPurpose): Promise<Map<string, CanonicalArticle | null>>;
   readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose): Promise<LinkPage>;
   probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose): Promise<LinkEvidence[]>;

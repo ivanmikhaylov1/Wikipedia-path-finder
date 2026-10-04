@@ -24,11 +24,11 @@ it('retains separate live regions and throttles progress announcements to two se
   const alert = container.querySelector('[role=alert]')!;
   expect(status).toBe(idleStatus); expect(alert).toBe(idleAlert);
   expect(container.querySelector('[hidden]')).toBeNull();
-  expect(status.textContent).not.toContain('Проверено статей: 1');
+  expect(status.textContent).not.toContain('Обнаружено статей: 1');
   act(() => vi.advanceTimersByTime(1000)); render(500);
   expect(status.textContent).not.toContain('500');
   act(() => vi.advanceTimersByTime(1000));
-  expect(status.textContent).toContain('Проверено статей: 500');
+  expect(status.textContent).toContain('Обнаружено статей: 500');
   render(900); act(() => vi.advanceTimersByTime(1999));
   expect(status.textContent).not.toContain('900');
   act(() => root.render(<SearchStatus {...props} searching={false} error="Сеть недоступна" />));

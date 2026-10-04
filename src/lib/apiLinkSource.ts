@@ -1,7 +1,7 @@
 import { ArticleNotFoundError, type AnytimeLinkSource, type CanonicalArticle, type LinkDirection, type LinkEvidence, type QueryPurpose } from './linkSource';
 import { ApiGraphAcquisition } from './apiGraphAcquisition';
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
-import { WikiApiClient } from './wikiApi';
+import { WikiApiClient, languageLinkHost } from './wikiApi';
 
 type Direction = 'out' | 'in';
 type CachedLinks = { links: string[]; sizeBytes?: number; storedAt: number; complete: boolean };
@@ -189,13 +189,33 @@ export class ApiLinkSource implements AnytimeLinkSource {
   }
 
   async getLanglinks(title: string, lang: string): Promise<Array<{ title: string; lang: string }>> {
-    const result: Array<{ title: string; lang: string }> = [];
-    let continuation: Record<string, string> = {};
+    return (await this.getLanglinksBatch([title],lang)).get(title)??[];
+  }
+  async getLanglinksBatch(titles:string[],lang:string):Promise<Map<string,Array<{title:string;lang:string}>>> {
+    const unique=[...new Set(titles)],result=new Map(unique.map(title=>[title,[] as Array<{title:string;lang:string}>]));
+    for(let offset=0;offset<unique.length;offset+=50){
+      const group=unique.slice(offset,offset+50);let continuation:Record<string,string>={};
+      do{
+        const data=await this.api.query(lang,{prop:'langlinks',titles:group.join('|'),lllimit:'max',llprop:'url',...continuation});
+        const normalized=new Map((data.query?.normalized??[]).map(item=>[item.from,item.to]));
+        for(const title of group){
+          const page=data.query?.pages?.find(page=>page.title===(normalized.get(title)??title));
+          result.get(title)!.push(...(page?.langlinks??[]).map(link=>({title:link.title,lang:languageLinkHost(link)})));
+        }
+        continuation=data.continue??{};
+      }while(Object.keys(continuation).length);
+    }
+    return result;
+  }
+
+  /** Manual language backlinks complement Wikibase-derived reciprocal candidates. */
+  async getLangbacklinks(title: string, targetLang: string, sourceLang: string): Promise<Array<{title:string;lang:string}>> {
+    const result:Array<{title:string;lang:string}>=[];let continuation:Record<string,string>={};
     do {
-      const data = await this.api.query(lang, { prop: 'langlinks', titles: title, lllimit: 'max', ...continuation });
-      result.push(...(data.query?.pages?.[0]?.langlinks ?? []));
-      continuation = data.continue ?? {};
-    } while (Object.keys(continuation).length);
+      const data=await this.api.query(sourceLang,{list:'langbacklinks',lbllang:targetLang,lbltitle:title,lbllimit:'max',...continuation});
+      result.push(...(data.query?.langbacklinks??[]).filter(page=>page.ns===0).map(page=>({title:page.title,lang:sourceLang})));
+      continuation=data.continue??{};
+    }while(Object.keys(continuation).length);
     return result;
   }
 

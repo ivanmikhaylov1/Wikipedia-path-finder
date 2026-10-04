@@ -19,10 +19,10 @@ export function CollisionStage({ searching, searchId, progress }: CollisionStage
       {progress?.sampleTitles?.map((title, index) => <span className="search-fragment" key={`${index}:${title}`} style={{ '--fragment': index } as CSSProperties}>{sampleTitle(title)}</span>)}
     </div>
     <p className="search-counts">
-      <span>Проверено статей: {progress?.visited ?? 0}</span>
+      <span>Обнаружено статей: {progress?.visited ?? 0}</span>
       <span>Глубина: {progress?.depth ?? 0}</span>
-      <span>Со стороны начала: {progress?.frontierA ?? 0}</span>
-      <span>Со стороны конца: {progress?.frontierB ?? 0}</span>
+      <span>В очереди от начала: {progress?.frontierA ?? 0}</span>
+      <span>В очереди от конца: {progress?.frontierB ?? 0}</span>
     </p>
   </div>;
 }

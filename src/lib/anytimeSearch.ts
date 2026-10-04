@@ -34,7 +34,7 @@ export async function anytimeSearch(
  if(best)beginImprovement();
  const graph=new DiscoveredGraph(previous?{edges:previous.graph.edges.map(e=>({...e,fresh:false}))}:undefined);
  let context:StrategyContext|undefined;
- const pathTitle=(article:CanonicalArticle)=>source.forwardOnly?articleIdentity(article):article.title;
+ const pathTitle=(article:CanonicalArticle)=>(source.articleKeys??source.forwardOnly)?articleIdentity(article):article.title;
  const snapshot=():AnytimeResumeState|undefined=>context?{
   version:1,from,to,lang,forwardOnly:!!source.forwardOnly,start:context.start,end:context.end,graph:graph.snapshot(),best,
   strategies:{completeOut:[...context.completeOut],completeIn:[...context.completeIn],probed:[...context.probed],pendingProbes:Object.fromEntries(context.pendingProbes ?? [])},
@@ -44,7 +44,7 @@ export async function anytimeSearch(
   if(best.length<=2)return true;
   // Only full, live, same-language forward layers certify this lower bound.
   // Cached or partially acquired pages cannot prove missing shorter edges.
-  if(source.forwardOnly)return false;
+  if(source.forwardOnly||source.incompleteReverse)return false;
   const bound=best.length-2;
   for(const node of graph.reachable(context.start,'out',Math.min(12,2*limits.maxDepth))){
    if(node.depth>=bound)return true;
@@ -90,6 +90,7 @@ export async function anytimeSearch(
   context={source,graph,start,end,onEvidence:consider,completeFreshOut:new Set(),concurrency:limits.concurrency,maxDepth:limits.maxDepth,completeOut:new Set(previous?.strategies.completeOut),completeIn:new Set(previous?.strategies.completeIn),probed:new Set(previous?.strategies.probed),pendingProbes:new Map(Object.entries(previous?.strategies.pendingProbes ?? {}))};
   onProgress({depth:0,visitedCount:articleIdentity(start)===articleIdentity(end)?1:2,round:1,roundCount:1,linkCap:500,frontierA:1,frontierB:source.forwardOnly?0:1});
   if(articleIdentity(start)===articleIdentity(end)){best=[pathTitle(start)];bestVerifiedNow=true;options.onCandidate?.(best);return finish('complete');}
+  if(source.prepareSearch)graph.add(await source.prepareSearch(start,end,async edges=>{graph.add(edges);await consider();}));
   await consider();if(optimal()||best&&best.length<=2)return finish('complete');
   // A direct-link probe is cheap and bypasses the first-page truncation.
   if(!previous){await runStrategy(bridgeStrategy);if(optimal()||best&&best.length<=2)return finish('complete');}

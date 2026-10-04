@@ -13,8 +13,8 @@ for (const width of [360, 1280]) for (const state of ['idle', 'searching', 'foun
       await expect(page.locator('.route-strip')).toHaveCount(EXAMPLE_ROUTE.length);
       await expect(page.locator('.route-strip a')).toHaveText(EXAMPLE_ROUTE.map(node => `${node.title} ↗`));
       await expect(page.locator('.route-language-turn')).toHaveText('RU → EN / смена языка');
-    } else if (state === 'notFound') await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible();
-    else if (state === 'searching') await expect(page.locator('.search-counts')).toContainText('Проверено статей:');
+    } else if (state === 'notFound') await expect(page.getByRole('heading', { name: 'Путь не найден в исследованном графе' })).toBeVisible();
+    else if (state === 'searching') await expect(page.locator('.search-counts')).toContainText('Обнаружено статей:');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']).analyze()).violations).toEqual([]);
     for (const target of await page.locator('button, a[href]').all()) {

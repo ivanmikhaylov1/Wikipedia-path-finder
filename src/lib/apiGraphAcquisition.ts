@@ -1,6 +1,6 @@
 import { articleIdentity, type CanonicalArticle, type LinkDirection, type LinkEvidence, type LinkPage, type QueryPurpose } from './linkSource';
 import { LinkCache, withAdjacencyLock, type AdjacencyRecord } from './linkCache';
-import { ApiQueryError, type WikiApiClient } from './wikiApi';
+import { ApiQueryError, languageLinkHost, type WikiApiClient } from './wikiApi';
 
 /** Progressive graph acquisition shares the legacy source's HTTP client and budget. */
 export class ApiGraphAcquisition {
@@ -176,8 +176,8 @@ export class ApiGraphAcquisition {
         if (articleIdentity(identities.get(edge.rawTarget) ?? { lang: '', title: '' }) !== articleIdentity(edge.to)) { onInvalid?.(edge); return false; }
         let cursor: Record<string, string> | undefined; let exists = false;
         do {
-          const data = await this.api.query(edge.from.lang, { prop: 'langlinks', titles: edge.from.title, lllimit: 'max', ...cursor }, 'validate');
-          exists ||= !!data.query?.pages?.[0]?.langlinks?.some(l => l.lang === edge.to.lang && l.title === edge.rawTarget);
+          const data = await this.api.query(edge.from.lang, { prop: 'langlinks', titles: edge.from.title, lllimit: 'max', llprop:'url', ...cursor }, 'validate');
+          exists ||= !!data.query?.pages?.[0]?.langlinks?.some(l => languageLinkHost(l) === edge.to.lang && l.title === edge.rawTarget);
           cursor = data.continue;
         } while (cursor && !exists);
         if (!exists) { onInvalid?.(edge); return false; }

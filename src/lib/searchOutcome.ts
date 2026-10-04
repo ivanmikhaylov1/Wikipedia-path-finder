@@ -9,3 +9,10 @@ export const stopExplanation: Record<LimitsHit, string> = {
   time: 'Истекло время поиска.',
   no_path: 'Доступные связи проверены; путь не найден в исследованном графе.',
 };
+
+export const stopHeading: Record<LimitsHit,string> = {
+  time: 'Не удалось найти маршрут за отведённое время',
+  requests: 'Поиск достиг лимита запросов',
+  depth: 'Поиск достиг предела глубины',
+  no_path: 'Путь не найден в исследованном графе',
+};
