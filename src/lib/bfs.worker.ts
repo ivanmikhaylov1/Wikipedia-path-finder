@@ -11,7 +11,7 @@ export type SearchResumeState = {kind:'bfs';state:BfsResumeState}|{kind:'anytime
 export type WorkerMessage =
  | ({type:'progress'}&ThreadProgress)
  | {type:'candidate';path:string[]}
- | {type:'found';path:string[];exact?:boolean;reason?:'complete'|'budget'|'timeout';resumeState?:SearchResumeState}
+ | {type:'found';path:string[];exact?:boolean;reason?:'complete'|'budget'|'timeout'|'improvement';resumeState?:SearchResumeState}
  | {type:'notFound';limitsHit:string[];reason:NotFoundReason;visited:number;depth:number;resumeState?:SearchResumeState}
  | {type:'error';message:string};
 export interface WorkerInput {from:string;to:string;lang:string;toLang?:string;multilingual?:boolean;limits?:SearchLimits;resumeState?:SearchResumeState}

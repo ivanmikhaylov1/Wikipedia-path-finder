@@ -13,7 +13,8 @@
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "test:local": "npm run build:graph -- --lang en --page tests/fixtures/page.sql --pagelinks tests/fixtures/pagelinks.sql --linktarget tests/fixtures/linktarget.sql --redirect tests/fixtures/redirect.sql --out public/graphs/en.bin.gz && VITE_LINK_SOURCE=local VITE_BASE_PATH=/ vite build --config vite.config.ts --outDir dist-local && playwright test --config playwright.local.config.ts",
     "measure:bundle": "node scripts/measure-bundle.mjs",
-    "benchmark:search": "tsx scripts/benchmark-search.ts"
+    "benchmark:search": "tsx scripts/benchmark-search.ts",
+    "benchmark:graph": "tsx scripts/benchmark-graph.ts"
   },
   "dependencies": {
     "linkedom": "^0.18.13",

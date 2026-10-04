@@ -1,45 +1,56 @@
-# API anytime search — implementation verification
+# Проверка API-поиска — 4 октября 2026
 
-Implemented on `redesign/incompatible-pages`, based on `32984d4`.
+Поиск публикует первый проверенный маршрут, затем заменяет его только более коротким. Остановка, ошибка и исчерпание лимитов сохраняют результат. Бесплатный Action API остаётся единственным сетевым источником; граф пересадок отложен.
 
-The API engine alternates bidirectional BFS, targeted bridge checks, and guided exploration. It publishes the first verified route, continues seeking strictly shorter routes, and retains the best route on cancellation, timeout, budget exhaustion, and errors. Depth/HTTP/time bounds mean neither finding a route nor global shortestness is guaranteed. A saved browser graph is reused as stale evidence and verified before publishing new candidates. No paid service, Google Drive dependency, or prebuilt transfer graph was added.
+## Остановка и стоимость поиска
 
-## Verification
+После первого маршрута улучшение ограничено **8 секундами и 80 дополнительными HTTP-запросами**, включая проверки и повторы. Сокращение маршрута не перезапускает окно. Дедлайн применяется также к уже выполняющимся запросам. Продолжение сохранённого результата получает новое ограниченное окно.
 
-- Unit/integration: **151/151**, 27 test files.
-- Browser: **76/76**, including progressive routes, resume, keyboard/focus, mobile and accessibility.
-- TypeScript and production build: passed.
-- Local Worker compatibility: **1/1** (verified before final API-only fixes).
-- Lighthouse: medians **100** performance/accessibility/best practices/SEO (verified before final API-only fixes).
-- Final gzip asset total: **263,322 bytes**; bundle growth gate passed. User's existing `docs/bundle-final.json` was preserved.
-- Real-adapter fixture benchmark, three repetitions, cold/warm cache: baseline **18/42**, anytime **30/42**. The five reachable scenarios contribute 30 runs; impossible/empty scenarios contribute 12 expected misses. Thus reachable outcomes were **18/30 → 30/30**. These are controlled fixtures, not live Wikipedia speed measurements.
+Поиск завершается раньше при доказательстве оптимальности: для прямого перехода либо после полного раскрытия необходимых живых исходящих слоёв одного языка. Для пути длины L необходимо раскрыть все вершины на расстоянии меньше L−1 от старта. Кэш, частичные страницы и межъязыковые переходы не служат таким доказательством. Обратные слои не используются для сертификата: их полнота зависит от обхода редиректов. Отсутствие результата в пределах бюджета не означает отсутствия пути.
 
-## Independent review and fixes
+BFS загружает до пяти статей одного слоя параллельно и публикует полезные ответы, не дожидаясь самой медленной статьи. Успешные ответы сохраняются при ошибке соседнего запроса. Исходящие связи возвращает `generator=links` с разрешением редиректов в том же ответе: отдельная канонизация каждых 50 названий больше не нужна. Механизм описан в [API:Links](https://www.mediawiki.org/wiki/API:Links) и [API:Query](https://www.mediawiki.org/wiki/API:Query).
 
-One independent whole-branch reviewer reproduced six Important findings. Each was fixed in one TDD pass with an observed failing regression and a passing final suite:
+Граф поддерживает расстояния и родителей инкрементально; удаление недействительных связей сбрасывает индексы. Стратегии получают новые рёбра страницы, а не повторно весь накопленный список. Ранжирование ограничено 128 кандидатами и рассчитывается один раз перед сортировкой. Guided получает ход раз в четыре раунда или после исчерпания обычного BFS. Стоимость и найденные кандидаты каждой стратегии записываются отдельно.
 
-1. Invalid continuation restarts discard the previous adjacency generation and invalidate corresponding discovered edges.
-2. Persisted incoming redirect aliases are resolved again before creating current evidence.
-3. Cached multilingual edges require the current canonical destination to match.
-4. Bridge acquisition returns one HTTP page per turn; pending jobs/cursors survive resume and frontier changes.
-5. Acquisition uses shared locks and persistent revision checks; delayed writes cannot replace newer complete records.
-6. Resume considers already discovered candidates immediately, and rejected edges allow remaining routes to be reconsidered.
+## Сравнение с прежним алгоритмом
 
-No deferred minor findings. No second reviewer was dispatched, as required by the execution workflow.
+В обоих режимах лимиты одинаковы: 100 HTTP-запросов, 15 секунд на поиск; для anytime также окно улучшения 8 секунд / 80 запросов. Прогрев ограничен теми же 100 запросами / 15 секундами и исключён из времени и стоимости поиска. Частичный прогрев помечен в каждом запуске. Медианы времени и запросов до результата рассчитаны только для успешных запусков; медиана полного времени — для всех. При чётном числе наблюдений используется среднее двух центральных значений.
 
-## Recorded decisions
+| Метрика | Прежний поиск | Anytime |
+| --- | ---: | ---: |
+| HTTP-фикстуры: успешные запуски | 48 / 90 | 60 / 90 |
+| HTTP-фикстуры: медиана запросов до первого маршрута | 5 | 7,5 |
+| HTTP-фикстуры: все запросы поиска | 633 | 3636 |
+| Живая Wikipedia: успешные запуски | 4 / 8 | 6 / 8 |
+| Живая Wikipedia: медиана запросов до первого маршрута | 14,5 | 2 |
+| Живая Wikipedia: медиана времени до первого маршрута | 7,133 с | 0,912 с |
+| Живая Wikipedia: медиана полного времени | 10,056 с | 2,835 с |
+| Живая Wikipedia: все запросы поиска | 301 | 116 |
 
-- Ruling: Work in the user's current feature checkout, redesign/incompatible-pages — user selected implementation by me in this session; preserve existing modifications — costs lack of an isolated branch, mitigated by staging only task files.
-- Ruling: Keep legacy API facades for baseline/local compatibility; introduce progressive acquisition separately and share reusable records when query semantics match — avoids unnecessary regressions — costs two acquisition paths until migration.
-- Ruling: API normalization requires up to two validation requests per stale edge — reserve test uses 8 total/2 validation rather than 4/1 — tiny budgets may retain only previously validated results.
-- Ruling: API acquisition lives in apiGraphAcquisition.ts to keep ApiLinkSource's facade small — same transport and budget — costs an additional focused module.
-- Task 2: Ruling: reverse reachability may legitimately include ru:A through ru:A→en:B→en:A; corrected a test's title-only expected list to language-qualified identities — prevents mistaking legitimate cross-language reachability for duplicate identity.
-- Ruling: Probe a direct endpoint link before the first BFS page — a cheap exact check can bypass 500-link truncation and avoid unnecessary acquisition — costs one shared-budget request on non-direct pairs.
-- Ruling: Extracted searchWorker.ts for a testable real Worker boundary and updated App's resume type in Task 4 — avoids importing worker globals in tests — costs one focused module.
-- Ruling: Depth exhaustion after all allowed work produces no resume token — a fresh budget cannot extend the unchanged depth bound — avoids a recovery button that cannot progress.
-- Ruling: Tiny-budget E2E resume checks progress within the fresh budget, not a guaranteed complete route — stale-route validation may need more requests than such a budget permits.
-- Ruling: Benchmark exercises both real API adapters against HTTP-shaped fixtures rather than counting high-level fixture methods — includes normalization and pagination in actual transport counts — costs extra fixture code, avoids misleading request comparisons.
-- Ruling: Warmup has the same bounded request/time limits and reports partial warmup explicitly — a large live redirect family must not make a benchmark run unbounded — partial warm caches are labeled in JSON.
-- Ruling: Node TypeScript project includes search modules and fixture types used by the CLI — ensures the benchmark is build-checked — costs duplicate type checking across app/node projects.
-- Final: Ruling: Use Web Locks for cross-worker/tab acquisition and revision-aware IndexedDB transactions; fallback serializes instances within one realm — protects progress without a paid service — browsers without Web Locks may duplicate HTTP work across realms, but older revisions cannot overwrite newer records.
-- Final: Ruling: Serialize one bridge HTTP page and its pending jobs in the resume state — enforces strategy fairness and preserves observed links — costs larger resume messages for large redirect families.
+Фикстуры включают семь контрольных и восемь случайных графов с фиксированным seed, циклами, алиасами и несвязными областями. Они используют настоящий API-адаптер и моделируют канонизацию, фильтры и пагинацию. Отдельные проверки сравнивают сертификаты кратчайшего пути с независимым полным BFS. Искусственные ответы приходят без сетевой задержки, поэтому их время не характеризует скорость Wikipedia. Более широкий поиск на этих графах увеличивает число успехов, но также расход: универсального уменьшения стоимости нет.
+
+Живой прогон: Cat → Animal, USA → North America, Fungus → Music, RU Осьминоги → EN Bauhaus; один повтор с холодным и прогретым кэшами, последовательно с паузами. Anytime завершил пять запусков доказанной оптимальностью, один — лимитом улучшения; межъязыковую пару не нашёл в обоих режимах кэша. Все четыре прогрева anytime были частичными. Прежний алгоритм возвращал Cat → Aardwolf → Animal, новый — прямой переход Cat → Animal. Guided израсходовал **7 / 116 запросов (6%)** и не дал нового кандидата в этом прогоне; на фикстурах — **177 / 3636 (4,9%)**. Эта небольшая выборка обосновывает ограниченный график guided, но не гарантирует такое соотношение для других пар, устройств и сетей.
+
+Полные результаты: [HTTP-фикстуры](anytime-fixture-benchmark.json), [живая Wikipedia](anytime-live-benchmark.json).
+
+## CPU обнаруженного графа
+
+Измеряется добавление страницы из 500 рёбер, получение маршрута и два запроса достижимости; три шага после построения индексов. Это отдельный CPU-бенчмарк, без HTTP, UI и стоимости полного шага координатора.
+
+| Начальный граф | Повторный полный обход | Инкрементальный шаг | Первое построение индексов |
+| --- | ---: | ---: | ---: |
+| 120 тыс. рёбер / 10 тыс. вершин | 10,9–13,9 мс | 4,8–6,0 мс | 118 мс |
+| 1,1 млн рёбер / 100 тыс. вершин | 182,8–219,4 мс | 26,5–33,2 мс | 1956 мс |
+
+Начальное построение большого индекса остаётся заметной стоимостью; измерение повторных шагов её не скрывает. [Исходные измерения](anytime-graph-benchmark.json).
+
+## Проверки финальной реализации
+
+- Unit/integration: **168 / 168**, 30 файлов, включая случайные графы, параллельную загрузку, раннюю публикацию, ограничение усилий и корректность сертификатов.
+- TypeScript и production-сборка: пройдены.
+- Local Worker: **1 / 1**, повторно после финальных правок; тестовый граф исключён из production-сборки.
+- Mobile Lighthouse: три свежих прогона; performance **84 / 100 / 100**, остальные категории **100 / 100 / 100**. Медианы всех четырёх категорий — **100**.
+- Gzip ассетов: **265129 байт**, проверка ограничения роста пройдена.
+- Браузерные сценарии: **77 / 77**, полный прогон на стабильной production-сборке; проверены сохранение результата, продолжение, межъязыковые переходы, счётчики, мобильный интерфейс и доступность.
+
+Воспроизведение: `npm test`, `npm run build`, `npm run test:e2e`, `npm run test:local`, `npm run test:lighthouse`, `npm run measure:bundle`, `npm run benchmark:graph`, `npm run benchmark:search -- --runs 3`, `npm run benchmark:search -- --live --runs 1`.

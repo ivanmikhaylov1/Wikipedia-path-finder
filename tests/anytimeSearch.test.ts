@@ -119,3 +119,42 @@ it('reconsiders another cached route after rejecting an invalid shortcut', async
   } });
   expect(result).toMatchObject({ status: 'found', path: ['A', 'B', 'C', 'D'] });
 });
+it('stops background improvement with a resumable result before the overall HTTP budget', async () => {
+  const source = new FixtureSource({ A: ['B','Noise'], B: ['D'], Noise: ['More'], More: [], D: [] }, 1, 1000);
+  const article = (title: string) => ({ title, lang: 'en' });
+  const result = await anytimeSearch(source, 'A', 'D', 'en', { ...DEFAULT_LIMITS, maxTotalRequests: 1000, improvementMaxRequests: 2 }, undefined, {
+    resumeState: { version: 1, from: 'A', to: 'D', lang: 'en', forwardOnly: false, start: article('A'), end: article('D'),
+      graph: { edges: [] }, strategies: { completeOut: [], completeIn: [], probed: [] }, best: ['A','B','D'] },
+  });
+  expect(result).toMatchObject({ status: 'found', path: ['A','B','D'], reason: 'improvement' });
+  expect(result.resumeState).toBeDefined(); expect(source.getRequestCount()).toBeLessThanOrEqual(2);
+});
+it('stops improving after its own deadline while keeping the verified route', async () => {
+  const source = new FixtureSource({ A: ['B','Noise'], B: ['D'], Noise: [], D: [] });
+  const now = Date.now(), clock = vi.spyOn(Date, 'now').mockReturnValue(now);
+  try {
+    const result = await anytimeSearch(source, 'A', 'D', 'en', { ...DEFAULT_LIMITS, improvementTimeout: 5, searchTimeout: 1000 }, undefined,
+      { onCandidate: () => clock.mockReturnValue(now + 6) });
+    expect(result).toMatchObject({ status: 'found', path: ['A','B','D'], reason: 'improvement' });
+    expect(result.resumeState).toBeDefined();
+  } finally { clock.mockRestore(); }
+});
+it('gives guided exploration a minority of HTTP work on a wide ordinary frontier', async () => {
+  const noise=Array.from({length:40},(_,i)=>`Noise ${i}`);
+  const source=new FixtureSource({ A:noise, ...Object.fromEntries(noise.map(n=>[n,[]])), D:[] },1,1000);
+  const work:Array<{strategy:string;requests:number}>=[];
+  await anytimeSearch(source,'A','D','en',{...DEFAULT_LIMITS,concurrency:1},undefined,{onStrategyWork:s=>work.push(s)});
+  const guided=work.filter(s=>s.strategy==='guided').reduce((n,s)=>n+s.requests,0);
+  expect(guided/source.getRequestCount()).toBeLessThan(0.2);
+  expect(work.some(s=>s.strategy==='bfs'&&s.requests>0)).toBe(true);
+});
+it('publishes a route from a completed prefetch while another article is still loading', async () => {
+ const source=new FixtureSource({A:['B','Slow'],B:['D'],Slow:[],D:[]},500,1000,true);
+ source.probeLinks=async()=>[];
+ let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+ const read=source.readLinkPage.bind(source);let slowStarted=false,candidateSeen=false;
+ source.readLinkPage=async(article,direction)=>{if(article.title==='Slow'){slowStarted=true;await gate;}return read(article,direction);};
+ const work=anytimeSearch(source,'A','D','en',{...DEFAULT_LIMITS,concurrency:5},undefined,{onCandidate:()=>{candidateSeen=true;}});
+ try{await new Promise(resolve=>setTimeout(resolve,0));expect(slowStarted).toBe(true);expect(candidateSeen).toBe(true);}
+ finally{release();await work;}
+});

@@ -66,6 +66,7 @@ export class ApiLinkSource implements AnytimeLinkSource {
 
   getRequestCount(): number { return this.api.getRequestCount(); }
   getRemainingRequests(): number { return this.api.getRemainingRequests(); }
+  setRequestLimit(limit: number): void { this.api.setRequestLimit(limit); }
   setDeadline(deadline: number): void { this.api.setDeadline(deadline); }
   canonicalize(titles: string[], lang: string, purpose?: QueryPurpose) { return this.acquisition.canonicalize(titles, lang, purpose); }
   readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose) { return this.acquisition.readLinkPage(article, direction, purpose); }

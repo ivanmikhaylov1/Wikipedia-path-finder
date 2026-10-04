@@ -14,12 +14,13 @@ export async function mockWiki(context: BrowserContext, mode: MockMode = 'found'
   await context.route('https://*.wikipedia.org/**', async route => {
     if (route.request().method() === 'OPTIONS') { await route.fulfill({status:204,headers:{'access-control-allow-origin':'*','access-control-allow-headers':'*'}}); return; }
     const url = new URL(route.request().url()), q = url.searchParams, lang = url.hostname.split('.')[0];
-    if (slow && (mode === 'timeout' ? q.get('prop')?.includes('links') : q.get('redirects'))) await new Promise(resolve => setTimeout(resolve, mode === 'long' ? 1600 : 700));
+    if (slow && (mode === 'timeout' ? (q.get('prop')?.includes('links') || q.get('generator')==='links') : q.get('redirects'))) await new Promise(resolve => setTimeout(resolve, mode === 'long' ? 1600 : 700));
     let data;
     if (url.pathname.includes('/summary/')) data = { description: 'Описание статьи из свободной энциклопедии' };
     else if (q.get('list') === 'search') data = { query: { search: [{title: lang === 'ru' ? 'Москва' : 'Moscow'}, {title: lang === 'ru' ? 'Московская область' : 'Moscow Oblast'}] } };
     else if (q.get('action') === 'parse') data = { parse: { text: '<div class="mw-parser-output"><p>Без ссылок</p></div>' } };
     else if (q.get('list') === 'backlinks') data = { query: { backlinks: nodes.filter(node => node.lang === lang && graph.get(key(node))?.some(next => next.lang === lang && next.title === q.get('bltitle'))).map(node => ({ title: node.title, ns: 0 })) } };
+    else if (q.get('generator') === 'links') data = { query: { pages: (graph.get(key({title:q.get('titles') ?? '',lang})) ?? []).filter(node=>node.lang===lang).map(node=>({title:node.title,ns:0,...(mode==='missing'?{missing:true}:{})})) } };
     else data = { query: { pages: (q.get('titles') ?? '').split('|').map(title => ({
       title, ns: 0, length: 100, ...(mode === 'missing' ? { missing: true } : {}),
       links: (graph.get(key({title, lang})) ?? []).filter(node => node.lang === lang).map(node => ({ title: node.title, ns: 0 })),

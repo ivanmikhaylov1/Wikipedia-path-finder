@@ -7,6 +7,8 @@ export class ApiGraphAcquisition {
   private identities = new Map<string, CanonicalArticle | null>();
   private aliases = new Map<string, Set<string>>();
   private cache = new LinkCache();
+  private liveCoverage = new Map<string,number>();
+  private delivered = new Set<string>();
   private inFlight = new Map<string, Promise<LinkPage>>();
   constructor(private api: WikiApiClient) {}
   async canonicalize(titles: string[], lang: string, purpose: QueryPurpose = 'explore'): Promise<Map<string, CanonicalArticle | null>> {
@@ -38,20 +40,25 @@ export class ApiGraphAcquisition {
     return result;
   }
   readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose: QueryPurpose = 'explore'): Promise<LinkPage> {
-    const key = JSON.stringify([article.lang, article.title, direction, 'namespace0-canonical-v1']);
+    const key = JSON.stringify([article.lang, article.title, direction, direction === 'out' ? 'namespace0-generator-v2' : 'namespace0-canonical-v1']);
     const existing = this.inFlight.get(key); if (existing) return existing;
-    const promise = withAdjacencyLock(key, () => this.acquire(key, article, direction, purpose)).finally(() => this.inFlight.delete(key));
+    const promise = withAdjacencyLock(key, () => this.acquire(key, article, direction, purpose)).then(page => {
+      const first = !this.delivered.has(key); this.delivered.add(key);
+      return { ...page, newEdges: first ? page.edges : page.newEdges ?? [] };
+    }).finally(() => this.inFlight.delete(key));
     this.inFlight.set(key, promise); return promise;
   }
   private async acquire(key: string, article: CanonicalArticle, direction: LinkDirection, purpose: QueryPurpose): Promise<LinkPage> {
     let record: AdjacencyRecord = await this.cache.get(key) ?? { edges: [], complete: false, storedAt: Date.now(), phase: 'direct', aliases: [], aliasIndex: 0 };
-    if (record.complete) return { edges: record.edges, complete: true };
+    if(this.liveCoverage.get(key)!==(record.revision??0))this.liveCoverage.delete(key);
+    if (record.complete) return { edges: record.edges, complete: true, completeFresh:this.liveCoverage.has(key) };
+    const coversFromStart=direction==='out'&&(this.liveCoverage.has(key)||(!record.cursor&&!record.edges.length));
     const incoming = direction === 'in';
     const aliasesPhase = incoming && record.phase === 'aliases';
     const title = incoming && record.phase === 'references' ? record.aliases![record.aliasIndex ?? 0] : article.title;
     const params: Record<string, string> = aliasesPhase ? { prop: 'redirects', rdnamespace: '0', rdlimit: 'max' }
       : incoming ? { prop: 'linkshere|info', lhnamespace: '0', lhshow: '!redirect', lhlimit: 'max' }
-      : { prop: 'links|info', plnamespace: '0', pllimit: 'max' };
+      : { generator: 'links', prop: 'info', gplnamespace: '0', gpllimit: 'max', redirects: '1' };
     let invalidatedEdges: LinkEvidence[] = [];
     if (incoming && record.phase === 'references') {
       // Saved alias membership is a hint, never current-search proof.
@@ -71,7 +78,7 @@ export class ApiGraphAcquisition {
     try { data = await this.api.query(article.lang, { ...params, titles: title, ...record.cursor }, purpose); }
     catch (error) {
       if (!(error instanceof ApiQueryError) || !['badcontinue', 'invalidcontinue'].includes(error.code) || !record.cursor) throw error;
-      const invalidatedEdges = record.edges;
+      const invalidatedEdges = record.edges;this.liveCoverage.delete(key);
       // Restart the full adjacency generation, including its incoming phases.
       await this.cache.put(key, { edges: [], complete: false, storedAt: Date.now(), phase: 'direct', aliases: [], aliasIndex: 0, revision: (record.revision ?? 0) + 1 });
       const restarted = await this.acquire(key, article, direction, purpose);
@@ -84,13 +91,32 @@ export class ApiGraphAcquisition {
       record.aliases = [...new Set([...(record.aliases ?? []), ...values])];
       const set = this.aliases.get(articleIdentity(article)) ?? new Set<string>();
       values.forEach(v => set.add(v)); this.aliases.set(articleIdentity(article), set);
+    } else if (!incoming) {
+      const redirects = new Map([...(data.query?.normalized ?? []), ...(data.query?.redirects ?? [])].map(r => [r.from,r.to]));
+      const intermediates = new Set(redirects.values());
+      for (const neighbor of data.query?.pages ?? []) {
+        if (neighbor.missing || neighbor.invalid || neighbor.ns !== 0 || neighbor.title === article.title) continue;
+        const target: CanonicalArticle = { title: neighbor.title, lang: article.lang, ...(neighbor.pageid ? {pageId:neighbor.pageid} : {}) };
+        this.identities.set(articleIdentity(target),target);
+        let rawTarget = target.title;
+        for (const raw of redirects.keys()) {
+          if(intermediates.has(raw))continue;
+          let resolved=raw;const seen=new Set<string>();
+          while(redirects.has(resolved)&&!seen.has(resolved)){seen.add(resolved);resolved=redirects.get(resolved)!;}
+          if(resolved!==target.title)continue;
+          rawTarget=raw;this.identities.set(JSON.stringify([article.lang,raw]),target);
+          const aliases=this.aliases.get(articleIdentity(target))??new Set<string>();aliases.add(raw);this.aliases.set(articleIdentity(target),aliases);
+        }
+        edges.push({ from:article,to:target,rawTarget,fresh:true });
+      }
     } else if (page && !page.missing && !page.invalid && page.ns === 0) {
-      const raw = (incoming ? page.linkshere : page.links) ?? [];
-      const titles = raw.filter(p => p.ns === 0).map(p => p.title);
-      const identities = await this.canonicalize(titles, article.lang, purpose);
-      for (const rawTitle of titles) {
-        const neighbor = identities.get(rawTitle); if (!neighbor || articleIdentity(neighbor) === articleIdentity(article)) continue;
-        edges.push({ from: incoming ? neighbor : article, to: incoming ? article : neighbor, rawTarget: incoming ? title : rawTitle, fresh: true });
+      // lhshow=!redirect excludes redirect source pages; their returned titles
+      // already identify canonical namespace-0 articles.
+      for (const raw of page.linkshere ?? []) {
+        if(raw.ns!==0 || raw.title===article.title)continue;
+        const neighbor:CanonicalArticle={title:raw.title,lang:article.lang,...(raw.pageid?{pageId:raw.pageid}:{})};
+        this.identities.set(articleIdentity(neighbor),neighbor);
+        edges.push({from:neighbor,to:article,rawTarget:title,fresh:true});
       }
     }
     const combined = new Map(record.edges.map(e => [JSON.stringify([articleIdentity(e.from), articleIdentity(e.to), e.rawTarget]), e]));
@@ -102,9 +128,12 @@ export class ApiGraphAcquisition {
       else if (record.phase === 'aliases') { record.phase = 'references'; record.complete = !record.aliases?.length; }
       else { record.aliasIndex = (record.aliasIndex ?? 0) + 1; record.complete = record.aliasIndex >= (record.aliases?.length ?? 0); }
     }
-    record.storedAt = Date.now(); record.revision = (record.revision ?? 0) + 1; record = await this.cache.put(key, record);
+    record.storedAt = Date.now(); record.revision = (record.revision ?? 0) + 1;
+    const writtenRevision=record.revision;record = await this.cache.put(key, record);
+    if(coversFromStart&&record.revision===writtenRevision&&record.edges.every(e=>e.fresh))this.liveCoverage.set(key,writtenRevision);
+    else this.liveCoverage.delete(key);
     // Include already acquired edges so a resumed/new source can rebuild its discovered graph.
-    return { edges: record.edges, complete: record.complete, cursor: record.cursor };
+    return { edges: record.edges, newEdges: edges, complete: record.complete, completeFresh:record.complete&&this.liveCoverage.has(key), cursor: record.cursor };
   }
   async probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose: QueryPurpose = 'explore'): Promise<LinkEvidence[]> {
     const result: LinkEvidence[] = []; let cursor: Record<string, string> | undefined;

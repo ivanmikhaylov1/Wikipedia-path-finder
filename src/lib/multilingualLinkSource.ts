@@ -23,6 +23,7 @@ export class MultilingualLinkSource implements LinkSource {
     return this.source as AnytimeLinkSource;
   }
   getRemainingRequests(): number { return this.progressive().getRemainingRequests(); }
+  setRequestLimit(limit: number): void { this.progressive().setRequestLimit?.(limit); }
   setDeadline(deadline: number): void { this.progressive().setDeadline(deadline); }
   async canonicalize(titles: string[], _lang: string, purpose?: QueryPurpose): Promise<Map<string, CanonicalArticle | null>> {
     const result = new Map<string, CanonicalArticle | null>();
@@ -37,6 +38,7 @@ export class MultilingualLinkSource implements LinkSource {
     const page = await this.progressive().readLinkPage(article, direction, purpose);
     const key = articleIdentity(article);
     let translated = this.translations.get(key);
+    const firstTranslationPage = !translated;
     if (!translated) {
       translated = (async () => {
         const result: LinkEvidence[] = [];
@@ -49,7 +51,8 @@ export class MultilingualLinkSource implements LinkSource {
       })().catch(error => { this.translations.delete(key); throw error; });
       this.translations.set(key, translated);
     }
-    return { ...page, edges: [...page.edges, ...await translated] };
+    const languageEdges=await translated;
+    return { ...page, edges: [...page.edges, ...languageEdges], newEdges: [...(page.newEdges ?? page.edges), ...(firstTranslationPage ? languageEdges : [])] };
   }
   probeLinkPage(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose?: QueryPurpose) { return this.progressive().probeLinkPage!(from, to, cursor, purpose); }
   probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose) { return this.progressive().probeLinks(from, to, purpose); }

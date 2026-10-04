@@ -22,12 +22,44 @@ export const benchmarkFixtures:BenchmarkFixture[]=[
  fixture('impossible',single({A:['B'],B:[],D:['E'],E:[]})),
  fixture('empty',single({A:[],D:[]})),
 ];
+/** Seeded directed graphs include aliases, cycles and disconnected components. */
+export function seededFixtures(): BenchmarkFixture[] {
+ return Array.from({length:8},(_,i)=>{
+  const seed=1009+i*7919;let state=seed;
+  const random=()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state;};
+  const count=64+i*8,split=i%4===3,aliases:Record<string,string>={},graph:Record<string,string[]>={};
+  for(let from=0;from<count;from++){
+   const targets=new Set<string>(),low=split&&from>=count/2?count/2:0,span=split?count/2:count;
+   for(let j=0;j<3+i%3;j++){
+    const to=low+random()%span;if(to===from)continue;
+    const target=key(`N${to}`),raw=random()%4===0?key(`Alias ${to}`):target;
+    if(raw!==target)aliases[raw]=target;targets.add(raw);
+   }
+   graph[key(`N${from}`)]=[...targets];
+  }
+  return fixture(`seeded-${seed}${split?'-disconnected':''}`,graph,article('N0'),article(`N${count-1}`),aliases);
+ });
+}
+benchmarkFixtures.push(...seededFixtures());
+
 /** HTTP-shaped fixture with shared 500-result continuation, redirects and actual filters. */
 export function fixtureFetch(f:BenchmarkFixture):typeof fetch{
  const inverse=new Map<string,string[]>();
  for(const [source,targets]of Object.entries(f.graph))for(const target of targets){const values=inverse.get(target)??[];values.push(source);inverse.set(target,values);}
  return async(input)=>{
   const url=new URL(String(input)),q=url.searchParams,lang=url.hostname.split('.')[0],rawTitles=(q.get('titles')??'').split('|');
+  if(q.get('generator')==='links'){
+   const source=key(rawTitles[0],lang),offset=Number(q.get('gplcontinue')??0);
+   const targets=(f.graph[source]??[]).filter(t=>JSON.parse(t)[0]===lang).sort();
+   const selected=targets.slice(offset,offset+500),redirects:Array<{from:string;to:string}>=[];
+   const pages:WikiPage[]=[];
+   for(const raw of selected){
+    const resolved=f.canonical({title:JSON.parse(raw)[1],lang}),title=JSON.parse(resolved)[1];
+    if(raw!==resolved)redirects.push({from:JSON.parse(raw)[1],to:title});
+    if(!pages.some(p=>p.title===title))pages.push({title,ns:0,pageid:Object.keys(f.graph).indexOf(resolved)+1,...(!(resolved in f.graph)?{missing:true}:{})});
+   }
+   return new Response(JSON.stringify({query:{pages,redirects},...(targets.length>offset+500?{continue:{gplcontinue:String(offset+500),continue:'||'}}:{})}),{status:200,headers:{'content-type':'application/json'}});
+  }
   const canonical=(raw:string)=>f.canonical({title:raw,lang});
   const redirects:Array<{from:string;to:string}>=[];
   const pages:WikiPage[]=rawTitles.map(raw=>{

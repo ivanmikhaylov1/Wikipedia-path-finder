@@ -62,7 +62,8 @@ export default function App() {
       setResult(candidate.current);
     };
     const retained = (reason: string) => setImprovementExplanation(
-      reason === 'timeout' ? 'Время поиска закончилось. Найденный маршрут сохранён.'
+      reason === 'improvement' ? 'Улучшение завершено. Найденный маршрут сохранён.'
+        : reason === 'timeout' ? 'Время поиска закончилось. Найденный маршрут сохранён.'
         : reason === 'budget' ? 'Лимит запросов исчерпан. Найденный маршрут сохранён.'
           : reason === 'error' ? 'Не удалось продолжить поиск. Найденный маршрут сохранён.'
             : 'Поиск завершён. Маршрут найден.');

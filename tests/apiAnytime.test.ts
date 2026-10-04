@@ -10,6 +10,12 @@ function wiki(edges: Record<string, string[]>, aliases: Record<string, string> =
   vi.stubGlobal('fetch', vi.fn(async (input: URL) => {
     const url = new URL(String(input)); calls.push(url); const q = url.searchParams;
     const titles = (q.get('titles') ?? '').split('|');
+    if(q.get('generator')==='links'){
+      const offset=Number(q.get('gplcontinue')??0),values=(edges[titles[0]]??[]).slice(offset,offset+pageSize);
+      const pages=values.map(raw=>({title:aliases[raw]??raw,ns:0,...(!((aliases[raw]??raw)in edges)?{missing:true}:{})}));
+      const redirects=values.filter(raw=>raw in aliases).map(raw=>({from:raw,to:aliases[raw]}));
+      return {ok:true,status:200,json:async()=>({query:{pages,redirects},...((edges[titles[0]]?.length??0)>offset+pageSize?{continue:{gplcontinue:String(offset+pageSize),continue:'||'}}:{})})};
+    }
     const redirects: Array<{ from: string; to: string }> = [];
     const pages = titles.map(raw => {
       const title = q.has('redirects') ? aliases[raw] ?? raw : raw;
@@ -39,17 +45,17 @@ it('acquires the 600th link with canonical directed evidence and preserves the c
   expect(first.edges).toHaveLength(500); expect(first.complete).toBe(false);
   const second = await source.readLinkPage(article('A'), 'out');
   expect(second.edges.some(e => e.to.title === 'N599')).toBe(true); expect(second.complete).toBe(true);
-  expect(calls.filter(u => u.searchParams.get('prop') === 'links|info').map(u => u.searchParams.get('plcontinue'))).toEqual([null, '500']);
+  expect(calls.filter(u => u.searchParams.get('generator') === 'links').map(u => u.searchParams.get('gplcontinue'))).toEqual([null, '500']);
 });
 it('reuses persistent adjacency as stale evidence and coalesces simultaneous reads', async () => {
   vi.stubGlobal('indexedDB', new IDBFactory()); const calls = wiki({ A: ['B'], B: [] });
   const source = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
   const [a, b] = await Promise.all([source.readLinkPage(article('A'), 'out'), source.readLinkPage(article('A'), 'out')]);
   expect(a.edges).toEqual(b.edges); expect(a.edges[0].fresh).toBe(true);
-  expect(calls.filter(u => u.searchParams.get('prop') === 'links|info')).toHaveLength(1);
+  expect(calls.filter(u => u.searchParams.get('generator') === 'links')).toHaveLength(1);
   const cached = await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).readLinkPage(article('A'), 'out');
   expect(cached.edges[0].fresh).toBe(false);
-  expect(calls.filter(u => u.searchParams.get('prop') === 'links|info')).toHaveLength(1);
+  expect(calls.filter(u => u.searchParams.get('generator') === 'links')).toHaveLength(1);
 });
 it('canonicalizes intermediate aliases and probes a link beyond the adjacency prefix', async () => {
   const calls = wiki({ A: ['Alias'], B: [] }, { Alias: 'B' });
@@ -95,7 +101,7 @@ it('restores all continuation parameters across source instances', async () => {
   await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).readLinkPage(article('A'), 'out');
   const page = await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).readLinkPage(article('A'), 'out');
   expect(page.edges).toHaveLength(501); expect(page.edges[0].fresh).toBe(false); expect(page.edges.at(-1)?.fresh).toBe(true);
-  const request = calls.find(u => u.searchParams.has('plcontinue'))!;
+  const request = calls.find(u => u.searchParams.has('gplcontinue'))!;
   expect(request.searchParams.get('continue')).toBe('||');
 });
 
@@ -103,8 +109,8 @@ it('invalid continuation discards the previous generation of fresh links', async
   let phase = 0;
   vi.stubGlobal('fetch', vi.fn(async (input: URL) => {
     const q = new URL(String(input)).searchParams;
-    const body = q.has('plcontinue') ? { error: { code: 'badcontinue', info: 'expired' } }
-      : q.get('prop') === 'links|info' ? { query: { pages: [{ title: 'A', ns: 0, links: [{ title: phase++ ? 'Current' : 'Removed', ns: 0 }] }] }, ...(phase === 1 ? { continue: { plcontinue: 'old' } } : {}) }
+    const body = q.has('gplcontinue') ? { error: { code: 'badcontinue', info: 'expired' } }
+      : q.get('generator') === 'links' ? { query: { pages: [{ title: phase++ ? 'Current' : 'Removed', ns: 0 }] }, ...(phase === 1 ? { continue: { gplcontinue: 'old' } } : {}) }
       : { query: { pages: q.get('titles')!.split('|').map(title => ({ title, ns: 0 })) } };
     return { ok: true, status: 200, json: async () => body };
   }));
@@ -165,7 +171,7 @@ it('serializes pagination across source instances and refreshes their persistent
   let held = false;
   vi.stubGlobal('fetch', vi.fn(async (input: URL, init?: RequestInit) => {
     const q = new URL(String(input)).searchParams;
-    if (q.get('plcontinue') === '1' && !held) { held = true; entered(); await gate; }
+    if (q.get('gplcontinue') === '1' && !held) { held = true; entered(); await gate; }
     return transport(input, init);
   }));
   const a = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }), b = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
@@ -175,7 +181,7 @@ it('serializes pagination across source instances and refreshes their persistent
   await delayed; expect((await next).edges).toHaveLength(3);
   const saved = await a.readLinkPage(article('A'), 'out');
   expect(saved.complete).toBe(true); expect(saved.edges).toHaveLength(3);
-  expect(calls.filter(u => u.searchParams.get('prop') === 'links|info').map(u => u.searchParams.get('plcontinue'))).toEqual([null, '1', '2']);
+  expect(calls.filter(u => u.searchParams.get('generator') === 'links').map(u => u.searchParams.get('gplcontinue'))).toEqual([null, '1', '2']);
 });
 it('resumes bridge pages without repeating the first alias group', async () => {
   const aliases = Object.fromEntries(Array.from({ length: 100 }, (_, i) => [`Alias${i}`, 'B']));
@@ -188,4 +194,20 @@ it('resumes bridge pages without repeating the first alias group', async () => {
   expect(third.complete).toBe(true); expect(third.edges.map(e => e.rawTarget)).toEqual(['Alias99']);
   const groups = calls.filter(u => u.searchParams.has('pltitles')).map(u => u.searchParams.get('pltitles')!.split('|'));
   expect(groups.map(g => g.length)).toEqual([50, 50, 1]); expect(new Set(groups.flat()).size).toBe(101);
+});
+it('gets a canonical outgoing redirect edge in one HTTP generator request', async () => {
+  const { fixtureFetch, benchmarkFixtures } = await import('./fixtures/apiBenchmark');
+  const calls: URL[] = []; const fetch = fixtureFetch(benchmarkFixtures.find(f => f.name === 'redirect-heavy')!);
+  vi.stubGlobal('fetch', async (input: URL, init?: RequestInit) => { calls.push(new URL(String(input))); return fetch(input, init); });
+  const source = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  const page = await source.readLinkPage(article('A'), 'out');
+  expect(page.edges[0]).toMatchObject({ from: article('A'), to: article('B'), rawTarget: 'Alias', fresh: true });
+  expect(source.getRequestCount()).toBe(1); expect(calls[0].searchParams.get('generator')).toBe('links');
+});
+it('uses nonredirect incoming titles without separate canonicalization requests', async () => {
+  wiki({ A: ['D'], B: ['D'], D: [] });
+  const source = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  const page = await source.readLinkPage(article('D'), 'in');
+  expect(page.edges.map(e=>e.from.title)).toEqual(['A','B']);
+  expect(source.getRequestCount()).toBe(1);
 });

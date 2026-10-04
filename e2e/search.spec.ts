@@ -11,7 +11,8 @@ async function mockApi(context: BrowserContext, mode: 'normal' | 'slow' | 'error
     if (mode === 'slow') await new Promise(resolve => setTimeout(resolve, 800));
     if (mode === 'error') { await route.fulfill({ status: 400, body: 'Bad request' }); return; }
     const params = url.searchParams;
-    const pages = (params.get('titles') ?? '').split('|').map(title => ({
+    const titles = params.get('generator') === 'links' ? edges[params.get('titles') ?? ''] ?? [] : (params.get('titles') ?? '').split('|');
+    const pages = titles.map(title => ({
       title, ns: 0, length: 100, missing: title === 'Missing' ? true : undefined,
       links: (edges[title] ?? []).map(title => ({ title, ns: 0 })),
       linkshere: Object.keys(edges).filter(key => edges[key].includes(title)).map(title => ({ title, ns: 0 })),

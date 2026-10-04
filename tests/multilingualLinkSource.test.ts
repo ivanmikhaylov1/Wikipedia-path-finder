@@ -33,3 +33,15 @@ it('acquires canonical forward translations in the progressive source without in
     expect(reverse.edges).toEqual([]); expect(reverse.complete).toBe(false);
   } finally { vi.unstubAllGlobals(); }
 });
+it('feeds freshly discovered language links into incremental graph acquisition', async () => {
+ const { ApiLinkSource }=await import('../src/lib/apiLinkSource');
+ const { anytimeSearch }=await import('../src/lib/anytimeSearch');
+ const { fixtureFetch,benchmarkFixtures }=await import('./fixtures/apiBenchmark');
+ const { DEFAULT_LIMITS }=await import('../src/lib/searchLimits');
+ const fixture=benchmarkFixtures.find(f=>f.name==='multilingual')!;
+ const previous=globalThis.fetch;globalThis.fetch=fixtureFetch(fixture);
+ try{
+  const source=new MultilingualLinkSource(new ApiLinkSource(DEFAULT_LIMITS,{anytime:true}),['ru','en']);
+  expect(await anytimeSearch(source,articleKey(fixture.from),articleKey(fixture.to),'ru',DEFAULT_LIMITS)).toMatchObject({status:'found',path:[articleKey(fixture.from),articleKey({title:'Bridge',lang:'en'}),articleKey(fixture.to)]});
+ }finally{globalThis.fetch=previous;}
+});

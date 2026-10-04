@@ -47,3 +47,11 @@ it('retries a server error successfully and counts both attempts', async () => {
   await expect(client.query('en', { titles: 'A' })).resolves.toEqual({ query: {} });
   expect(client.getRequestCount()).toBe(2);
 });
+it('caps queued requests when the background-improvement allowance is reduced', async () => {
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ query: {} }) })));
+  const client = new WikiApiClient(DEFAULT_LIMITS, 100);
+  client.setRequestLimit(2);
+  const results = await Promise.allSettled(Array.from({ length: 8 }, () => client.query('en', { titles: 'A' })));
+  expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(2);
+  expect(client.getRequestCount()).toBe(2);
+});

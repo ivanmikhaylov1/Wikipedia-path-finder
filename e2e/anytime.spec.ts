@@ -33,7 +33,7 @@ test('only accepts shorter replacements and preserves keyboard focus on a surviv
  await emit(page,{type:'candidate',path:['A','B','D']});await expect(page.locator('.route-strip a')).toHaveCount(3);
  await expect(page.locator('.route-strip a').first()).toBeFocused();
 });
-for(const reason of ['budget','timeout','error'])test(`retains the route after ${reason} and resumes without hiding it`,async({page})=>{
+for(const reason of ['budget','timeout','error','improvement'])test(`retains the route after ${reason} and resumes without hiding it`,async({page})=>{
  await controlled(page);await emit(page,{type:'candidate',path:route});
  await emit(page,reason==='error'?{type:'error',message:'Disconnected'}:{type:'found',path:route,exact:false,reason,resumeState});
  await expect(page.locator('.route-strip a')).toHaveCount(4);
