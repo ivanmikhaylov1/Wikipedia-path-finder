@@ -367,3 +367,18 @@ test('malformed worker route shows accessible reload recovery', async ({ page })
   await expect(page.locator('[data-side=from] .article-display')).toHaveText('A');
   await expect(page.locator('[data-side=from] .language-badge')).toHaveText('RU');
 });
+
+test('optional reverse language API refusal does not stop the first multilingual route',async({page,context})=>{
+ const {mockWiki,EXAMPLE_ROUTE}=await import('./wikiMock');
+ await mockWiki(context,'found',EXAMPLE_ROUTE);let refusals=0;
+ await page.route('https://*.wikipedia.org/**',async route=>{
+  const url=new URL(route.request().url());
+  if(url.searchParams.get('list')==='langbacklinks'){
+   refusals++;await route.fulfill({status:403,json:{error:{code:'permissiondenied',info:'Optional reverse API unavailable'}},headers:{'access-control-allow-origin':'*'}});
+  }else await route.fallback();
+ });
+ await page.goto('/');await page.getByRole('button',{name:'Столкнуть'}).click();
+ await expect(page.locator('.route-strip')).toHaveCount(EXAMPLE_ROUTE.length);
+ await expect(page.getByRole('heading',{name:'Поиск остановлен'})).toHaveCount(0);
+ expect(refusals).toBeGreaterThan(0);
+});

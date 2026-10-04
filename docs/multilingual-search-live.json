@@ -38,7 +38,7 @@
         "[\"ru\",\"Баухаус\"]",
         "[\"en\",\"Bauhaus\"]"
       ],
-      "ms": 7309.089166999999,
+      "ms": 6108.304667,
       "requests": 17
     },
     {
@@ -48,7 +48,7 @@
         "[\"en\",\"Pablo Picasso\"]",
         "[\"en\",\"Bauhaus\"]"
       ],
-      "ms": 10713.085792,
+      "ms": 8111.531833999999,
       "requests": 23
     }
   ],
@@ -64,8 +64,8 @@
     "reason": "improvement",
     "canResume": true
   },
-  "durationMs": 15311.544834,
-  "searchRequests": 48,
+  "durationMs": 14112.816292,
+  "searchRequests": 49,
   "independentlyVerified": true,
   "validationRequests": 6
 }

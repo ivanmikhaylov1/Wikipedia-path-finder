@@ -1,4 +1,5 @@
-import { articleIdentity, type AnytimeLinkSource, type CanonicalArticle, type LinkDirection, type LinkEvidence, type LinkPage, type LinkSource, type QueryPurpose } from './linkSource';
+import { SearchDeadlineError } from './wikiApi';
+import { RequestBudgetExceededError, ImprovementLimitError, articleIdentity, type AnytimeLinkSource, type CanonicalArticle, type LinkDirection, type LinkEvidence, type LinkPage, type LinkSource, type QueryPurpose } from './linkSource';
 import type { ParsedArticle } from './parseInput';
 
 export function articleKey(article: ParsedArticle): string { return JSON.stringify([article.lang, article.title]); }
@@ -7,6 +8,8 @@ export function articleFromKey(key: string): ParsedArticle {
   if (!Array.isArray(value) || value.length !== 2 || typeof value[0] !== 'string' || typeof value[1] !== 'string') throw new Error('Некорректная межъязыковая статья');
   return { lang: value[0], title: value[1] };
 }
+
+const isSearchLimit=(error:unknown)=>error instanceof RequestBudgetExceededError||error instanceof ImprovementLimitError||error instanceof SearchDeadlineError;
 
 /** Bidirectional multilingual acquisition. Reverse language edges are verified
  * in their actual forward direction; reciprocal links are never assumed. */
@@ -30,6 +33,7 @@ export class MultilingualLinkSource implements LinkSource {
   }
   private deliveredTranslations = new Set<string>();
   private languageLinks = new Map<string, Promise<Array<{title:string;lang:string}>>>();
+  private languageQueue=new Map<string,Map<string,{resolve:(links:Array<{title:string;lang:string}>)=>void;reject:(error:unknown)=>void}>>();
   private translations = new Map<string, Promise<LinkEvidence[]>>();
   constructor(private source: LinkSource, private languages: string[]) {
     if (!source.getLanglinks) throw new Error('Межъязыковой поиск требует API-источник с langlinks');
@@ -53,8 +57,23 @@ export class MultilingualLinkSource implements LinkSource {
 
   private langlinks(article: CanonicalArticle) {
     const key=articleIdentity(article);let pending=this.languageLinks.get(key);
-    if(!pending){pending=this.source.getLanglinks!(article.title,article.lang).catch(error=>{this.languageLinks.delete(key);throw error;});this.languageLinks.set(key,pending);}
+    if(!pending){
+      const request=this.source.getLanglinksBatch?new Promise<Array<{title:string;lang:string}>>((resolve,reject)=>{
+        let queue=this.languageQueue.get(article.lang);
+        if(!queue){queue=new Map();this.languageQueue.set(article.lang,queue);queueMicrotask(()=>{void this.flushLanguageQueue(article.lang);});}
+        queue.set(article.title,{resolve,reject});
+      }):this.source.getLanglinks!(article.title,article.lang);
+      pending=request.catch(error=>{this.languageLinks.delete(key);throw error;});this.languageLinks.set(key,pending);
+    }
     return pending;
+  }
+  private async flushLanguageQueue(lang:string):Promise<void>{
+    const queue=this.languageQueue.get(lang);if(!queue)return;
+    this.languageQueue.delete(lang);
+    try{
+      const pages=await this.source.getLanglinksBatch!([...queue.keys()],lang);
+      for(const [title,waiter]of queue)waiter.resolve(pages.get(title)??[]);
+    }catch(error){for(const waiter of queue.values())waiter.reject(error);}
   }
   private async canonical(article: CanonicalArticle): Promise<CanonicalArticle|null> {
     if('canonicalize' in this.source)return (await this.progressive().canonicalize([article.title],article.lang)).get(article.title)??null;
@@ -73,8 +92,15 @@ export class MultilingualLinkSource implements LinkSource {
           return edges;
         }
         const candidates=new Map(targets.map(target=>[articleIdentity(target),target]));
-        for(const lang of this.languages.filter(lang=>lang!==article.lang&&!targets.some(target=>target.lang===lang)))for(const candidate of await this.source.getLangbacklinks?.(article.title,article.lang,lang)??[])candidates.set(articleIdentity(candidate),candidate);
-        const verified=await Promise.all([...candidates.values()].map(async candidate=>{
+        // Deliberately incomplete: a Wikibase candidate suppresses the manual
+        // backlink lookup for that language, which may omit another article's
+        // manual language link. Longer multilingual routes cannot certify global shortestness.
+        for(const lang of this.languages.filter(lang=>lang!==article.lang&&!targets.some(target=>target.lang===lang))){
+          try{
+            for(const candidate of await this.source.getLangbacklinks?.(article.title,article.lang,lang)??[])candidates.set(articleIdentity(candidate),candidate);
+          }catch(error){if(isSearchLimit(error))throw error;}
+        }
+        const verified=await Promise.allSettled([...candidates.values()].map(async candidate=>{
           const canonical=await this.canonical(candidate);if(!canonical)return null;
           for(const target of await this.langlinks(canonical)){
             if(target.lang!==article.lang)continue;
@@ -83,9 +109,13 @@ export class MultilingualLinkSource implements LinkSource {
           }
           return null;
         }));
-        const edges:LinkEvidence[]=verified.filter((edge):edge is LinkEvidence=>edge!==null);
+        for(const result of verified)if(result.status==='rejected'&&isSearchLimit(result.reason))throw result.reason;
+        const edges:LinkEvidence[]=verified.flatMap(result=>result.status==='fulfilled'&&result.value?[result.value]:[]);
         return edges;
-      })().catch(error=>{this.translations.delete(key);throw error;});this.translations.set(key,pending);
+      })().catch(error=>{
+        if(direction==='in'&&!isSearchLimit(error))return [];
+        this.translations.delete(key);throw error;
+      });this.translations.set(key,pending);
     }
     return pending;
   }

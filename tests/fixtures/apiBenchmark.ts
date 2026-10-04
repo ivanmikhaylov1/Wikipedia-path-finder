@@ -78,7 +78,7 @@ export function fixtureFetch(f:BenchmarkFixture):typeof fetch{
   pages.forEach((page,index)=>{
    const pageKey=key(page.title,lang);
    if(prop.includes('langlinks'))page.langlinks=(f.graph[pageKey]??[]).map(raw=>JSON.parse(raw) as [string,string]).filter(([other])=>other!==lang).map(([lang,title])=>({lang,title}));
-   const values=prop==='redirects'?Object.keys(f.aliases).filter(a=>f.aliases[a]===pageKey):prop.includes('linkshere')?inverse.get(pageKey)??[]:prop.includes('links')?f.graph[pageKey]??[]:[];
+   const values=prop==='langlinks'?[]:prop==='redirects'?Object.keys(f.aliases).filter(a=>f.aliases[a]===pageKey):prop.includes('linkshere')?inverse.get(pageKey)??[]:prop.includes('links')?f.graph[pageKey]??[]:[];
    for(const raw of [...values].sort()){
     const [other,title]=JSON.parse(raw) as [string,string];if(other!==lang)continue;
     if(q.has('pltitles')&&!q.get('pltitles')!.split('|').includes(title))continue;
