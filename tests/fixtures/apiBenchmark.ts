@@ -48,6 +48,11 @@ export function fixtureFetch(f:BenchmarkFixture):typeof fetch{
  for(const [source,targets]of Object.entries(f.graph))for(const target of targets){const values=inverse.get(target)??[];values.push(source);inverse.set(target,values);}
  return async(input)=>{
   const url=new URL(String(input)),q=url.searchParams,lang=url.hostname.split('.')[0],rawTitles=(q.get('titles')??'').split('|');
+  if(q.get('list')==='langbacklinks'){
+   const target=key(q.get('lbltitle')??'',q.get('lbllang')??''),offset=Number(q.get('lblcontinue')??0);
+   const sources=(inverse.get(target)??[]).filter(source=>JSON.parse(source)[0]===lang).sort();
+   return new Response(JSON.stringify({query:{langbacklinks:sources.slice(offset,offset+500).map(source=>({title:JSON.parse(source)[1],ns:0}))},...(sources.length>offset+500?{continue:{lblcontinue:String(offset+500),continue:'||'}}:{})}));
+  }
   if(q.get('generator')==='links'){
    const source=key(rawTitles[0],lang),offset=Number(q.get('gplcontinue')??0);
    const targets=(f.graph[source]??[]).filter(t=>JSON.parse(t)[0]===lang).sort();

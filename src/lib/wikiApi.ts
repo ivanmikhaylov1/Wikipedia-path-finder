@@ -1,11 +1,11 @@
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
 import { RequestBudgetExceededError, ImprovementLimitError, type QueryPurpose } from './linkSource';
 
-export interface WikiPage { ns: number; title: string; pageid?: number; missing?: boolean; invalid?: boolean; links?: WikiPage[]; linkshere?: WikiPage[]; redirects?: WikiPage[]; langlinks?: Array<{ lang: string; title: string }>; length?: number }
+export interface WikiPage { ns: number; title: string; pageid?: number; missing?: boolean; invalid?: boolean; links?: WikiPage[]; linkshere?: WikiPage[]; redirects?: WikiPage[]; langlinks?: Array<{ lang: string; title: string; url?: string }>; length?: number }
 export interface WikiResponse {
   continue?: Record<string, string>;
   error?: { code: string; info: string };
-  query?: {
+  query?: { langbacklinks?: WikiPage[];
     pages?: WikiPage[];
     backlinks?: WikiPage[];
     search?: Array<{ title: string }>;
@@ -13,6 +13,11 @@ export interface WikiResponse {
     redirects?: Array<{ from: string; to: string }>;
   };
   parse?: { text?: string };
+}
+
+export function languageLinkHost(link:{lang:string;url?:string}):string {
+  if(link.url)try{const match=new URL(link.url).hostname.match(/^([a-z-]+)\.wikipedia\.org$/);if(match)return match[1];}catch{ /* malformed optional metadata falls back to the language code */ }
+  return link.lang;
 }
 
 function apiUrl(lang: string): string {

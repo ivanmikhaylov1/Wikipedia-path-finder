@@ -3,7 +3,7 @@ import type { DiscoveredGraph } from './discoveredGraph';
 export type SearchStrategyName='bfs'|'bridge'|'guided';
 export interface StrategyState { completeOut:string[];completeIn:string[];probed:string[]; pendingProbes?:Record<string,Record<string,string>> }
 export interface StrategyContext {
-  onEvidence?:()=>Promise<void>;concurrency?:number;source:AnytimeLinkSource;graph:DiscoveredGraph;start:CanonicalArticle;end:CanonicalArticle;maxDepth:number;
+  bfsTurn?:number;onEvidence?:()=>Promise<void>;concurrency?:number;source:AnytimeLinkSource;graph:DiscoveredGraph;start:CanonicalArticle;end:CanonicalArticle;maxDepth:number;
   completeFreshOut?:Set<string>;completeOut:Set<string>;completeIn:Set<string>;probed:Set<string>;pendingProbes?:Map<string,Record<string,string>>;
 }
 export interface SearchStrategy { name:SearchStrategyName;step(context:StrategyContext):Promise<boolean> }
@@ -19,7 +19,8 @@ function frontier(c:StrategyContext,direction:LinkDirection,depth=c.maxDepth){
     .filter(n=>n.depth<depth&&!done(c,direction).has(articleIdentity(n.article)));
 }
 export const bfsStrategy:SearchStrategy={name:'bfs',async step(c){
-  const layer=(direction:LinkDirection)=>{const nodes=frontier(c,direction);const min=nodes.reduce((m,n)=>Math.min(m,n.depth),Infinity);return nodes.filter(n=>n.depth===min);};
+  const languages=c.source.searchLanguages,language=languages?.[(c.bfsTurn??0)%languages.length];c.bfsTurn=(c.bfsTurn??0)+1;
+  const layer=(direction:LinkDirection)=>{let nodes=frontier(c,direction);if(language&&nodes.some(n=>n.article.lang===language))nodes=nodes.filter(n=>n.article.lang===language);const min=nodes.reduce((m,n)=>Math.min(m,n.depth),Infinity);return nodes.filter(n=>n.depth===min);};
   const left=layer('out'),right=layer('in');if(!left.length&&!right.length)return false;
   const direction=!right.length||(left.length>0&&left.length<=right.length)?'out':'in';
   const batch=(direction==='out'?left:right).slice(0,Math.max(1,Math.min(5,c.concurrency??1)));

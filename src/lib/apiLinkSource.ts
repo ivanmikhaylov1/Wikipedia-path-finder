@@ -1,7 +1,7 @@
 import { ArticleNotFoundError, type AnytimeLinkSource, type CanonicalArticle, type LinkDirection, type LinkEvidence, type QueryPurpose } from './linkSource';
 import { ApiGraphAcquisition } from './apiGraphAcquisition';
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
-import { WikiApiClient } from './wikiApi';
+import { WikiApiClient, languageLinkHost } from './wikiApi';
 
 type Direction = 'out' | 'in';
 type CachedLinks = { links: string[]; sizeBytes?: number; storedAt: number; complete: boolean };
@@ -192,10 +192,21 @@ export class ApiLinkSource implements AnytimeLinkSource {
     const result: Array<{ title: string; lang: string }> = [];
     let continuation: Record<string, string> = {};
     do {
-      const data = await this.api.query(lang, { prop: 'langlinks', titles: title, lllimit: 'max', ...continuation });
-      result.push(...(data.query?.pages?.[0]?.langlinks ?? []));
+      const data = await this.api.query(lang, { prop: 'langlinks', titles: title, lllimit: 'max', llprop:'url', ...continuation });
+      result.push(...(data.query?.pages?.[0]?.langlinks ?? []).map(link=>({title:link.title,lang:languageLinkHost(link)})));
       continuation = data.continue ?? {};
     } while (Object.keys(continuation).length);
+    return result;
+  }
+
+  /** Manual language backlinks complement Wikibase-derived reciprocal candidates. */
+  async getLangbacklinks(title: string, targetLang: string, sourceLang: string): Promise<Array<{title:string;lang:string}>> {
+    const result:Array<{title:string;lang:string}>=[];let continuation:Record<string,string>={};
+    do {
+      const data=await this.api.query(sourceLang,{list:'langbacklinks',lbllang:targetLang,lbltitle:title,lbllimit:'max',...continuation});
+      result.push(...(data.query?.langbacklinks??[]).filter(page=>page.ns===0).map(page=>({title:page.title,lang:sourceLang})));
+      continuation=data.continue??{};
+    }while(Object.keys(continuation).length);
     return result;
   }
 
