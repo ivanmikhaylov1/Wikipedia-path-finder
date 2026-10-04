@@ -23,3 +23,23 @@ export class RequestBudgetExceededError extends Error {
     this.name = 'RequestBudgetExceededError';
   }
 }
+
+export class ImprovementLimitError extends Error {}
+
+export type LinkDirection = 'out' | 'in';
+export type QueryPurpose = 'explore' | 'validate';
+export interface CanonicalArticle { lang: string; title: string; pageId?: number }
+export interface LinkEvidence { from: CanonicalArticle; to: CanonicalArticle; rawTarget: string; fresh: boolean }
+export interface LinkPage { completeFresh?: boolean; newEdges?: LinkEvidence[]; edges: LinkEvidence[]; complete: boolean; cursor?: Record<string, string>; invalidatedEdges?: LinkEvidence[] }
+export interface AnytimeLinkSource extends LinkSource {
+  readonly forwardOnly?: boolean;
+  canonicalize(titles: string[], lang: string, purpose?: QueryPurpose): Promise<Map<string, CanonicalArticle | null>>;
+  readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose): Promise<LinkPage>;
+  probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose): Promise<LinkEvidence[]>;
+  probeLinkPage?(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose?: QueryPurpose): Promise<LinkPage>;
+  validateEdges(edges: LinkEvidence[], onInvalid?: (edge: LinkEvidence) => void): Promise<boolean>;
+  getRemainingRequests(): number;
+  setRequestLimit?(limit: number): void;
+  setDeadline(deadline: number): void;
+}
+export const articleIdentity = (article: CanonicalArticle) => JSON.stringify([article.lang, article.title]);

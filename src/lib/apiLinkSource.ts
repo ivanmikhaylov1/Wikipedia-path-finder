@@ -1,4 +1,5 @@
-import { ArticleNotFoundError, type LinkSource } from './linkSource';
+import { ArticleNotFoundError, type AnytimeLinkSource, type CanonicalArticle, type LinkDirection, type LinkEvidence, type QueryPurpose } from './linkSource';
+import { ApiGraphAcquisition } from './apiGraphAcquisition';
 import { DEFAULT_LIMITS, type SearchLimits } from './searchLimits';
 import { WikiApiClient } from './wikiApi';
 
@@ -48,21 +49,31 @@ class PersistentLinks {
   }
 }
 
-export class ApiLinkSource implements LinkSource {
+export class ApiLinkSource implements AnytimeLinkSource {
   private api: WikiApiClient;
   private persistent = new PersistentLinks();
   private linkCache = new Map<string, CachedLinks>();
   private resolveCache = new Map<string, Promise<string>>();
   private sizeCache = new Map<string, number>();
   private linkCeiling: number;
+  private acquisition: ApiGraphAcquisition;
 
-  constructor(private limits: SearchLimits = DEFAULT_LIMITS) {
-    this.api = new WikiApiClient(limits, limits.maxTotalRequests);
+  constructor(private limits: SearchLimits = DEFAULT_LIMITS, options: { anytime?: boolean } = {}) {
+    this.api = new WikiApiClient(limits, limits.maxTotalRequests, options.anytime ? Math.min(26, Math.floor(limits.maxTotalRequests / 4)) : 0);
+    this.acquisition = new ApiGraphAcquisition(this.api);
     this.linkCeiling = Math.min(500, limits.maxLinksPerPage);
   }
 
   getRequestCount(): number { return this.api.getRequestCount(); }
-  private key(lang: string, title: string, direction: Direction, cap = this.linkCeiling): string { return JSON.stringify([lang, title, direction, cap]); }
+  getRemainingRequests(): number { return this.api.getRemainingRequests(); }
+  setRequestLimit(limit: number): void { this.api.setRequestLimit(limit); }
+  setDeadline(deadline: number): void { this.api.setDeadline(deadline); }
+  canonicalize(titles: string[], lang: string, purpose?: QueryPurpose) { return this.acquisition.canonicalize(titles, lang, purpose); }
+  readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose) { return this.acquisition.readLinkPage(article, direction, purpose); }
+  probeLinkPage(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose?: QueryPurpose) { return this.acquisition.probeLinkPage(from, to, cursor, purpose); }
+  probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose) { return this.acquisition.probeLinks(from, to, purpose); }
+  validateEdges(edges: LinkEvidence[], onInvalid?: (edge: LinkEvidence) => void) { return this.acquisition.validateEdges(edges, onInvalid); }
+  private key(lang: string, title: string, direction: Direction, _cap = this.linkCeiling): string { return JSON.stringify([lang, title, direction]); }
   private async cachedLinks(key: string): Promise<CachedLinks | null> {
     const memory = this.linkCache.get(key);
     if (memory) return memory;
@@ -71,7 +82,7 @@ export class ApiLinkSource implements LinkSource {
     return stored;
   }
   private async saveLinks(key: string, links: string[], complete: boolean, sizeBytes?: number): Promise<void> {
-    const value: CachedLinks = { links: links.slice(0, this.linkCeiling), sizeBytes, complete, storedAt: Date.now() };
+    const value: CachedLinks = { links: links.slice(0, 500), sizeBytes, complete, storedAt: Date.now() };
     this.linkCache.set(key, value);
     await this.persistent.put(key, value);
   }
@@ -134,7 +145,7 @@ export class ApiLinkSource implements LinkSource {
           if (!page || page.missing || page.ns !== 0) continue;
           entry.sizeBytes = page.length ?? entry.sizeBytes;
           for (const link of (direction === 'out' ? page.links : page.linkshere) ?? []) {
-            if (link.ns === 0 && entry.links.size < this.linkCeiling) entry.links.add(link.title);
+            if (link.ns === 0 && entry.links.size < 500) entry.links.add(link.title);
           }
         }
         continuation = data.continue ?? {};

@@ -14,6 +14,9 @@
   "include": [
     "vite.config.ts",
     "scripts/*.ts",
-    "src/lib/graphFormat.ts"
+    "src/lib/graphFormat.ts",
+    "src/lib/**/*.ts",
+    "src/vite-env.d.ts",
+    "tests/fixtures/apiBenchmark.ts"
   ]
 }

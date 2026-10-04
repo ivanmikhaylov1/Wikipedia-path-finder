@@ -1,0 +1,7483 @@
+{
+  "mode": "fixture",
+  "summary": {
+    "baseline": {
+      "successes": 48,
+      "total": 90,
+      "medianRequestsToFirstRoute": 5.0,
+      "medianFirstRouteMs": 0.5909164999999916,
+      "medianTotalDurationMs": 0.6565204999999423,
+      "totalHttpRequests": 633,
+      "guidedHttpRequests": 0
+    },
+    "anytime": {
+      "successes": 60,
+      "total": 90,
+      "medianRequestsToFirstRoute": 7.5,
+      "medianFirstRouteMs": 0.7927500000000123,
+      "medianTotalDurationMs": 6.630291499999942,
+      "totalHttpRequests": 3636,
+      "guidedHttpRequests": 177
+    }
+  },
+  "records": [
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 25.662040999999988,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 25.656832999999978,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 2.483417000000003,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.1708749999999952,
+        "bridge": 0.617167999999964,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 2.4332500000000152,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.46212499999998613,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.45991699999999014,
+      "finalTransitions": 2,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 2.4580830000000162,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 5,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.2557079999999985,
+        "bridge": 0.44079099999996174,
+        "guided": 0.42379300000001763
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.5652919999999995,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 11,
+      "totalDurationMs": 2.26291599999999,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 2.2591659999999933,
+      "finalTransitions": 9,
+      "actualHttpRequests": 11,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 18,
+      "totalDurationMs": 9.288291999999984,
+      "strategyRequests": {
+        "bfs": 12,
+        "bridge": 9,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 2.2184999999999775,
+        "bridge": 0.7037910000000238,
+        "guided": 6.061748999999992
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 2.3742499999999893,
+      "finalTransitions": 9,
+      "actualHttpRequests": 25,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 9,
+      "totalDurationMs": 1.0795840000000112,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 1.076166999999998,
+      "finalTransitions": 9,
+      "actualHttpRequests": 9,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 4.433249999999987,
+      "strategyRequests": {
+        "bfs": 14,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 2.628208000000029,
+        "bridge": 0.748875000000055,
+        "guided": 0.7492090000000076
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 1.7958329999999876,
+      "finalTransitions": 9,
+      "actualHttpRequests": 32,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 108.15766699999998,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 24,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 14.837333000000001,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 3,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 11.718168000000048,
+        "bridge": 1.6370399999999563,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 14.486249999999984,
+      "finalTransitions": 2,
+      "actualHttpRequests": 8,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 106.5435,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 22,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 8,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 23.90491700000001,
+      "strategyRequests": {
+        "bfs": 68,
+        "bridge": 3,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 14.16787399999987,
+        "bridge": 2.003040999999996,
+        "guided": 1.2677510000000325
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 4.056874999999991,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.7449999999999477,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 6,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.4787080000000401,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.2407089999999812,
+        "bridge": 0.11308299999996052,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.46475000000003774,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.4081670000000486,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.35012499999999136,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.1615409999999997,
+        "bridge": 0.10579200000006495,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.33729099999999335,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.7136669999999867,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7126669999999535,
+      "finalTransitions": 2,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 1.0102500000000418,
+      "strategyRequests": {
+        "bfs": 7,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.6742910000000393,
+        "bridge": 0.15604200000001356,
+        "guided": 0.024459000000035758
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.5251670000000104,
+      "finalTransitions": 2,
+      "actualHttpRequests": 11,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.3277079999999728,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.326582999999971,
+      "finalTransitions": 2,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.5746250000000259,
+      "strategyRequests": {
+        "bfs": 5,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.3647910000000252,
+        "bridge": 0.09887500000002092,
+        "guided": 0.007000000000005002
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.28245800000001964,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.43866700000000947,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.7047089999999798,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.5186250000000427,
+        "bridge": 0.09249900000003208,
+        "guided": 0.004874000000029355
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.355165999999997,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 3,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.4371250000000373,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.2621250000000259,
+        "bridge": 0.09391700000003311,
+        "guided": 0.004041999999969903
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.3909580000000119,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.5455840000000194,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.4401659999999765,
+        "bridge": 0.044167000000072676,
+        "guided": 0.002958999999975731
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.149833000000001,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.17116599999997106,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.08362500000004047,
+        "bridge": 0.04008299999998144,
+        "guided": 0.0024579999999900792
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.960583999999983,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.806583999999987,
+      "strategyRequests": {
+        "bfs": 49,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.581372999999985,
+        "bridge": 1.6821259999999825,
+        "guided": 1.0398340000000417
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 66,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 3.3613750000000095,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.908832999999959,
+      "strategyRequests": {
+        "bfs": 46,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.958542000000193,
+        "bridge": 1.6158329999996681,
+        "guided": 0.8710409999999342
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 63,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.3316660000000411,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.33062500000005457,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.4235830000000078,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.2266660000000229,
+        "bridge": 0.13104100000009566,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.40670799999998053,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 0.14012500000001182,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.1392079999999396,
+      "finalTransitions": 2,
+      "actualHttpRequests": 2,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 13.048582999999894,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.973962000000142,
+        "bridge": 4.540209000000118,
+        "guided": 0.6107079999999314
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.26149999999995543,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.6074170000000549,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6064999999999827,
+      "finalTransitions": 3,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 1.4786249999999654,
+      "strategyRequests": {
+        "bfs": 8,
+        "bridge": 4,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.1294579999997723,
+        "bridge": 0.24645800000007512,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.5718329999999696,
+      "finalTransitions": 3,
+      "actualHttpRequests": 13,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.48500000000001364,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.48329200000000583,
+      "finalTransitions": 3,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 13.749458000000004,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.52379000000019,
+        "bridge": 5.018041999999923,
+        "guided": 1.2930850000000191
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6685000000001082,
+      "finalTransitions": 3,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.8472499999999172,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 11,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 8.618625000000065,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 12,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.3694989999997915,
+        "bridge": 1.2337509999998701,
+        "guided": 0.5537499999999227
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.8265420000000177,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 8.994249999999965,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.4535409999997455,
+        "bridge": 1.3627100000001064,
+        "guided": 0.6538330000000769
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 1.5139169999999922,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.5114170000000513,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 12.459708000000091,
+      "strategyRequests": {
+        "bfs": 56,
+        "bridge": 15,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 7.195626000000175,
+        "bridge": 3.9285829999998896,
+        "guided": 0.473041999999964
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 2.3420409999999947,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 1.13412500000004,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.1328750000000127,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 11.511124999999993,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 14,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.001044000000206,
+        "bridge": 4.129792000000066,
+        "guided": 0.5218340000000126
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.672666999999933,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.9062910000000102,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.9050829999999905,
+      "finalTransitions": 4,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 12,
+      "totalDurationMs": 8.875,
+      "strategyRequests": {
+        "bfs": 35,
+        "bridge": 10,
+        "guided": 2
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.882458000000042,
+        "bridge": 3.0563320000001113,
+        "guided": 0.3192500000000109
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2041249999999764,
+      "finalTransitions": 4,
+      "actualHttpRequests": 48,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.7242499999999836,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7228330000000369,
+      "finalTransitions": 4,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 13,
+      "totalDurationMs": 11.88266699999997,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.891209000000117,
+        "bridge": 4.6121250000001055,
+        "guided": 0.4905839999998989
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.9291249999999991,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 0.8561670000000277,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.8551669999999376,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 8.783583000000021,
+      "strategyRequests": {
+        "bfs": 52,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.572545000000105,
+        "bridge": 2.201915999999983,
+        "guided": 0.3904179999999542
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2539580000000115,
+      "finalTransitions": 5,
+      "actualHttpRequests": 69,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.680582999999956,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6796249999999873,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 8.465125000000057,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.048582000000351,
+        "bridge": 2.4201250000000982,
+        "guided": 0.388915999999881
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.8580409999999574,
+      "finalTransitions": 5,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 3.2698330000000624,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 10,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.892166999999972,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6.072832000000062,
+        "bridge": 2.8472900000001573,
+        "guided": 0.3707089999999198
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 3.0152080000000296,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 8,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.192041000000017,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.381207999999788,
+        "bridge": 2.84274999999991,
+        "guided": 0.3707489999999325
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2519170000000486,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2508750000000646,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.23154199999999037,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.1427080000000842,
+        "bridge": 0.05250000000012278,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.22283300000003692,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.14783299999999144,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.14704100000005838,
+      "finalTransitions": 2,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.6109579999999823,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 5,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.424666000000002,
+        "bridge": 0.11858299999983046,
+        "guided": 0.005416000000082022
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.15495800000007875,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 11,
+      "totalDurationMs": 0.7315830000000005,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7308329999999614,
+      "finalTransitions": 9,
+      "actualHttpRequests": 11,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 18,
+      "totalDurationMs": 1.9758339999999635,
+      "strategyRequests": {
+        "bfs": 12,
+        "bridge": 9,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.253455999999801,
+        "bridge": 0.277042000000165,
+        "guided": 0.29437399999994796
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2458339999999453,
+      "finalTransitions": 9,
+      "actualHttpRequests": 25,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 9,
+      "totalDurationMs": 0.6053749999999809,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6043750000000045,
+      "finalTransitions": 9,
+      "actualHttpRequests": 9,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 2.5600829999999632,
+      "strategyRequests": {
+        "bfs": 14,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.4980860000001712,
+        "bridge": 0.39766499999996086,
+        "guided": 0.45545800000013514
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 1.0954160000000002,
+      "finalTransitions": 9,
+      "actualHttpRequests": 32,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 83.20337499999994,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 24,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 16.253250000000094,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 3,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 13.479707999999846,
+        "bridge": 1.4082929999999578,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 15.935292000000004,
+      "finalTransitions": 2,
+      "actualHttpRequests": 8,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 69.27379100000007,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 22,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 8,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 18.256709,
+      "strategyRequests": {
+        "bfs": 68,
+        "bridge": 3,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 10.377039999999965,
+        "bridge": 1.8347059999998692,
+        "guided": 0.9506660000000693
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 3.84795900000006,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.4438750000000482,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 6,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2725829999999405,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.15508299999999053,
+        "bridge": 0.07045800000003055,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2634580000000142,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.29504100000008293,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2000830000000633,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.11045799999999417,
+        "bridge": 0.05208300000003874,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.19254100000000562,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.34258299999999053,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.3417499999999336,
+      "finalTransitions": 2,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.5624590000001035,
+      "strategyRequests": {
+        "bfs": 7,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.4257509999999911,
+        "bridge": 0.06770799999992505,
+        "guided": 0.0064589999999498104
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.27233400000000074,
+      "finalTransitions": 2,
+      "actualHttpRequests": 11,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.19491599999992104,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.19412499999998545,
+      "finalTransitions": 2,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.4658749999999827,
+      "strategyRequests": {
+        "bfs": 5,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.3109999999999218,
+        "bridge": 0.07087400000023081,
+        "guided": 0.007541999999943982
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.19499999999993634,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.31729199999995217,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.5012919999999212,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.4022500000000946,
+        "bridge": 0.05008300000008603,
+        "guided": 0.003958000000011452
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.1798750000000382,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 3,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.25841700000000856,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.17341599999986101,
+        "bridge": 0.046206999999981235,
+        "guided": 0.00204200000007404
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.23508300000003146,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.3615420000000995,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.302332999999976,
+        "bridge": 0.02529200000003584,
+        "guided": 0.001916000000051099
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.10245800000006966,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.12850000000003092,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.07312499999989086,
+        "bridge": 0.024208999999927983,
+        "guided": 0.0018330000000332802
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.41212500000006,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.62662499999999,
+      "strategyRequests": {
+        "bfs": 49,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.493331999999896,
+        "bridge": 1.0965000000002192,
+        "guided": 0.6851669999998649
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 66,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.9980410000000575,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.232708000000002,
+      "strategyRequests": {
+        "bfs": 46,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.124956000000225,
+        "bridge": 1.067542000000003,
+        "guided": 0.6937069999999039
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 63,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.24645799999996143,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.24558300000001054,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2786670000000413,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.16399999999998727,
+        "bridge": 0.07504200000016681,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2688339999999698,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 0.10483299999998508,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.10408300000005966,
+      "finalTransitions": 2,
+      "actualHttpRequests": 2,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 10.165500000000065,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.2192499999998745,
+        "bridge": 3.794041000000334,
+        "guided": 0.4249169999999367
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.1916670000000522,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.5062910000000329,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.505457999999976,
+      "finalTransitions": 3,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 1.1743750000000546,
+      "strategyRequests": {
+        "bfs": 8,
+        "bridge": 4,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.8882919999997512,
+        "bridge": 0.20262500000001182,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.44687500000009095,
+      "finalTransitions": 3,
+      "actualHttpRequests": 13,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.34341600000004746,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.34266600000000835,
+      "finalTransitions": 3,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 11.062584000000015,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.086247999999841,
+        "bridge": 4.266957999999931,
+        "guided": 1.0397499999999127
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.3308749999999918,
+      "finalTransitions": 3,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.4817090000000235,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 11,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 7.03083300000003,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 12,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.207251000000156,
+        "bridge": 1.026042000000416,
+        "guided": 0.46137499999986176
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.3359590000000026,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 7.510833000000048,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.575500000000034,
+        "bridge": 1.1368730000001506,
+        "guided": 0.4405829999998332
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 1.164166000000023,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.1631250000000364,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 9.521290999999906,
+      "strategyRequests": {
+        "bfs": 56,
+        "bridge": 15,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.070041999999944,
+        "bridge": 3.3891260000001466,
+        "guided": 0.417459000000008
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.253415999999902,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.9966250000001082,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 0.995584000000008,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 8.99020900000005,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 14,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.679086000000098,
+        "bridge": 3.29587499999991,
+        "guided": 0.4059580000001688
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2893340000000535,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.7123749999999518,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7114579999999933,
+      "finalTransitions": 4,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 12,
+      "totalDurationMs": 7.468415999999934,
+      "strategyRequests": {
+        "bfs": 35,
+        "bridge": 10,
+        "guided": 2
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.03158400000018,
+        "bridge": 2.68195800000035,
+        "guided": 0.29250100000001567
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 1.549082999999996,
+      "finalTransitions": 4,
+      "actualHttpRequests": 48,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.5784579999999551,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.5774579999999787,
+      "finalTransitions": 4,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 13,
+      "totalDurationMs": 10.257333000000017,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.0618760000000975,
+        "bridge": 4.027916999999661,
+        "guided": 0.44699900000011894
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7667920000000095,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 0.7559159999999565,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7549579999999878,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 8.167125000000055,
+      "strategyRequests": {
+        "bfs": 52,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.245664000000147,
+        "bridge": 1.9873739999999316,
+        "guided": 0.39116599999988466
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2198329999999942,
+      "finalTransitions": 5,
+      "actualHttpRequests": 69,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.6324579999999287,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6316669999999931,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 7.964083000000073,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.732209000000125,
+        "bridge": 2.326164000000176,
+        "guided": 0.3824170000000322
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.8187080000000151,
+      "finalTransitions": 5,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.9270830000000387,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 10,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.372041999999965,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.7146259999997255,
+        "bridge": 2.783168000000046,
+        "guided": 0.36204099999986283
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.7503749999999627,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 8,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 2,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.002915999999914,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.227417000000287,
+        "bridge": 2.8505829999994603,
+        "guided": 0.3706250000000182
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.23041699999998855,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.22954200000003766,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.22320799999988594,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.13954100000000835,
+        "bridge": 0.05108299999983501,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.21516599999995378,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.13687500000014552,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.1361660000000029,
+      "finalTransitions": 2,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.6070830000001024,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 5,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.4210419999999431,
+        "bridge": 0.12024899999937588,
+        "guided": 0.005167000000028565
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.1648330000000442,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 11,
+      "totalDurationMs": 0.6995830000000751,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6987910000000284,
+      "finalTransitions": 9,
+      "actualHttpRequests": 11,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 18,
+      "totalDurationMs": 1.9700829999999314,
+      "strategyRequests": {
+        "bfs": 12,
+        "bridge": 9,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.260208999999577,
+        "bridge": 0.27666699999963384,
+        "guided": 0.29383400000006077
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2687920000000759,
+      "finalTransitions": 9,
+      "actualHttpRequests": 25,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 9,
+      "totalDurationMs": 0.5764999999998963,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.57549999999992,
+      "finalTransitions": 9,
+      "actualHttpRequests": 9,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "weakly-connected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 2.32229099999995,
+      "strategyRequests": {
+        "bfs": 14,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 1.4095420000003287,
+        "bridge": 0.3308759999999893,
+        "guided": 0.41703999999958796
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"N1\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N4\"]",
+        "[\"en\",\"N5\"]",
+        "[\"en\",\"N6\"]",
+        "[\"en\",\"N7\"]",
+        "[\"en\",\"N8\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.9477500000000418,
+      "finalTransitions": 9,
+      "actualHttpRequests": 32,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 67.32716600000003,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 24,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 13.77299999999991,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 3,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 10.748666999999841,
+        "bridge": 1.6124999999997272,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 13.459875000000011,
+      "finalTransitions": 2,
+      "actualHttpRequests": 8,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 59.86058300000013,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 22,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "high-degree",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 8,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 17.019375000000082,
+      "strategyRequests": {
+        "bfs": 68,
+        "bridge": 3,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 9.928540999999996,
+        "bridge": 1.50099900000032,
+        "guided": 0.8991239999998015
+      },
+      "path": [
+        "[\"en\",\"Start\"]",
+        "[\"en\",\"Goal bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 3.29295900000011,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.4187500000000455,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 6,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.25774999999998727,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.15858400000001893,
+        "bridge": 0.05791599999997743,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2497080000000551,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.2779169999998885,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-heavy",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.1878750000000764,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.11216699999999946,
+        "bridge": 0.04458399999998619,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"A\"]",
+        "[\"en\",\"B\"]",
+        "[\"en\",\"D\"]"
+      ],
+      "firstVerifiedRouteMs": 0.18112500000006548,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.35104200000000674,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.35008300000004056,
+      "finalTransitions": 2,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.5490419999998721,
+      "strategyRequests": {
+        "bfs": 7,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.3973750000000109,
+        "bridge": 0.05999999999994543,
+        "guided": 0.006292000000030384
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2937500000000455,
+      "finalTransitions": 2,
+      "actualHttpRequests": 11,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.1782500000001619,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.1775000000000091,
+      "finalTransitions": 2,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.3338329999999132,
+      "strategyRequests": {
+        "bfs": 5,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.22695800000019517,
+        "bridge": 0.05116599999951177,
+        "guided": 0.005209000000149899
+      },
+      "path": [
+        "[\"ru\",\"А\"]",
+        "[\"en\",\"Bridge\"]",
+        "[\"en\",\"Goal\"]"
+      ],
+      "firstVerifiedRouteMs": 0.14541600000006838,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.28949999999986176,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.4875839999999698,
+      "strategyRequests": {
+        "bfs": 4,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.4025010000000293,
+        "bridge": 0.044290999999930136,
+        "guided": 0.003666999999950349
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.17454099999986283,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 3,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "impossible",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.23762499999998,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.16108399999984613,
+        "bridge": 0.04183399999942594,
+        "guided": 0.0018330000000332802
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.22100000000000364,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 4,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.34716600000001563,
+      "strategyRequests": {
+        "bfs": 3,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.29374899999970694,
+        "bridge": 0.023209000000179003,
+        "guided": 0.0016669999999976426
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 5,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.1007089999998243,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "empty",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 0.12295799999992596,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.0716669999997066,
+        "bridge": 0.022957999999562162,
+        "guided": 0.0017080000000078144
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 2,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.4629589999999553,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.160707999999886,
+      "strategyRequests": {
+        "bfs": 49,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.277711000000863,
+        "bridge": 0.9073339999990822,
+        "guided": 0.6560829999998532
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 66,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.164541999999983,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 7,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-1009",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.633957999999893,
+      "strategyRequests": {
+        "bfs": 46,
+        "bridge": 10,
+        "guided": 6
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.745331999999735,
+        "bridge": 0.9235000000003311,
+        "guided": 0.6482089999999516
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 63,
+      "stopReason": "no_path",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2404589999998734,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.23949999999990723,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.2625420000001668,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 2,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.15812499999992724,
+        "bridge": 0.06787599999984195,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.2540000000001328,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 0.1023330000000442,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.10162500000001273,
+      "finalTransitions": 2,
+      "actualHttpRequests": 2,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-8928",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 9.61195900000007,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.132875999999669,
+        "bridge": 3.3977930000000924,
+        "guided": 0.39970800000014606
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N3\"]",
+        "[\"en\",\"N71\"]"
+      ],
+      "firstVerifiedRouteMs": 0.17266700000004676,
+      "finalTransitions": 2,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.4934579999999187,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.4925829999999678,
+      "finalTransitions": 3,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 1.133542000000034,
+      "strategyRequests": {
+        "bfs": 8,
+        "bridge": 4,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0.8790010000000166,
+        "bridge": 0.17929100000014841,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.43183299999986957,
+      "finalTransitions": 3,
+      "actualHttpRequests": 13,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 3,
+      "totalDurationMs": 0.33029099999998834,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.3294999999998254,
+      "finalTransitions": 3,
+      "actualHttpRequests": 3,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-16847",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 8,
+      "totalDurationMs": 10.63087500000006,
+      "strategyRequests": {
+        "bfs": 54,
+        "bridge": 17,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.53154199999949,
+        "bridge": 4.007126999999855,
+        "guided": 0.42237599999998565
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N2\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N79\"]"
+      ],
+      "firstVerifiedRouteMs": 0.31795800000008967,
+      "finalTransitions": 3,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.477292000000034,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 11,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.582167000000027,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 12,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.960084000000279,
+        "bridge": 0.8703349999996135,
+        "guided": 0.43745800000010604
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 1.275583000000097,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 9,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-24766-disconnected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6.885625000000118,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 13,
+        "guided": 4
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.024004000000787,
+        "bridge": 1.0546200000007957,
+        "guided": 0.4470809999997982
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 1.120542000000114,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.1194170000001122,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 9.502250000000004,
+      "strategyRequests": {
+        "bfs": 56,
+        "bridge": 15,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.361875000000282,
+        "bridge": 3.1070860000006633,
+        "guided": 0.41020800000001145
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2175829999998768,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 1.033292000000074,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N28\"]",
+        "[\"en\",\"N26\"]",
+        "[\"en\",\"N44\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.0323750000000018,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-32685",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 19,
+      "totalDurationMs": 8.739500000000135,
+      "strategyRequests": {
+        "bfs": 57,
+        "bridge": 14,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.556707000000642,
+        "bridge": 3.175582000000304,
+        "guided": 0.40879199999994853
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N40\"]",
+        "[\"en\",\"N77\"]",
+        "[\"en\",\"N43\"]",
+        "[\"en\",\"N95\"]"
+      ],
+      "firstVerifiedRouteMs": 1.2757080000001224,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 0.6825830000000224,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6817080000000715,
+      "finalTransitions": 4,
+      "actualHttpRequests": 6,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 12,
+      "totalDurationMs": 6.808082999999897,
+      "strategyRequests": {
+        "bfs": 35,
+        "bridge": 10,
+        "guided": 2
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 3.5046669999999267,
+        "bridge": 2.57558400000039,
+        "guided": 0.2745840000000044
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.9862499999999272,
+      "finalTransitions": 4,
+      "actualHttpRequests": 48,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 0.5491669999998976,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 0.5483329999999569,
+      "finalTransitions": 4,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-40604",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 13,
+      "totalDurationMs": 10.679124999999885,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.614794999999731,
+        "bridge": 3.8992059999995945,
+        "guided": 0.4465829999999187
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N27\"]",
+        "[\"en\",\"N70\"]",
+        "[\"en\",\"N84\"]",
+        "[\"en\",\"N103\"]"
+      ],
+      "firstVerifiedRouteMs": 1.3350419999999303,
+      "finalTransitions": 4,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 7,
+      "totalDurationMs": 0.786167000000205,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.7851250000001073,
+      "finalTransitions": 5,
+      "actualHttpRequests": 7,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 7.361875000000055,
+      "strategyRequests": {
+        "bfs": 52,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 4.616374000000405,
+        "bridge": 1.874873999999636,
+        "guided": 0.36733299999991686
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 1.201665999999932,
+      "finalTransitions": 5,
+      "actualHttpRequests": 69,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 5,
+      "totalDurationMs": 0.6230830000001788,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.6221669999999904,
+      "finalTransitions": 5,
+      "actualHttpRequests": 5,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-48523",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 15,
+      "totalDurationMs": 8.570000000000164,
+      "strategyRequests": {
+        "bfs": 53,
+        "bridge": 18,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.293872999999849,
+        "bridge": 2.347414999999046,
+        "guided": 0.38675100000000384
+      },
+      "path": [
+        "[\"en\",\"N0\"]",
+        "[\"en\",\"N30\"]",
+        "[\"en\",\"N51\"]",
+        "[\"en\",\"N82\"]",
+        "[\"en\",\"N35\"]",
+        "[\"en\",\"N111\"]"
+      ],
+      "firstVerifiedRouteMs": 0.864667000000054,
+      "finalTransitions": 5,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.917165999999952,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 10,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "cold",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 8.838000000000193,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.261835000000474,
+        "bridge": 2.699126999999862,
+        "guided": 0.3631669999999758
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 2.735916999999972,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 8,
+      "stopReason": "depth",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "seeded-56442-disconnected",
+      "cache": "warm",
+      "run": 3,
+      "warmupComplete": true,
+      "warmupHttpRequests": 6,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 9.286749999999984,
+      "strategyRequests": {
+        "bfs": 58,
+        "bridge": 13,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 5.126915999999255,
+        "bridge": 2.7925420000001395,
+        "guided": 0.819374999999809
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    }
+  ]
+}

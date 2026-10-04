@@ -261,3 +261,18 @@ input { caret-color: var(--accent); }
 
 /* Empty live regions remain in the accessibility tree without visual spacing. */
 .search-status.is-empty { padding: 0; border: 0; margin: 0; }
+
+.route-search-status {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+  border-top: 1px solid currentColor;
+}
+.route-search-status p { margin: 0; }
+.route-search-status button { min-height: 44px; padding: .65rem 1rem; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+.route-search-progress { font-size: .875rem; margin-top: .35rem !important; }

@@ -1,0 +1,122 @@
+{
+  "seed": 20261004,
+  "scope": "CPU only: page insert, route, two reachability queries; indexes prewarmed; three steps",
+  "records": [
+    {
+      "nodes": 10000,
+      "initialEdges": 120000,
+      "addedEdges": 1500,
+      "initialIndexMs": 117.790167,
+      "reference": {
+        "stepMs": [
+          13.537750000000017,
+          13.902708000000018,
+          10.917958999999996
+        ],
+        "routeLengths": [
+          5,
+          5,
+          5
+        ],
+        "reachableCounts": [
+          [
+            10000,
+            10000
+          ],
+          [
+            10000,
+            10000
+          ],
+          [
+            10000,
+            10000
+          ]
+        ]
+      },
+      "incremental": {
+        "stepMs": [
+          5.2989579999999705,
+          4.797750000000008,
+          6.0176250000000095
+        ],
+        "routeLengths": [
+          5,
+          5,
+          5
+        ],
+        "reachableCounts": [
+          [
+            10000,
+            10000
+          ],
+          [
+            10000,
+            10000
+          ],
+          [
+            10000,
+            10000
+          ]
+        ]
+      }
+    },
+    {
+      "nodes": 100000,
+      "initialEdges": 1100000,
+      "addedEdges": 1500,
+      "initialIndexMs": 1955.7942909999997,
+      "reference": {
+        "stepMs": [
+          182.8283339999998,
+          219.36391699999967,
+          202.31433300000026
+        ],
+        "routeLengths": [
+          5,
+          5,
+          5
+        ],
+        "reachableCounts": [
+          [
+            99996,
+            100000
+          ],
+          [
+            99996,
+            100000
+          ],
+          [
+            99996,
+            100000
+          ]
+        ]
+      },
+      "incremental": {
+        "stepMs": [
+          33.223416000000725,
+          31.538417000000663,
+          26.52362499999981
+        ],
+        "routeLengths": [
+          5,
+          5,
+          5
+        ],
+        "reachableCounts": [
+          [
+            99996,
+            100000
+          ],
+          [
+            99996,
+            100000
+          ],
+          [
+            99996,
+            100000
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,4 +1,6 @@
 export interface SearchLimits {
+  improvementTimeout?: number;
+  improvementMaxRequests?: number;
   maxDepth: number;
   maxLinksPerPage: number;
   maxTotalRequests: number;
@@ -12,6 +14,8 @@ export interface SearchLimits {
 }
 
 export const DEFAULT_LIMITS: Readonly<SearchLimits> = Object.freeze({
+  improvementTimeout: 8_000,
+  improvementMaxRequests: 80,
   maxDepth: 6,
   maxLinksPerPage: 500,
   maxTotalRequests: 4000,

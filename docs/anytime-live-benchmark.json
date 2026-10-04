@@ -1,0 +1,675 @@
+{
+  "mode": "live",
+  "summary": {
+    "baseline": {
+      "successes": 4,
+      "total": 8,
+      "medianRequestsToFirstRoute": 14.5,
+      "medianFirstRouteMs": 7133.276250000003,
+      "medianTotalDurationMs": 10056.232500000006,
+      "totalHttpRequests": 301,
+      "guidedHttpRequests": 0
+    },
+    "anytime": {
+      "successes": 6,
+      "total": 8,
+      "medianRequestsToFirstRoute": 2.0,
+      "medianFirstRouteMs": 911.5622080000026,
+      "medianTotalDurationMs": 2835.038958499994,
+      "totalHttpRequests": 116,
+      "guidedHttpRequests": 7
+    }
+  },
+  "records": [
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 4,
+      "totalDurationMs": 1551.595959,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Cat\"]",
+        "[\"en\",\"Aardwolf\"]",
+        "[\"en\",\"Animal\"]"
+      ],
+      "firstVerifiedRouteMs": 1551.568,
+      "finalTransitions": 2,
+      "actualHttpRequests": 4,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 806.9480829999998,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 268.0027919999998,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Cat\"]",
+        "[\"en\",\"Animal\"]"
+      ],
+      "firstVerifiedRouteMs": 806.8877910000001,
+      "finalTransitions": 1,
+      "actualHttpRequests": 2,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "ordinary-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 487.4526670000005,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Cat\"]",
+        "[\"en\",\"Aardwolf\"]",
+        "[\"en\",\"Animal\"]"
+      ],
+      "firstVerifiedRouteMs": 487.4455830000006,
+      "finalTransitions": 2,
+      "actualHttpRequests": 2,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "ordinary-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": false,
+      "warmupHttpRequests": 46,
+      "warmupError": "Время поиска закончилось",
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 723.3294580000002,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 308.5321249999979,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Cat\"]",
+        "[\"en\",\"Animal\"]"
+      ],
+      "firstVerifiedRouteMs": 723.3100419999973,
+      "finalTransitions": 1,
+      "actualHttpRequests": 2,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 15001.203042000001,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 22,
+      "stopReason": "timeout",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 521.2630419999987,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 237.64966700000514,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"United States\"]",
+        "[\"en\",\"North America\"]"
+      ],
+      "firstVerifiedRouteMs": 521.244666999999,
+      "finalTransitions": 1,
+      "actualHttpRequests": 2,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "redirect-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 15001.882959000002,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 21,
+      "stopReason": "timeout",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "redirect-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": false,
+      "warmupHttpRequests": 25,
+      "warmupError": "Время поиска закончилось",
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 2,
+      "totalDurationMs": 1016.3234999999986,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 1,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 310.82433299999684,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"United States\"]",
+        "[\"en\",\"North America\"]"
+      ],
+      "firstVerifiedRouteMs": 1016.236625000005,
+      "finalTransitions": 1,
+      "actualHttpRequests": 2,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "distant-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 27,
+      "totalDurationMs": 12715.004375000004,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Fungus\"]",
+        "[\"en\",\"Academic Press\"]",
+        "[\"en\",\"Book\"]",
+        "[\"en\",\"Music\"]"
+      ],
+      "firstVerifiedRouteMs": 12714.984500000006,
+      "finalTransitions": 3,
+      "actualHttpRequests": 27,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "distant-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 9,
+      "totalDurationMs": 4653.754416999989,
+      "strategyRequests": {
+        "bfs": 5,
+        "bridge": 2,
+        "guided": 1
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 3243.5078740000026,
+        "bridge": 567.5194170000032,
+        "guided": 601.6135000000068
+      },
+      "path": [
+        "[\"en\",\"Fungus\"]",
+        "[\"en\",\"Tuberculosis\"]",
+        "[\"en\",\"Music\"]"
+      ],
+      "firstVerifiedRouteMs": 4650.921208,
+      "finalTransitions": 2,
+      "actualHttpRequests": 9,
+      "stopReason": "complete",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "distant-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": true,
+      "exact": true,
+      "requestsToFirstRoute": 25,
+      "totalDurationMs": 13055.278874999989,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [
+        "[\"en\",\"Fungus\"]",
+        "[\"en\",\"Academic Press\"]",
+        "[\"en\",\"Book\"]",
+        "[\"en\",\"Music\"]"
+      ],
+      "firstVerifiedRouteMs": 13055.265832999998,
+      "finalTransitions": 3,
+      "actualHttpRequests": 25,
+      "stopReason": "found",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "distant-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": false,
+      "warmupHttpRequests": 27,
+      "warmupError": "Время поиска закончилось",
+      "success": true,
+      "exact": false,
+      "requestsToFirstRoute": 6,
+      "totalDurationMs": 9987.323625000005,
+      "strategyRequests": {
+        "bfs": 14,
+        "bridge": 3,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 6574.755998000037,
+        "bridge": 1034.2177910000173,
+        "guided": 2096.056583000027
+      },
+      "path": [
+        "[\"en\",\"Fungus\"]",
+        "[\"en\",\"Tuberculosis\"]",
+        "[\"en\",\"Music\"]"
+      ],
+      "firstVerifiedRouteMs": 1985.878165999995,
+      "finalTransitions": 2,
+      "actualHttpRequests": 21,
+      "stopReason": "improvement",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 6719.433832999988,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 100,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual-live",
+      "cache": "cold",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 0,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 13326.722582999995,
+      "strategyRequests": {
+        "bfs": 70,
+        "bridge": 0,
+        "guided": 3
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 11742.49720699995,
+        "bridge": 1.873457999987295,
+        "guided": 1091.7093750000058
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 75,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "baseline",
+      "pair": "multilingual-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": true,
+      "warmupHttpRequests": 4,
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 7397.460625000007,
+      "strategyRequests": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 100,
+      "stopReason": "budget",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    },
+    {
+      "algorithm": "anytime",
+      "pair": "multilingual-live",
+      "cache": "warm",
+      "run": 1,
+      "warmupComplete": false,
+      "warmupHttpRequests": 39,
+      "warmupError": "Время поиска закончилось",
+      "success": false,
+      "exact": false,
+      "requestsToFirstRoute": null,
+      "totalDurationMs": 15002.395540999976,
+      "strategyRequests": {
+        "bfs": 1,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyCandidates": {
+        "bfs": 0,
+        "bridge": 0,
+        "guided": 0
+      },
+      "strategyDurationMs": {
+        "bfs": 14509.548167,
+        "bridge": 0.1090410000178963,
+        "guided": 0
+      },
+      "path": [],
+      "firstVerifiedRouteMs": null,
+      "finalTransitions": null,
+      "actualHttpRequests": 3,
+      "stopReason": "timeout",
+      "limits": {
+        "maxTotalRequests": 100,
+        "searchTimeout": 15000,
+        "improvementTimeout": 8000,
+        "improvementMaxRequests": 80
+      }
+    }
+  ]
+}

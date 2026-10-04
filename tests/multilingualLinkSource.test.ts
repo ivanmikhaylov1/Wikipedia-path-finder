@@ -17,3 +17,31 @@ it('finds a directed shortest langlinks path and never assumes reciprocal transl
   expect(await bidirectionalBfs(multilingual, b, a, 'en', DEFAULT_LIMITS)).toEqual({ status: 'not_found', reason: 'no_path' });
   expect(await multilingual.getOutlinks(a, 'ru')).not.toContain(articleKey({ title: 'Other', lang: 'de' }));
 });
+
+it('acquires canonical forward translations in the progressive source without inventing reverse translations', async () => {
+  const { ApiLinkSource } = await import('../src/lib/apiLinkSource');
+  const { vi } = await import('vitest');
+  vi.stubGlobal('fetch', async (input: URL) => {
+    const url = new URL(String(input)), q = url.searchParams, lang = url.hostname.split('.')[0];
+    return { ok: true, status: 200, json: async () => ({ query: { pages: (q.get('titles') ?? '').split('|').map(title => ({ title, ns: 0, links: [], redirects: [], langlinks: title === 'A' && lang === 'ru' ? [{ title: 'B', lang: 'en' }] : [] })) } }) };
+  });
+  try {
+    const source = new MultilingualLinkSource(new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }), ['ru', 'en']);
+    const page = await source.readLinkPage({ title: 'A', lang: 'ru' }, 'out');
+    expect(page.edges).toEqual([{ from: { title: 'A', lang: 'ru' }, to: { title: 'B', lang: 'en' }, rawTarget: 'B', fresh: true }]);
+    const reverse = await source.readLinkPage({ title: 'B', lang: 'en' }, 'in');
+    expect(reverse.edges).toEqual([]); expect(reverse.complete).toBe(false);
+  } finally { vi.unstubAllGlobals(); }
+});
+it('feeds freshly discovered language links into incremental graph acquisition', async () => {
+ const { ApiLinkSource }=await import('../src/lib/apiLinkSource');
+ const { anytimeSearch }=await import('../src/lib/anytimeSearch');
+ const { fixtureFetch,benchmarkFixtures }=await import('./fixtures/apiBenchmark');
+ const { DEFAULT_LIMITS }=await import('../src/lib/searchLimits');
+ const fixture=benchmarkFixtures.find(f=>f.name==='multilingual')!;
+ const previous=globalThis.fetch;globalThis.fetch=fixtureFetch(fixture);
+ try{
+  const source=new MultilingualLinkSource(new ApiLinkSource(DEFAULT_LIMITS,{anytime:true}),['ru','en']);
+  expect(await anytimeSearch(source,articleKey(fixture.from),articleKey(fixture.to),'ru',DEFAULT_LIMITS)).toMatchObject({status:'found',path:[articleKey(fixture.from),articleKey({title:'Bridge',lang:'en'}),articleKey(fixture.to)]});
+ }finally{globalThis.fetch=previous;}
+});

@@ -134,7 +134,7 @@ it('splits both directions into groups of at most fifty titles', async () => {
   expect(source.getRequestCount()).toBe(6);
 });
 
-it.each(['out', 'in'] as const)('isolates persistent %s cache entries by the effective link cap', async direction => {
+it.each(['out', 'in'] as const)('reuses richer persistent %s cache entries across effective link caps', async direction => {
   vi.stubGlobal('indexedDB', new IDBFactory());
   const links = Array.from({ length: 500 }, (_, i) => ({ title: `Node ${i}`, ns: 0 }));
   const fetchMock = vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ query: { pages: [{ title: 'Hub', ns: 0, length: 100, links, linkshere: links }] } }) }));
@@ -146,5 +146,5 @@ it.each(['out', 'in'] as const)('isolates persistent %s cache entries by the eff
     const cached = new ApiLinkSource({ ...DEFAULT_LIMITS, maxLinksPerPage: cap });
     expect(direction === 'out' ? await cached.getOutlinks('Hub', 'en', cap) : await cached.getInlinks('Hub', 'en', cap)).toHaveLength(cap);
   }
-  expect(fetchMock).toHaveBeenCalledTimes(3);
+  expect(fetchMock).toHaveBeenCalledTimes(1);
 });
