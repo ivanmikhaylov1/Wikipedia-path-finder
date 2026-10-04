@@ -9,8 +9,9 @@ export function readSharedQuery(search: string): { from: string; to: string; lan
 export function queryUrl(from: ParsedArticle, to: ParsedArticle, multilingual = false): string {
   const url = new URL(location.href);
   url.search = '';
-  url.searchParams.set('from', multilingual ? `https://${from.lang}.wikipedia.org/wiki/${from.title.replaceAll(' ', '_')}` : from.title);
-  url.searchParams.set('to', multilingual ? `https://${to.lang}.wikipedia.org/wiki/${to.title.replaceAll(' ', '_')}` : to.title);
+  const wikiUrl = (article: ParsedArticle) => `https://${article.lang}.wikipedia.org/wiki/${encodeURIComponent(article.title.replaceAll(' ', '_'))}`;
+  url.searchParams.set('from', multilingual ? wikiUrl(from) : from.title);
+  url.searchParams.set('to', multilingual ? wikiUrl(to) : to.title);
   url.searchParams.set('lang', from.lang);
   if (multilingual) url.searchParams.set('mode', 'multilingual');
   return url.href;

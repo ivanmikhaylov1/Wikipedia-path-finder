@@ -1,18 +1,26 @@
 [
   {
-    "file": "public/images/knowledge-map.webp",
-    "bytes": 41244
-  },
-  {
-    "file": "public/images/empty.webp",
-    "bytes": 6466
-  },
-  {
     "file": "public/images/grain.webp",
     "bytes": 88398
   },
   {
-    "file": "public/images/og.webp",
-    "bytes": 8070
+    "file": "public/images/collision/octopus-small.webp",
+    "bytes": 180816
+  },
+  {
+    "file": "public/images/collision/octopus.webp",
+    "bytes": 641816
+  },
+  {
+    "file": "public/images/collision/og.webp",
+    "bytes": 291996
+  },
+  {
+    "file": "public/images/collision/paper-strip.svg",
+    "bytes": 589
+  },
+  {
+    "file": "public/images/collision/tear.webp",
+    "bytes": 144380
   }
 ]

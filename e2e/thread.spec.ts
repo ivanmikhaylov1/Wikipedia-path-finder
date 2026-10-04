@@ -1,54 +1,56 @@
 import { expect, test } from '@playwright/test';
-import { mockWiki, PATH } from './wikiMock';
+import { mockWiki, PATH, searchBudget, watchFrames, expectRest, type WikiNode } from './wikiMock';
 
-test('not found and language validation explain how to recover', async ({page, context}) => {
-  await mockWiki(context, 'notFound'); await page.goto('/');
-  await page.getByLabel('Откуда', {exact:true}).fill(PATH[0]);
-  await page.getByLabel('Куда', {exact:true}).fill(PATH.at(-1)!);
-  await page.getByRole('button', {name:'Найти нить',exact:true}).click();
-  await expect(page.locator('.status-message strong')).toHaveText('Путь не найден');
-  await expect(page.locator('.path-step')).toHaveCount(0);
-  await page.getByLabel('Откуда', {exact:true}).fill('https://ru.wikipedia.org/wiki/A');
-  await page.getByLabel('Куда', {exact:true}).fill('https://en.wikipedia.org/wiki/D');
-  await page.getByRole('button', {name:'Найти нить',exact:true}).click();
-  await expect(page.getByRole('alert')).toContainText('Выберите обе из одного');
-});
-
-for(const count of [2,12])test(`scene handles ${count} steps and stops its ticker at rest`,async({page,context})=>{
-  await page.addInitScript(()=>{ const original=window.requestAnimationFrame.bind(window); let frames=0; Object.defineProperty(window,'threadFrames',{get:()=>frames}); window.requestAnimationFrame=callback=>original(time=>{frames++;callback(time);}); });
-  await page.emulateMedia({reducedMotion:'reduce'});
-  const graph=Array.from({length:count},(_,i)=>`Article ${i}`);
-  await context.route('https://*.wikipedia.org/**',async route=>{
-    if(route.request().method()==='OPTIONS'){await route.fulfill({status:204,headers:{'access-control-allow-origin':'*','access-control-allow-headers':'*'}});return;}
-    const q=new URL(route.request().url()).searchParams;
-    await route.fulfill({json:route.request().url().includes('/summary/')?{description:'Статья'}:{query:{pages:(q.get('titles')??'').split('|').map(title=>{const i=graph.indexOf(title);return {title,ns:0,length:100,links:i>=0&&i<count-1?[{title:graph[i+1],ns:0}]:[],linkshere:i>0?[{title:graph[i-1],ns:0}]:[]};})}}});
+for (const width of [767, 768, 1280]) for (const count of [1, 2, 12, 13]) {
+  test(`consecutive measured route ${count} articles at ${width}px`, async ({ page, context }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await watchFrames(page); await searchBudget(page, { maxDepth: 16 });
+    const nodes: WikiNode[] = Array.from({ length: count }, (_, index) => ({
+      title: `Article ${index + 1}`, lang: index < 3 ? 'ru' : 'en',
+    }));
+    await mockWiki(context, 'found', nodes);
+    const endpoint = (node: WikiNode) => `https://${node.lang}.wikipedia.org/wiki/${encodeURIComponent(node.title)}`;
+    await page.goto(`/?from=${encodeURIComponent(endpoint(nodes[0]))}&to=${encodeURIComponent(endpoint(nodes.at(-1)!))}`);
+    await page.getByRole('button', { name: 'Столкнуть' }).click();
+    await expect(page.locator('.route-strip')).toHaveCount(count);
+    await expect(page.locator('.route-strip a')).toHaveText(nodes.map(node => `${node.title} ↗`));
+    await expect(page.locator('.route-counts')).toContainText(`${count - 1} `);
+    await expect(page.locator('.route-counts')).toContainText(`/ ${count} `);
+    await expect(page.locator('.route-connectors path')).toHaveCount(count - 1);
+    for (let index = 1; index < count; index++) {
+      const join = page.locator(`.route-connectors path[data-from="${index}"][data-to="${index + 1}"]`);
+      await expect(join).toHaveCount(1);
+      const d = await join.getAttribute('d'); expect(d).not.toMatch(/NaN|Infinity/);
+      expect(d).toContain(width < 768 ? ' L ' : ' C ');
+      if (index === 3) {
+        await expect(join).toHaveAttribute('stroke-dasharray', '9 7');
+        await expect(page.locator('.route-language-turn')).toHaveText('RU → EN / смена языка');
+      } else await expect(join).not.toHaveAttribute('stroke-dasharray');
+    }
+    expect(await page.locator('.route-list').evaluate(el => getComputedStyle(el).display)).toBe(width < 768 ? 'flex' : 'grid');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+    await expectRest(page);
   });
-  await page.goto('/');
-  await page.getByLabel('Откуда',{exact:true}).fill(graph[0]);await page.getByLabel('Куда',{exact:true}).fill(graph.at(-1)!);
-  await page.getByRole('button',{name:'Найти нить',exact:true}).click();
-  await expect(page.locator('.stage')).toHaveAttribute('data-phase','done');
-  await expect(page.locator('.path-step.is-lit')).toHaveCount(count);
-  await page.evaluate(()=>document.fonts.ready);
-  // Let observers settle, then assert no continuous RAF loop in the done phase.
-  await page.waitForTimeout(100);
-  const before=await page.evaluate(()=>Reflect.get(window,'threadFrames'));
-  await page.waitForTimeout(150);
-  expect(await page.evaluate(()=>Reflect.get(window,'threadFrames'))).toBe(before);
-});
+}
 
-test('hidden tab pauses the animation and cancellation resets the scene',async({page,context})=>{
-  await mockWiki(context,'slow');await page.goto('/');
-  await page.getByLabel('Откуда',{exact:true}).fill(PATH[0]);await page.getByLabel('Куда',{exact:true}).fill(PATH.at(-1)!);
-  await page.getByRole('button',{name:'Найти нить',exact:true}).click();
-  await expect(page.locator('.stage')).toHaveAttribute('data-phase','search');
-  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
-  await page.waitForTimeout(2600);
-  await expect(page.locator('.stage')).toHaveAttribute('data-phase','search');
-  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));});
-  await expect(page.locator('.stage')).toHaveAttribute('data-phase','done');
-  await page.getByRole('button',{name:'Найти нить',exact:true}).click();
-  await page.getByRole('button',{name:'Остановить',exact:true}).click();
-  await expect(page.locator('.stage')).toHaveAttribute('data-phase','idle');
-  await expect(page.locator('.path-step')).toHaveCount(0);
-  await expect(page.locator('.stage-counters strong')).toHaveText(['0','0']);
+test('real API search observations survive hidden tab and cancellation leaves no ongoing animation', async ({ page, context }) => {
+  await watchFrames(page); const fixture = await mockWiki(context, 'long');
+  await page.goto('/?from=Москва&to=Философия&lang=ru');
+  await page.getByRole('button', { name: 'Столкнуть' }).click();
+  await expect(page.locator('.collision-stage')).toBeVisible();
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+  fixture.release();
+  await page.evaluate(() => { Object.defineProperty(document, 'hidden', { configurable: true, get: () => false }); document.dispatchEvent(new Event('visibilitychange')); });
+  await expect(page.locator('.route-strip')).toHaveCount(PATH.length);
+  await expectRest(page);
+  await page.getByRole('button', { name: 'Новая пара' }).click();
+  await mockWiki(context, 'long');
+  await page.getByRole('combobox', { name: 'Откуда' }).fill(PATH[0]);
+  await page.getByRole('combobox', { name: 'Куда', exact: true }).fill(PATH.at(-1)!);
+  await page.getByRole('button', { name: 'Столкнуть' }).click();
+  await page.getByRole('button', { name: 'Остановить' }).click();
+  await expect(page.locator('.collision-stage')).toHaveCount(0);
+  await expect(page.locator('.route-strip')).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Откуда' })).toBeFocused();
+  await expectRest(page);
 });

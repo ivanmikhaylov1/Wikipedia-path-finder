@@ -16,31 +16,22 @@ try { await fetch(url); } catch {
 let chrome;
 try {
   await mkdir('lighthouse-reports', { recursive: true });
-  const summary = {};
-  for (const theme of ['light', 'dark']) {
-    chrome = await launch({ chromePath: chromium.executablePath(), chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'] });
-    const browser = await chromium.connectOverCDP(`http://127.0.0.1:${chrome.port}`);
-    const page = await browser.contexts()[0].newPage();
-    await page.goto(url);
-    await page.evaluate(theme => localStorage.setItem('perehody-theme', theme), theme);
-    await page.reload();
-    if (await page.locator('html').getAttribute('data-theme') !== theme) throw new Error('Theme not applied');
-    await page.close();
-    const scores = [];
-    for (let run = 1; run <= 3; run++) {
-      const result = await lighthouse(url, { port: chrome.port, disableStorageReset: true, output: ['html', 'json'], logLevel: 'error', onlyCategories: categories });
-      if (!result || result.lhr.runtimeError) throw new Error(result?.lhr.runtimeError?.message ?? 'Lighthouse produced no result');
-      await writeFile(`lighthouse-reports/${theme}-mobile-${run}.html`, result.report[0]);
-      await writeFile(`lighthouse-reports/${theme}-mobile-${run}.json`, result.report[1]);
-      const score = Object.fromEntries(categories.map(category => [category, Math.round(result.lhr.categories[category].score * 100)]));
-      scores.push(score); console.log(JSON.stringify({ theme, run, ...score }));
-    }
-    const medians = Object.fromEntries(categories.map(category => [category, scores.map(score => score[category]).sort((a, b) => a - b)[1]]));
-    summary[theme] = { runs: scores, medians };
-    await browser.close(); await chrome.kill(); chrome = undefined;
-    if (Object.values(medians).some(score => score < 90)) process.exitCode = 1;
+  const palette = 'paper';
+  chrome = await launch({ chromePath: chromium.executablePath(), chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'] });
+  const scores = [];
+  for (let run = 1; run <= 3; run++) {
+    const result = await lighthouse(url, { port: chrome.port, disableStorageReset: true, output: ['html', 'json'], logLevel: 'error', onlyCategories: categories });
+    if (!result || result.lhr.runtimeError) throw new Error(result?.lhr.runtimeError?.message ?? 'Lighthouse produced no result');
+    await writeFile(`lighthouse-reports/${palette}-mobile-${run}.html`, result.report[0]);
+    await writeFile(`lighthouse-reports/${palette}-mobile-${run}.json`, result.report[1]);
+    const score = Object.fromEntries(categories.map(category => [category, Math.round(result.lhr.categories[category].score * 100)]));
+    scores.push(score); console.log(JSON.stringify({ palette, run, ...score }));
   }
-  await writeFile('lighthouse-reports/scores.json', JSON.stringify({ profile: 'mobile, simulated throttling; persisted theme preference', themes: summary }, null, 2));
-  console.log('Mobile Lighthouse medians:', summary);
+  const medians = Object.fromEntries(categories.map(category => [category, scores.map(score => score[category]).sort((a, b) => a - b)[1]]));
+  const summary = { runs: scores, medians };
+  await chrome.kill(); chrome = undefined;
+  if (Object.values(medians).some(score => score < 90)) process.exitCode = 1;
+  await writeFile('lighthouse-reports/scores.json', JSON.stringify({ profile: 'mobile, simulated throttling; paper palette', palette: { [palette]: summary } }, null, 2));
+  console.log('Mobile Lighthouse medians:', { [palette]: summary });
 
 } finally { if (chrome) await chrome.kill(); if (server) server.kill(); }

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3ecdf" />
+    <meta name="theme-color" content="#f4f1e8" />
     <meta name="description" content="Ищите цепочку переходов между статьями Википедии в пределах лимитов. Шаг — гиперссылка или переход между языковыми версиями." />
     <link rel="icon" href="%BASE_URL%favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" sizes="180x180" />
@@ -11,30 +11,29 @@
     <link rel="canonical" href="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ru_RU" />
-    <meta property="og:title" content="Переходы — нить между статьями" />
-    <meta property="og:description" content="Ищите путь между статьями в пределах лимитов: связь находится не всегда. Шаг — гиперссылка или переход между языковыми версиями." />
+    <meta property="og:title" content="Переходы — две статьи, одна связь" />
+    <meta property="og:description" content="Две статьи на энциклопедическом развороте. Ищите цепочку ссылок и языковых переходов в пределах лимитов: связь находится не всегда." />
     <meta property="og:url" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/" />
-    <meta property="og:image" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/images/og.webp" />
+    <meta property="og:image" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/images/collision/og.webp" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Переходы. Красная нить связывает узлы на тёмной карте." />
+    <meta property="og:image:alt" content="Переходы — столкновение гравюры осьминога и ультрамариновой геометрии" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://ivanmikhaylov1.github.io/Wikipedia-path-finder/images/collision/og.webp" />
     <title>Переходы — путь между статьями Википедии</title>
-    <link rel="preload" href="/src/assets/fonts/Yq6W-LOTXCb04q32xlpwv8ZfrxE.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/src/assets/fonts/Yq6W-LOTXCb04q32xlpwu8Zf.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/prata-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/src/assets/fonts/oswald-700.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/src/assets/fonts/q5uCsoe9Lv5t7Meb31EcExd8hLxR.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/src/assets/fonts/q5uCsoe9Lv5t7Meb31EcExN8hA.woff2" as="font" type="font/woff2" crossorigin />
-    <script>
-      try { const t = localStorage.getItem('perehody-theme'); document.documentElement.dataset.theme = t === 'dark' || t === 'light' ? t : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; } catch {}
-    </script>
   </head>
-  <body>
+  <body style="background:#f4f1e8;color:#11110f">
     <div id="root"></div>
     <noscript>
-      <main style="max-width:1200px;margin:auto;padding:32px;font-family:system-ui,sans-serif">
-        <h1>Переходы — нить между статьями</h1>
-        <p>Чтобы искать связи в Википедии, включите JavaScript в настройках браузера и обновите страницу.</p>
-        <img src="%BASE_URL%images/knowledge-map.webp" width="2400" height="1400" alt="Карта знаний: красная нить соединяет узлы на тёмном поле." style="width:100%;height:auto;border-radius:22px" />
+      <main style="max-width:1000px;margin:auto;padding:32px;background:#f4f1e8;color:#11110f;font-family:Georgia,serif">
+        <h1>Переходы — две статьи, одна связь</h1>
+        <p>Выберите две статьи Википедии: название или ссылку на нужный языковой раздел. Поиск проверяет цепочку ссылок и языковых переходов в пределах лимитов; путь есть не всегда и найденный не обязательно кратчайший.</p>
+        <p>Чтобы искать связи, включите JavaScript в настройках браузера и обновите страницу.</p>
+        <img src="%BASE_URL%images/collision/octopus-small.webp" width="600" height="800" alt="Декоративная иллюстрация осьминога к примеру статьи «Осьминоги»." style="width:min(100%,300px);height:auto" />
       </main>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>
