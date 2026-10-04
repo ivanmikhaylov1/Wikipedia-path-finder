@@ -4,8 +4,8 @@ import { RouteRibbon } from './components/RouteRibbon';
 import { initialArticlePair } from './lib/articleSelection';
 import { readSharedQuery, queryUrl } from './lib/shareQuery';
 import type { ParsedArticle } from './lib/parseInput';
-import type { BfsResumeState, SearchResult } from './lib/bfs';
-import type { ThreadProgress, WorkerMessage } from './lib/bfs.worker';
+import type { SearchResult } from './lib/bfs';
+import type { ThreadProgress, WorkerMessage, SearchResumeState } from './lib/bfs.worker';
 import { DEFAULT_LIMITS } from './lib/searchLimits';
 import { limitsHitFromReason, type NotFoundState } from './lib/searchOutcome';
 
@@ -26,7 +26,7 @@ export default function App() {
   const [shareStatus, setShareStatus] = useState('');
   const focusResult = useRef(false);
   const workerRef = useRef<Worker | null>(null);
-  const resumeState = useRef<BfsResumeState | undefined>(undefined);
+  const resumeState = useRef<SearchResumeState | undefined>(undefined);
   useEffect(() => () => workerRef.current?.terminate(), []);
 
   const cancel = () => {
@@ -36,7 +36,7 @@ export default function App() {
     setError('Поиск остановлен. Можно изменить статьи и попробовать снова.');
     setFocusRequest(request => request + 1);
   };
-  const startWorker = (from: string, to: string, lang: string, resume?: BfsResumeState, multilingual = false, toLang = lang) => {
+  const startWorker = (from: string, to: string, lang: string, resume?: SearchResumeState, multilingual = false, toLang = lang) => {
     workerRef.current?.terminate();
     setPair({ from: { value: from, selected: { title: from, lang } }, to: { value: to, selected: { title: to, lang: toLang } }, example: false });
     setNotFound(null); setSearching(true); setProgress(null); setResult(null); setError('');
@@ -61,7 +61,7 @@ export default function App() {
         case 'notFound':
           setNotFound({ limitsHit: limitsHitFromReason(message.reason), visited: message.visited, depth: message.depth });
           setProgress(previous => ({ ...previous, depth: message.depth, visited: message.visited, frontierA: 0, frontierB: 0 }));
-          setResult({ status: 'not_found', reason: message.reason, resumeState: message.resumeState });
+          setResult({ status: 'not_found', reason: message.reason });
           resumeState.current = message.resumeState; finish(); break;
         case 'error': setError(`${message.message} Проверьте статьи и повторите поиск.`); candidate.current = null; finish(); break;
       }
