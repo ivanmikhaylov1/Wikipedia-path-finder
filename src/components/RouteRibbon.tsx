@@ -1,15 +1,16 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { routeArticles, routeConnectors, type RoutePoint } from '../lib/routeRibbon';
 import { PublisherMark } from './CollisionSpread';
+import { RouteSearchStatus, type RouteSearchState } from './RouteSearchStatus';
 
-export interface RouteRibbonProps { path: string[]; lang: string; multilingual: boolean; onNewPair(): void; onEdit(): void; onShare(): void; shareStatus: string }
+export interface RouteRibbonProps { path: string[]; lang: string; multilingual: boolean; onNewPair(): void; onEdit(): void; onShare(): void; shareStatus: string; searchState?: RouteSearchState }
 
 function plural(count: number, forms: [string, string, string]) {
   const last = count % 10; const hundred = count % 100;
   return forms[hundred >= 11 && hundred <= 14 ? 2 : last === 1 ? 0 : last >= 2 && last <= 4 ? 1 : 2];
 }
 
-export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onShare, shareStatus }: RouteRibbonProps) {
+export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onShare, shareStatus, searchState }: RouteRibbonProps) {
   const resultKey = JSON.stringify([path, lang, multilingual]);
   const articles = useMemo(() => routeArticles(path, lang, multilingual), [path, lang, multilingual]);
   const list = useRef<HTMLOListElement>(null);
@@ -72,6 +73,7 @@ export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onSha
         {joins.map(join => <path key={`${join.from}-${join.to}`} data-from={join.from} data-to={join.to} d={join.d} fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray={join.crossLanguage ? '9 7' : undefined} markerEnd={`url(#${arrowId})`} />)}
       </svg>}
     </div>
+    {searchState && <RouteSearchStatus {...searchState} />}
     <footer className="ribbon-actions"><button type="button" onClick={onNewPair}>Новая пара <span aria-hidden="true">↗</span></button><button type="button" onClick={onShare}>Поделиться <span aria-hidden="true">↗</span></button><button type="button" onClick={onEdit}>Изменить статьи</button><p role="status">{shareStatus}</p></footer>
   </section>;
 }

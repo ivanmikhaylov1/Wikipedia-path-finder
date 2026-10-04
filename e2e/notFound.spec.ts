@@ -7,7 +7,7 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
     await page.setViewportSize({ width, height: 900 }); await page.emulateMedia({ reducedMotion: 'reduce' });
     const fixture = await mockWiki(context, state === 'no_path' ? 'notFound' : state === 'time' ? 'timeout' : 'found');
     if (state === 'requests') await searchBudget(page, { maxTotalRequests: 3 });
-    if (state === 'noResume') await searchBudget(page, { maxTotalRequests: 1 });
+    if (state === 'noResume') await searchBudget(page, { maxTotalRequests: 0 });
     if (state === 'depth') await searchBudget(page, { maxDepth: 1 });
     if (state === 'time') await searchBudget(page, { searchTimeout: 150 });
     await page.goto('/?from=Москва&to=Философия&lang=ru');
@@ -23,7 +23,7 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
       await expect(from).toBeFocused();
     } else {
       await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible();
-      const stats = { requests: [3, 1], noResume: [0, 0], no_path: [2, 0], depth: [4, 1], time: [2, 0] }[state];
+      const stats = { requests: [2, 0], noResume: [0, 0], no_path: [2, 0], depth: [5, 2], time: [2, 0] }[state];
       await expect(page.locator('.search-status')).toContainText(`Проверено статей: ${stats[0]}. Достигнутая глубина: ${stats[1]}.`);
       await expect(page.locator('.route-strip')).toHaveCount(0);
       await expect(page.locator('.collision-stage')).toHaveCount(0);
@@ -43,7 +43,8 @@ for (const width of [360, 1280]) for (const state of ['requests', 'noResume', 'n
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     if (state === 'requests' || state === 'time') {
       fixture.release(); await page.getByRole('button', { name: 'Искать глубже' }).click();
-      await expect(page.locator('.route-strip')).toHaveCount(PATH.length);
+      if (state === 'time') await expect(page.locator('.route-strip')).toHaveCount(PATH.length);
+      else { await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible(); await expect(page.locator('.search-status')).toContainText('Проверено статей: 3. Достигнутая глубина: 1.'); }
     } else if (state === 'no_path') {
       await page.getByRole('button', { name: 'Изменить статьи', exact: true }).click(); await expect(from).toBeFocused();
       await page.getByRole('button', { name: 'Поменять статьи местами' }).click();

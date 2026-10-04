@@ -29,7 +29,7 @@ export async function anytimeSearch(
   strategies:{completeOut:[...context.completeOut],completeIn:[...context.completeIn],probed:[...context.probed]},
  }:undefined;
  const finish=(reason:'complete'|'budget'|'timeout'|'depth'|'no_path'):AnytimeOutcome=>{
-  const resumeState=reason==='complete'||reason==='no_path'?undefined:snapshot();
+  const resumeState=reason==='complete'||reason==='no_path'||reason==='depth'?undefined:snapshot();
   return best?{status:'found',path:best,exact:false,reason:reason==='depth'?'complete':reason==='no_path'?'complete':reason,...(resumeState?{resumeState}:{})}
    :{status:'not_found',reason:reason==='complete'?'no_path':reason,...(resumeState?{resumeState}:{})};
  };
@@ -46,6 +46,7 @@ export async function anytimeSearch(
    if(!start)throw new ArticleNotFoundError(from,lang);if(!end)throw new ArticleNotFoundError(to,lang);
   }
   context={source,graph,start,end,maxDepth:limits.maxDepth,completeOut:new Set(previous?.strategies.completeOut),completeIn:new Set(previous?.strategies.completeIn),probed:new Set(previous?.strategies.probed)};
+  onProgress({depth:0,visitedCount:articleIdentity(start)===articleIdentity(end)?1:2,round:1,roundCount:1,linkCap:500,frontierA:1,frontierB:source.forwardOnly?0:1});
   if(articleIdentity(start)===articleIdentity(end)){best=[pathTitle(start)];options.onCandidate?.(best);return finish('complete');}
   // A direct-link probe is cheap and bypasses the first-page truncation.
   if(!previous){await bridgeStrategy.step(context);await consider();if(best&&best.length<=2)return finish('complete');}

@@ -151,7 +151,7 @@ test('result copies searched endpoints and new pair restores a fresh example wit
   expect(copied.searchParams.get('from')).toBe('A');
   expect(copied.searchParams.get('to')).toBe('D');
   expect(copied.searchParams.get('lang')).toBe('ru');
-  await expect(page.getByRole('status')).toContainText('Ссылка скопирована');
+  await expect(page.locator('.ribbon-actions [role=status]')).toContainText('Ссылка скопирована');
   await page.getByRole('button', { name: 'Новая пара' }).click();
   await expect(page.getByRole('combobox', { name: 'Откуда' })).toHaveValue('Осьминоги');
   await expect(page.getByRole('combobox', { name: 'Куда', exact: true })).toHaveValue('Bauhaus');
@@ -166,7 +166,7 @@ test('failed clipboard write is announced while the route remains available', as
   await page.getByRole('button', { name: 'Столкнуть' }).click();
   await emit(page, 0, { type: 'found', path: ['A', 'B', 'D'] });
   await page.getByRole('button', { name: 'Поделиться' }).click();
-  await expect(page.getByRole('status')).toContainText('Не удалось скопировать');
+  await expect(page.locator('.ribbon-actions [role=status]')).toContainText('Не удалось скопировать');
   await expect(page.locator('.route-strip')).toHaveCount(3);
 });
 
@@ -188,21 +188,17 @@ test('cancellation followed by a fresh query ignores late messages from the old 
   await expect(page.locator('.route-strip a')).toHaveText(['Fresh ↗', 'End ↗']);
 });
 
-test('notFound beats a candidate; resume retains searched languages after pending edits', async ({ page }) => {
+test('a verified candidate survives exhausted improvement and resume preserves its searched languages', async ({ page }) => {
   await controlledWorkers(page);
-  await page.goto('/?from=A&to=D&lang=ru&mode=multilingual');
+  await page.goto('/?from=https://ru.wikipedia.org/wiki/A&to=https://en.wikipedia.org/wiki/D');
   await page.getByRole('button', { name: 'Столкнуть' }).click();
   await emit(page, 0, { type: 'candidate', path: ['["ru","A"]', '["en","D"]'] });
-  await expect(page.locator('.route-list')).toHaveCount(0);
-  await emit(page, 0, { type: 'notFound', reason: 'time', limitsHit: ['time'], visited: 41, depth: 2, resumeState: resume });
-  await expect(page.getByRole('heading', { name: 'Путь не найден' })).toBeVisible();
-  await expect(page.locator('.route-list')).toHaveCount(0);
-  await page.getByRole('combobox', { name: 'Откуда' }).fill('https://de.wikipedia.org/wiki/Edited');
-  await page.getByRole('button', { name: 'Искать глубже' }).click();
+  await expect(page.locator('.route-list')).toHaveCount(1);
+  await emit(page, 0, { type: 'notFound', reason: 'timeout', limitsHit: ['time'], visited: 41, depth: 2, resumeState: resume });
+  await expect(page.getByRole('heading', { name: 'Путь не найден' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Искать короче' }).click();
   expect(await workerInput(page, 1)).toMatchObject({ from: 'A', to: 'D', lang: 'ru', toLang: 'en', multilingual: true, resumeState: resume });
   await expect(page.getByRole('button', { name: 'Остановить' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Путь не найден' })).toHaveCount(0);
-  await emit(page, 1, { type: 'found', path: ['["ru","A"]', '["en","D"]'] });
   await expect(page.locator('.route-strip a').last()).toHaveAttribute('href', 'https://en.wikipedia.org/wiki/D');
 });
 
