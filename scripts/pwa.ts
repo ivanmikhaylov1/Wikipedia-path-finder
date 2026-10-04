@@ -11,7 +11,7 @@ export function pwa(): Plugin {
     apply: 'build',
     configResolved(config) { output = resolve(config.root, config.build.outDir); },
     async closeBundle() {
-      const files = ['index.html', 'icon.svg', 'manifest.webmanifest', ...(await readdir(resolve(output, 'assets'))).map(file => `assets/${file}`)];
+      const files = ['index.html', 'favicon.svg', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'manifest.webmanifest', 'images/grain.webp', 'images/collision/tear.webp', 'images/collision/paper-strip.svg', 'images/collision/octopus.webp', 'images/collision/octopus-small.webp', ...(await readdir(resolve(output, 'assets'))).map(file => `assets/${file}`)];
       const hash = createHash('sha256');
       for (const file of files) hash.update(await readFile(resolve(output, file)));
       const cache = `perehody-${hash.digest('hex').slice(0, 12)}`;
