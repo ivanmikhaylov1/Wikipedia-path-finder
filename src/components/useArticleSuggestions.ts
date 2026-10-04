@@ -14,7 +14,9 @@ export function useArticleSuggestions(value: string, enabled: boolean): Suggesti
     if (!eligible) return;
     const timer = setTimeout(() => {
       setState({ ...empty, value, loading: true });
-      void suggestArticles(value, () => current).then(result => {
+      void suggestArticles(value, () => current, result => {
+        if (current) setState({ ...result, value, loading: true });
+      }).then(result => {
         if (current) setState({ ...result, value, loading: false });
       });
     }, 300);

@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { mkdir } from 'node:fs/promises';
 import { mockWiki, EXAMPLE_ROUTE } from './wikiMock';
 
 for (const width of [360, 1280]) for (const state of ['idle', 'searching', 'found', 'notFound'] as const) {
@@ -24,8 +23,7 @@ for (const width of [360, 1280]) for (const state of ['idle', 'searching', 'foun
       expect(bounds!.height).toBeGreaterThanOrEqual(44);
     }
     await page.evaluate(() => window.scrollTo(0, 0));
-    await mkdir('docs/verification/collision', { recursive: true });
-    const path = `docs/verification/collision/${state}-${width}.png`;
+    const path = testInfo.outputPath(`${state}-${width}.png`);
     await page.screenshot({ path, fullPage: true, animations: 'disabled' });
     await testInfo.attach('Actual collision state', { path, contentType: 'image/png' });
   });

@@ -183,7 +183,7 @@ test('cancellation followed by a fresh query ignores late messages from the old 
   await emit(page, 0, { type: 'error', message: 'Stale error' });
   await expect(page.getByRole('button', { name: 'Остановить' })).toBeVisible();
   await expect(page.locator('.route-list')).toHaveCount(0);
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByRole('alert')).toBeEmpty();
   await emit(page, 1, { type: 'found', path: ['Fresh', 'End'] });
   await expect(page.locator('.route-strip a')).toHaveText(['Fresh ↗', 'End ↗']);
 });
@@ -222,7 +222,7 @@ test('result arrival does not steal an active link; recovery focuses the first f
   await expect(page.getByRole('alert')).toHaveCount(1);
   await page.getByRole('button', { name: 'Изменить статьи', exact: true }).click();
   await expect(page.getByRole('combobox', { name: 'Откуда' })).toBeFocused();
-  await expect(page.getByRole('alert')).toHaveCount(0);
+  await expect(page.getByRole('alert')).toBeEmpty();
 });
 
 test('PWA shell reloads offline after its first online load', async ({ browser }) => {
@@ -312,4 +312,61 @@ test('keyboard suggestions reveal the last option and wrap without scrolling the
   await input.press('ArrowUp'); await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-7'); await fullyVisible();
   await input.press('Escape'); await expect(input).toHaveAttribute('aria-expanded', 'false');
   await input.press('ArrowUp'); await expect(input).toHaveAttribute('aria-activedescendant', 'article-01-option-7'); await fullyVisible();
+});
+
+
+test('found route edits its searched pair and preserves languages after resumed pending edits', async ({ page }) => {
+  await controlledWorkers(page);
+  await page.goto('/?from=https://en.wikipedia.org/wiki/Alpha&to=https://de.wikipedia.org/wiki/Beta');
+  await page.getByRole('button', { name: 'Столкнуть' }).click();
+  await emit(page, 0, { type: 'notFound', reason: 'depth', visited: 5, depth: 1, resumeState: resume });
+  await page.getByRole('combobox', { name: 'Откуда' }).fill('https://fr.wikipedia.org/wiki/Pending');
+  await page.getByRole('button', { name: 'Искать глубже' }).click();
+  await emit(page, 1, { type: 'found', path: ['["en","Alpha"]', '["de","Beta"]'] });
+  await page.getByRole('button', { name: 'Изменить статьи', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Откуда' })).toHaveValue('Alpha');
+  await expect(page.getByRole('combobox', { name: 'Куда', exact: true })).toHaveValue('Beta');
+  await expect(page.locator('[data-side=from] .language-badge')).toHaveText('EN');
+  await expect(page.locator('[data-side=to] .language-badge')).toHaveText('DE');
+  await expect(page.getByRole('combobox', { name: 'Откуда' })).toBeFocused();
+});
+
+test('progressive suggestions remain usable while the second section is pending and stay anchored', async ({ page, context }) => {
+  let releaseSecond!: () => void;
+  const second = new Promise<void>(resolve => { releaseSecond = resolve; });
+  await context.route('https://*.wikipedia.org/w/api.php?*', async route => {
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*' } });
+    const url = new URL(route.request().url());
+    if (url.hostname === 'en.wikipedia.org') await second;
+    await route.fulfill({ json: { query: { search: [{ title: url.hostname === 'ru.wikipedia.org' ? 'Первая статья' : 'Later article' }] } } });
+  });
+  await page.setViewportSize({ width: 360, height: 900 });
+  await page.goto('/?from=Long%20article%20title%20with%20many%20words&to=D&lang=ru');
+  const input = page.getByRole('combobox', { name: 'Откуда' });
+  await input.fill('Очень длинное название статьи для проверки расположения списка');
+  await expect(page.getByRole('option', { name: 'Первая статья RU' })).toBeVisible();
+  await expect(page.getByRole('option')).toHaveCount(1);
+  const anchored = await page.locator('[data-side=from]').evaluate(field => {
+    const control = field.querySelector('.article-editor')!.getBoundingClientRect();
+    const list = field.querySelector('.suggestions')!.getBoundingClientRect();
+    return list.top >= control.bottom && list.top - control.bottom < 16;
+  });
+  expect(anchored).toBe(true);
+  await input.press('ArrowDown'); await input.press('Enter');
+  await expect(input).toHaveValue('Первая статья');
+  releaseSecond();
+  await expect(input).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('malformed worker route shows accessible reload recovery', async ({ page }) => {
+  await controlledWorkers(page);
+  await page.goto('/?from=A&to=D&lang=ru&mode=multilingual');
+  await page.getByRole('button', { name: 'Столкнуть' }).click();
+  await emit(page, 0, { type: 'found', path: ['invalid route key'] });
+  await expect(page.getByRole('alert')).toContainText('Не удалось показать страницу');
+  await expect(page.getByRole('button', { name: 'Обновить страницу' })).toBeVisible();
+  await page.getByRole('button', { name: 'Обновить страницу' }).click();
+  await expect(page.getByRole('combobox', { name: 'Откуда' })).toHaveValue('https://ru.wikipedia.org/wiki/A');
+  await expect(page.locator('[data-side=from] .article-display')).toHaveText('A');
+  await expect(page.locator('[data-side=from] .language-badge')).toHaveText('RU');
 });

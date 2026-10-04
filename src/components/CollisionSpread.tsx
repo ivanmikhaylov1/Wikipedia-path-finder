@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { initialArticlePair, resolveArticleSelection } from '../lib/articleSelection';
+import { useEffect, useRef, useState } from 'react';
+import { resolveArticleSelection } from '../lib/articleSelection';
 import { SearchForm, type ArticlePair, type SearchFormProps } from './SearchForm';
 import { CollisionStage, type CollisionStageProps } from './CollisionStage';
 import { SearchStatus, type SearchStatusProps } from './SearchStatus';
 
-export interface CollisionSpreadProps extends SearchFormProps, CollisionStageProps, SearchStatusProps {
-  pair?: ArticlePair;
-}
+export interface CollisionSpreadProps extends SearchFormProps, CollisionStageProps, Omit<SearchStatusProps, 'progress'> {}
 
 export function PublisherMark() {
   return <div className="publisher-mark"><a href={import.meta.env.BASE_URL} aria-label="Переходы — на главную">Переходы</a><span>По ссылкам Википедии</span></div>;
@@ -17,10 +15,7 @@ function isArticle(pair: ArticlePair, side: 'from' | 'to', title: string, lang: 
   catch { return false; }
 }
 
-export function CollisionSpread({ pair: suppliedPair, onPairChange, searchId, progress, notFound, canResume, onResume, onEdit, onSwap, ...formProps }: CollisionSpreadProps) {
-  const [currentPair, setCurrentPair] = useState(() => initialArticlePair(location.search, import.meta.env.VITE_LINK_SOURCE === 'local'));
-  const pair = suppliedPair ?? currentPair;
-  const changePair = useCallback((next: ArticlePair) => { setCurrentPair(next); onPairChange?.(next); }, [onPairChange]);
+export function CollisionSpread({ pair, onPairChange, searchId, progress, notFound, canResume, onResume, onEdit, onSwap, ...formProps }: CollisionSpreadProps) {
   const lastSearch = useRef(searchId);
   const [colliding, setColliding] = useState(false);
   useEffect(() => {
@@ -48,10 +43,10 @@ export function CollisionSpread({ pair: suppliedPair, onPairChange, searchId, pr
         {bauhaus && <div className="bauhaus-print"><i className="blue-disc" /><i className="black-bar" /><i className="registration-line" /></div>}
       </div>
     </div>
-    <SearchForm {...formProps} error="" onPairChange={changePair} />
+    <SearchForm {...formProps} error="" pair={pair} onPairChange={onPairChange} />
     <div className="spread-search-state">
       <CollisionStage searching={formProps.searching} searchId={searchId} progress={progress} />
-      <SearchStatus searching={formProps.searching} error={formProps.error} notFound={notFound} canResume={canResume} onResume={onResume} onEdit={onEdit} onSwap={onSwap} />
+      <SearchStatus searching={formProps.searching} error={formProps.error} notFound={notFound} canResume={canResume} onResume={onResume} onEdit={onEdit} onSwap={onSwap} progress={progress} />
     </div>
     <p className="spread-limit">Поиск ограничен лимитами: путь есть не всегда, найденный не обязательно кратчайший.</p>
     <div className="publisher-foot" aria-hidden="true"><span>A</span><span>Выберите две статьи</span><span>B</span></div>

@@ -99,11 +99,11 @@ npm run test:lighthouse      # mobile аудит production-сборки
 
 CI (`.github/workflows/ci.yml`) проверяет pull requests и main: unit/property, сборку, E2E с axe, mobile Lighthouse, размер бандла и local Worker. Deploy workflow выполняет те же проверки перед публикацией и отдельно пересобирает приложение с GitHub Pages base. Для проверки по корню localhost поддерживается `VITE_BASE_PATH=/`.
 
-Сборка генерирует manifest и версионный service worker: оболочка, картинки и локальные шрифты доступны офлайн после первой загрузки. Wikipedia API офлайн недоступен; precache не сохраняет его ответы. IndexedDB-кэш ссылок остаётся отдельным. Графы не precache-ятся автоматически, чтобы установка PWA не скачивала гигабайты. В новом поиске новый Worker загружает локальный граф снова. Для установки PWA используйте HTTPS или localhost; manifest содержит SVG и PNG-иконки 192/512.
+Сборка генерирует manifest и версионный service worker: оболочка и локальные шрифты кэшируются при установке; небольшие декоративные изображения — по возможности. Большая гравюра кэшируется после запроса на широком экране. Сбой декоративного файла не блокирует установку. Wikipedia API офлайн недоступен; precache не сохраняет его ответы. IndexedDB-кэш ссылок остаётся отдельным. Графы не precache-ятся автоматически, чтобы установка PWA не скачивала гигабайты. В новом поиске новый Worker загружает локальный граф снова. Для установки PWA используйте HTTPS или localhost; manifest содержит SVG и PNG-иконки 192/512.
 
 Dev-зависимости: Playwright — браузерные сценарии; `@axe-core/playwright` — доступность; Lighthouse — mobile аудит; `tsx` — выполнение типизированного сборщика. Новых runtime-зависимостей нет. `sharp` используется только для воспроизводимой подготовки ассетов. Prata, Oswald и Golos Text размещены локально с лицензиями SIL OFL в `src/assets/fonts/`.
 
-[Токены и границы изменений](docs/red-thread.md), [результаты проверок](docs/verification.md), [отчёт по двум P1](docs/p1-report.md).
+[Дизайн](docs/collision-design.md), [результаты проверок](docs/collision-verification.md), [изображения и лицензии](docs/collision-assets.md).
 
 ## Деплой форка на GitHub Pages
 

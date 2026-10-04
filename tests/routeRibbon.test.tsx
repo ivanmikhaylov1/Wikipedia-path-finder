@@ -8,7 +8,7 @@ import { routeArticles, routeConnectors } from '../src/lib/routeRibbon';
 
 const path = ['Осьминоги', 'Моллюски', 'Биология', 'Искусство', 'Art', 'Bauhaus'];
 const multiPath = path.map((title, i) => JSON.stringify([i < 4 ? 'ru' : 'en', title]));
-const props = { path: multiPath, lang: 'ru', multilingual: true, onNewPair() {}, onShare() {}, shareStatus: '' };
+const props = { path: multiPath, lang: 'ru', multilingual: true, onNewPair() {}, onEdit() {}, onShare() {}, shareStatus: '' };
 function markup(options = {}) { return parseHTML(renderToStaticMarkup(<RouteRibbon {...props} {...options} />)).document; }
 
 it('keeps route order in one ordered list while assigning serpentine desktop positions', () => {
@@ -121,4 +121,15 @@ it('skips assembly with reduced motion and wires end actions', () => {
   act(() => { buttons[0].click(); buttons[1].click(); });
   expect(onNewPair).toHaveBeenCalledOnce(); expect(onShare).toHaveBeenCalledOnce();
   expect(container.querySelector('[role=status]')?.textContent).toBe('Ссылка скопирована');
+});
+
+
+it('offers editing the searched pair from the found result', () => {
+  const container = mount(true);
+  const onEdit = vi.fn();
+  act(() => root!.render(<RouteRibbon {...props} onEdit={onEdit} />));
+  const button = Array.from(container.querySelectorAll('button')).find(button => button.textContent === 'Изменить статьи');
+  expect(button).toBeDefined();
+  act(() => button!.click());
+  expect(onEdit).toHaveBeenCalledOnce();
 });

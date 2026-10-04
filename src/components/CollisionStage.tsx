@@ -18,7 +18,7 @@ export function CollisionStage({ searching, searchId, progress }: CollisionStage
     <div className="search-fragments" aria-hidden="true">
       {progress?.sampleTitles?.map((title, index) => <span className="search-fragment" key={`${index}:${title}`} style={{ '--fragment': index } as CSSProperties}>{sampleTitle(title)}</span>)}
     </div>
-    <p className="search-counts" role="status" aria-atomic="true">
+    <p className="search-counts">
       <span>Проверено статей: {progress?.visited ?? 0}</span>
       <span>Глубина: {progress?.depth ?? 0}</span>
       <span>Со стороны начала: {progress?.frontierA ?? 0}</span>

@@ -1,3 +1,5 @@
+> Исторический отчёт по PR #2. Текущие дизайн и проверки описаны в [collision-design.md](collision-design.md) и [collision-verification.md](collision-verification.md).
+
 # Закрытие P1 Impeccable — 3 октября 2026
 
 Рабочая ветка: `redesign/krasnaya-nit`, база P1 — `8f9bfc9`. Правки первоначально подготовлены в `fix/impeccable-p1`, затем перенесены в ветку PR #2 по новому заданию, разрешающему push, зелёный CI и обычное слияние. На момент подготовки main остаётся на `903cd3e`, поэтому rebase не требуется. После PR #2 следует отдельный PR предварительного маршрута.

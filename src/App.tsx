@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CollisionSpread } from './components/CollisionSpread';
 import { RouteRibbon } from './components/RouteRibbon';
 import { initialArticlePair } from './lib/articleSelection';
-import { queryUrl } from './lib/shareQuery';
+import { readSharedQuery, queryUrl } from './lib/shareQuery';
 import type { ParsedArticle } from './lib/parseInput';
 import type { BfsResumeState, SearchResult } from './lib/bfs';
 import type { ThreadProgress, WorkerMessage } from './lib/bfs.worker';
@@ -21,7 +21,7 @@ export default function App() {
   const [query, setQuery] = useState({ from: '', to: '', lang: 'ru', toLang: 'ru', multilingual: false });
   const [searchId, setSearchId] = useState(0);
   const [pair, setPair] = useState(() => initialArticlePair(location.search, import.meta.env.VITE_LINK_SOURCE === 'local'));
-  const [formResetKey, setFormResetKey] = useState(0);
+  const [localLang] = useState(() => import.meta.env.VITE_LINK_SOURCE === 'local' ? readSharedQuery(location.search).lang : undefined);
   const [focusRequest, setFocusRequest] = useState(0);
   const [shareStatus, setShareStatus] = useState('');
   const focusResult = useRef(false);
@@ -38,6 +38,7 @@ export default function App() {
   };
   const startWorker = (from: string, to: string, lang: string, resume?: BfsResumeState, multilingual = false, toLang = lang) => {
     workerRef.current?.terminate();
+    setPair({ from: { value: from, selected: { title: from, lang } }, to: { value: to, selected: { title: to, lang: toLang } }, example: false });
     setNotFound(null); setSearching(true); setProgress(null); setResult(null); setError('');
     setShareStatus('');
     setQuery({ from, to, lang, toLang, multilingual }); setSearchId(id => id + 1);
@@ -98,18 +99,17 @@ export default function App() {
   };
   const editPair = () => { clearOutcome(); setFocusRequest(request => request + 1); };
   const swapPair = () => {
-    formRef.current?.querySelector<HTMLButtonElement>('[data-swap]')?.click();
+    setPair(current => ({ from: current.to, to: current.from, example: false }));
     editPair();
   };
   const newPair = () => {
     clearOutcome();
-    // The result unmounts the form. Clear the old URL before its next initializer runs.
+    // A fresh example also clears the shared query in the address bar.
     const url = new URL(location.href);
     url.search = '';
     if (import.meta.env.VITE_LINK_SOURCE === 'local') url.searchParams.set('lang', query.lang);
     history.replaceState(null, '', url);
     setPair(initialArticlePair(url.search, import.meta.env.VITE_LINK_SOURCE === 'local'));
-    setFormResetKey(key => key + 1);
     setFocusRequest(request => request + 1);
   };
   const share = async () => {
@@ -121,8 +121,8 @@ export default function App() {
   return <div className="app-shell">
     <a className="skip-link" href="#main">Перейти к поиску</a>
     <main id="main">
-      {path ? <RouteRibbon path={path} lang={query.lang} multilingual={query.multilingual} onNewPair={newPair} onShare={share} shareStatus={shareStatus} />
-        : <CollisionSpread formRef={formRef} pair={pair} onPairChange={setPair} resetKey={formResetKey}
+      {path ? <RouteRibbon path={path} lang={query.lang} multilingual={query.multilingual} onNewPair={newPair} onEdit={editPair} onShare={share} shareStatus={shareStatus} />
+        : <CollisionSpread formRef={formRef} pair={pair} onPairChange={setPair} localLang={localLang}
           searching={searching} searchId={searchId} progress={progress} error={error}
           onSearch={search} onCancel={cancel} onValidationError={setError}
           notFound={notFound} canResume={Boolean(resumeState.current)} onResume={resumeSearch} onEdit={editPair} onSwap={swapPair} />}

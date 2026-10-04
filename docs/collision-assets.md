@@ -12,10 +12,10 @@ Originals remain in the generated_images directory. Optimization uses existing s
 
 Self-hosted display fonts use official Google Fonts distributions:
 
-- `src/assets/fonts/prata-400.ttf`: Prata 400, [official source and OFL license](https://github.com/google/fonts/tree/main/ofl/prata), local license `prata-OFL.txt`.
-- `src/assets/fonts/oswald-700.ttf`: Oswald 700, [official source and OFL license](https://github.com/google/fonts/tree/main/ofl/oswald), local license `oswald-OFL.txt`.
+- `src/assets/fonts/prata-400.woff2`: Prata 400, [official source and OFL license](https://github.com/google/fonts/tree/main/ofl/prata), local license `prata-OFL.txt`.
+- `src/assets/fonts/oswald-700.woff2`: Oswald 700, [official source and OFL license](https://github.com/google/fonts/tree/main/ofl/oswald), local license `oswald-OFL.txt`.
 
-Distribution URLs were obtained from Google Fonts CSS; production loads local files, not remote font services. Source and license retain their original names and content. The final bundle measurement includes TTF along with other fonts.
+Distribution URLs were obtained from Google Fonts CSS; production loads local files, not remote font services. Source and license retain their original names and content. Full WOFF2 conversions preserve the original glyphs (including Cyrillic), cmap, outlines and metrics. FontTools 4.66.1 and Brotli 1.2.0 converted the official TTF distributions without subsetting; no conversion tool is a production dependency. Prata is 36,512 bytes and Oswald is 32,696 bytes.
 
 ## Octopus prompt
 
@@ -30,3 +30,15 @@ Use case: stylized-concept. Asset type: standalone transparent paper-tear textur
 `public/images/collision/paper-strip.svg` is a 589-byte authored SVG mask. Its curved strip path is displaced by seeded SVG `feTurbulence` (`seed="17"`) and `feDisplacementMap` to create fine irregular paper edges. CSS uses the mask with the existing grain texture; this asset has no generation prompt or external source.
 
 App icons keep their existing authored vector geometry, recolored to paper `#f4f1e8`, ink `#11110f` and ultramarine `#123bff`. Run `node scripts/prepare-icons.mjs` to regenerate `favicon.svg`, `icon.svg` and the 180/192/512px PNG variants through existing sharp. Task 6 delivery sizes and verification are recorded separately in [collision-verification.md](collision-verification.md).
+
+## Generation terms
+
+Illustrations and concepts were generated with OpenAI image_gen. The [OpenAI Terms of Use](https://openai.com/policies/terms-of-use/) (effective January 1, 2026; checked October 4, 2026), Content section, assign output rights to the user as between OpenAI and the user, to the extent permitted by law. Output may not be unique; this is not a third-party public-domain image license or a guarantee of exclusive copyright. The generated imagery is identified here as AI-generated and is decorative. No Wikipedia illustrations or historical Bauhaus works were copied into the product.
+
+## Social sharing cover
+
+`public/images/collision/og.webp` is a dedicated opaque 1200 × 630 cover (WebP quality 85). It was generated on 2026-10-04 using the existing octopus as an image reference, then resized and flattened on ivory with sharp. Both Open Graph and Twitter metadata use it. It is not precached by the PWA.
+
+Exact prompt:
+
+Create a landscape social sharing cover for an avant-garde encyclopedia website. Wide 1200 x 630 composition, fully opaque warm ivory paper (#f4f1e8), dense black ink (#11110f), electric ultramarine (#123bff). Use the referenced engraved octopus, large on the left, tentacles spreading along the lower left. On the right a huge ultramarine circle and diagonal black printed rectangle, interrupted by a ragged torn-paper vertical seam at center. Daring editorial collage, natural history colliding with geometric design. Bold Russian headline Переходы near upper center/right, and small secondary line Две статьи — одна связь. Strong readable headline; preserve safe margins of at least 70px, all meaningful content within central 1000x500 area for social cropping. Subtle paper fibers, restrained print texture. No interface controls, no screenshot, no transparency, no frame, no watermark. Artwork must read as a complete horizontal poster, not a portrait illustration.

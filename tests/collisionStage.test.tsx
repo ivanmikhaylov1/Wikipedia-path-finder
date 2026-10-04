@@ -30,3 +30,10 @@ it('prints a multilingual worker key as its actual article title', () => {
   expect(html).toContain('>Architecture</span>');
   expect(html).not.toContain('&quot;');
 });
+
+
+it('keeps rapidly changing counts outside live regions', () => {
+  const html = renderToStaticMarkup(<CollisionStage searching searchId={1} progress={progress} />);
+  expect(html).not.toContain('role="status"');
+  expect(html).not.toContain('aria-live');
+});

@@ -7,7 +7,9 @@ const sections = ['ru', 'en', 'de', 'fr', 'es'];
 // Both fields share this queue, including the freshness check before a queued call.
 let queue: Promise<unknown> = Promise.resolve();
 
-export async function suggestArticles(text: string, isCurrent: () => boolean = () => true): Promise<{ articles: ParsedArticle[]; failed: boolean }> {
+export interface SuggestionResult { articles: ParsedArticle[]; failed: boolean }
+
+export async function suggestArticles(text: string, isCurrent: () => boolean = () => true, onUpdate?: (result: SuggestionResult) => void): Promise<SuggestionResult> {
   const articles: ParsedArticle[] = [];
   const seen = new Set<string>();
   let succeeded = false;
@@ -26,6 +28,7 @@ export async function suggestArticles(text: string, isCurrent: () => boolean = (
         seen.add(key); articles.push({ title, lang }); count++;
         if (count === 2 || articles.length === 8) break;
       }
+      onUpdate?.({ articles: [...articles], failed: false });
       if (articles.length === 8) break;
     } catch {
       if (!isCurrent()) return { articles: [], failed: false };

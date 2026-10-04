@@ -36,7 +36,9 @@ it('owns one runtime error announcement and hides stale notFound state', () => {
 });
 it('idle and active status do not promise a path', () => {
   const idle = renderToStaticMarkup(<SearchStatus searching={false} error="" canResume={false} onResume={() => {}} />);
-  expect(idle).toBe('');
+  expect(idle).toContain('is-empty');
+  expect(idle).not.toContain('hidden=');
+  expect(idle).not.toContain('<h2>');
   const active = renderToStaticMarkup(<SearchStatus searching error="" canResume={false} onResume={() => {}} />);
   expect(active).toContain('Ищем связь');
   expect(active).not.toMatch(/кратчайший|обязательно найд/);

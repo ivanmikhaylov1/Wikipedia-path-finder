@@ -11,3 +11,7 @@ playwright-report/
 test-results/
 lighthouse-reports/
 dist-local/
+
+# Local implementation notes and generated browser captures
+docs/superpowers/
+docs/verification/

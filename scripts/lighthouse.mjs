@@ -18,7 +18,6 @@ try {
   await mkdir('lighthouse-reports', { recursive: true });
   const palette = 'paper';
   chrome = await launch({ chromePath: chromium.executablePath(), chromeFlags: ['--headless', '--no-sandbox', '--disable-dev-shm-usage'] });
-  const browser = await chromium.connectOverCDP(`http://127.0.0.1:${chrome.port}`);
   const scores = [];
   for (let run = 1; run <= 3; run++) {
     const result = await lighthouse(url, { port: chrome.port, disableStorageReset: true, output: ['html', 'json'], logLevel: 'error', onlyCategories: categories });
@@ -30,7 +29,7 @@ try {
   }
   const medians = Object.fromEntries(categories.map(category => [category, scores.map(score => score[category]).sort((a, b) => a - b)[1]]));
   const summary = { runs: scores, medians };
-  await browser.close(); await chrome.kill(); chrome = undefined;
+  await chrome.kill(); chrome = undefined;
   if (Object.values(medians).some(score => score < 90)) process.exitCode = 1;
   await writeFile('lighthouse-reports/scores.json', JSON.stringify({ profile: 'mobile, simulated throttling; paper palette', palette: { [palette]: summary } }, null, 2));
   console.log('Mobile Lighthouse medians:', { [palette]: summary });

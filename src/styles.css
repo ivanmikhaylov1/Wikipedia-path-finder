@@ -66,7 +66,7 @@ input { caret-color: var(--accent); }
 .field-folio { font: 400 clamp(32px, 4.1vw, 60px)/1 var(--serif); letter-spacing: -.04em; }
 .field-label { font-size: 11px; text-transform: uppercase; letter-spacing: .22em; padding-bottom: 7px; border-bottom: 1px solid var(--ink); min-width: 96px; }
 .language-badge { display: inline-grid; place-items: center; min-width: 40px; min-height: 28px; padding: 3px 8px; border: 1px solid var(--ink); color: var(--ink); background: var(--paper); font: 400 15px/1.2 var(--serif); }
-.field-control { position: relative; min-width: 0; }
+.field-control { position: relative; min-width: 0; --editor-height: 64px; }
 .article-display { font: 400 clamp(68px, 21cqw, 165px)/.96 var(--serif); letter-spacing: -.04em; text-transform: uppercase; overflow-wrap: anywhere; padding-bottom: 12px; }
 .article-field[data-side=to] .article-display { font-family: var(--condensed); font-weight: 700; font-size: clamp(80px, 25cqw, 210px); color: var(--accent); line-height: 1.04; letter-spacing: -.035em; }
 .article-field[data-title-size=medium] .article-display { font-size: clamp(42px, 12cqw, 96px); line-height: 1.1; }
@@ -78,9 +78,9 @@ input { caret-color: var(--accent); }
 .article-edit-button:hover { color: var(--ink); }
 .article-field.is-editing { z-index: 10; }
 .article-field.is-editing .article-display { opacity: .2; }
-.article-field.is-editing .article-editor { top: 0; bottom: auto; height: 64px; padding: 14px 16px; color: var(--ink); caret-color: var(--accent); background: var(--paper); border: 1px solid var(--accent); opacity: 1; font: 400 20px/1.4 'Golos Text', sans-serif; box-shadow: 0 10px 30px #11110f20; outline-offset: 3px; }
+.article-field.is-editing .article-editor { top: 0; bottom: auto; height: var(--editor-height); padding: 14px 16px; color: var(--ink); caret-color: var(--accent); background: var(--paper); border: 1px solid var(--accent); opacity: 1; font: 400 20px/1.4 'Golos Text', sans-serif; box-shadow: 0 10px 30px #11110f20; outline-offset: 3px; }
 .article-field.is-editing .article-edit-button { margin-top: 8px; }
-.suggestions { position: absolute; z-index: 20; top: 134px; left: 0; right: 0; max-height: min(350px, 48svh); overflow-y: auto; background: var(--paper); border: 1px solid var(--ink); box-shadow: 0 12px 30px #11110f20; }
+.suggestions { position: absolute; z-index: 20; top: calc(var(--editor-height) + 6px); left: 0; right: 0; max-height: min(350px, 48svh); overflow-y: auto; background: var(--paper); border: 1px solid var(--ink); box-shadow: 0 12px 30px #11110f20; }
 .suggestion { display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%; min-height: 48px; text-align: left; padding: 10px 14px; border: 0; border-bottom: 1px solid var(--line); background: var(--paper); color: var(--ink); font-size: 15px; line-height: 1.4; }
 .suggestion > span:first-child { overflow-wrap: anywhere; }
 .suggestion .language-badge { flex: none; font-size: 12px; min-width: 34px; }
@@ -151,7 +151,6 @@ input { caret-color: var(--accent); }
   .article-field[data-title-size=long] .article-display { font-size: 9cqw; line-height: 1.25; }
   .article-edit-button { font-size: 11px; min-height: 44px; }
   .article-field.is-editing .article-editor { font-size: 18px; }
-  .suggestions { top: 110px; }
   .seam-controls { grid-row: 2; margin: 14px -20px 10px; padding-top: 12px; justify-self: stretch; }
   .seam-controls::before { content: ''; position: absolute; z-index: -1; pointer-events: none; left: 50%; top: 22px; width: 70px; height: 100vw; background: url('/images/collision/tear.webp') center/100% 100% no-repeat; transform: translate(-50%,-50%) rotate(90deg); }
   .collision-submit { min-height: 56px; padding: 9px 20px; gap: 12px; font-size: 27px; }
@@ -259,3 +258,6 @@ input { caret-color: var(--accent); }
 }
 @media (prefers-reduced-motion: reduce) { .is-assembling .route-strip::before { animation: none; } }
 @media (prefers-reduced-data: reduce) { .route-ribbon::after { background-image: none; } }
+
+/* Empty live regions remain in the accessibility tree without visual spacing. */
+.search-status.is-empty { padding: 0; border: 0; margin: 0; }

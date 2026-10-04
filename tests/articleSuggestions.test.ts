@@ -59,3 +59,21 @@ it('skips a stale queued field before its first request', async () => {
   await Promise.all([suggestArticles('Current'), suggestArticles('Outdated', () => false)]);
   expect(texts).not.toContain('Outdated');
 });
+
+
+it('publishes the first section before a slow second section completes', async () => {
+  let finishSecond!: (titles: string[]) => void;
+  vi.spyOn(WikiApiClient.prototype, 'suggest').mockImplementation(async (_text, lang) => {
+    if (lang === 'ru') return ['Берлин'];
+    if (lang === 'en') return new Promise(resolve => { finishSecond = resolve; });
+    return [];
+  });
+  const updates: { articles: { title: string; lang: string }[]; failed: boolean }[] = [];
+  const pending = suggestArticles('Berlin', () => true, update => updates.push(update));
+  await vi.waitFor(() => expect(finishSecond).toBeTypeOf('function'));
+  expect(updates[0]).toEqual({ articles: [{ title: 'Берлин', lang: 'ru' }], failed: false });
+  finishSecond(['Berlin']);
+  await pending;
+  expect(updates[0].articles).toHaveLength(1);
+  expect(updates.at(-1)?.articles).toHaveLength(2);
+});

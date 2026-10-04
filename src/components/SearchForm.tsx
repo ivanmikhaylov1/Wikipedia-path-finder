@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { initialArticlePair, resolveArticleSelection, resolveSearchPair, type ArticleSelection } from '../lib/articleSelection';
 import type { ParsedArticle } from '../lib/parseInput';
-import { readSharedQuery, queryUrl } from '../lib/shareQuery';
+import { queryUrl } from '../lib/shareQuery';
 import { ArticleField } from './ArticleField';
 
 export type ArticlePair = ReturnType<typeof initialArticlePair>;
@@ -10,25 +10,14 @@ export interface SearchFormProps {
   searching: boolean; error: string;
   onSearch: (from: ParsedArticle, to: ParsedArticle, multilingual: boolean) => void;
   onCancel: () => void; onValidationError: (message: string) => void;
-  onPairChange?: (pair: ArticlePair) => void; resetKey?: number;
+  pair: ArticlePair; onPairChange: (pair: ArticlePair) => void; localLang?: string;
 }
 
-export function SearchForm({ searching, error, onSearch, onCancel, onValidationError, formRef, onPairChange, resetKey }: SearchFormProps) {
-  const local = import.meta.env.VITE_LINK_SOURCE === 'local';
-  const [localLang] = useState(() => local ? readSharedQuery(location.search).lang : undefined);
-  const [pair, setPair] = useState(() => initialArticlePair(location.search, local));
+export function SearchForm({ searching, error, onSearch, onCancel, onValidationError, formRef, pair, onPairChange, localLang }: SearchFormProps) {
   const [validation, setValidation] = useState<{ from?: string; to?: string }>({});
-  const previousReset = useRef(resetKey);
-  useEffect(() => { onPairChange?.(pair); }, [pair, onPairChange]);
-  useEffect(() => {
-    if (previousReset.current === resetKey) return;
-    previousReset.current = resetKey;
-    setPair(initialArticlePair(localLang ? `?lang=${localLang}` : '', local));
-    setValidation({});
-  }, [resetKey, local, localLang]);
   const change = (field: 'from' | 'to', selection: ArticleSelection) => {
     setValidation({}); onValidationError('');
-    setPair(current => ({ ...current, [field]: selection, example: false }));
+    onPairChange({ ...pair, [field]: selection, example: false });
   };
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -67,9 +56,9 @@ export function SearchForm({ searching, error, onSearch, onCancel, onValidationE
     <div className="seam-controls">
       {searching ? <button key="stop" className="collision-submit cancel-button" type="button" onClick={onCancel}>Остановить</button>
         : <button key="submit" className="collision-submit" type="submit">Столкнуть<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg></button>}
-      <button className="swap-button" data-swap type="button" disabled={searching} onClick={() => {
+      <button className="swap-button" type="button" disabled={searching} onClick={() => {
         setValidation({}); onValidationError('');
-        setPair(current => ({ from: current.to, to: current.from, example: false }));
+        onPairChange({ from: pair.to, to: pair.from, example: false });
       }}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M7 20V4m-4 4 4-4 4 4m6-4v16m-4-4 4 4 4-4" /></svg>Поменять статьи местами</button>
     </div>
     {pair.example && <p className="example-pair">Пример пары · путь не гарантирован</p>}

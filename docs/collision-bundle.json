@@ -1,8 +1,8 @@
 {
   "baselineCommit": "903cd3e3ae65b2d809e295ec51cdc6bd708e94e6",
   "baselineBytes": 474655,
-  "totalBytes": 279974,
-  "deltaBytes": -194681,
+  "totalBytes": 257318,
+  "deltaBytes": -217337,
   "maxGrowthBytes": 30000,
   "files": [
     {
@@ -10,20 +10,20 @@
       "gzip": 5401
     },
     {
-      "file": "index-3hGLJlyS.js",
-      "gzip": 78991
+      "file": "index-BCMeOjlX.js",
+      "gzip": 79327
     },
     {
-      "file": "index-Cp0b5cnb.css",
-      "gzip": 6645
+      "file": "index-CDGkxkHs.css",
+      "gzip": 6663
     },
     {
-      "file": "oswald-700-CM4Tt9Ci.ttf",
-      "gzip": 45030
+      "file": "oswald-700-sKTivz0n.woff2",
+      "gzip": 32653
     },
     {
-      "file": "prata-400-AlJaus4f.ttf",
-      "gzip": 47178
+      "file": "prata-400-Coz73QBM.woff2",
+      "gzip": 36545
     },
     {
       "file": "q5uCsoe9Lv5t7Meb31EcEx18hLxR-B-I5lbAQ.woff2",

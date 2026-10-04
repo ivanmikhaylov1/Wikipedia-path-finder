@@ -2,12 +2,13 @@ import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { parseHTML } from 'linkedom';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { initialArticlePair } from '../src/lib/articleSelection';
 import { CollisionSpread, type CollisionSpreadProps } from '../src/components/CollisionSpread';
 
 let root: Root;
 let container: HTMLElement;
 const idle: CollisionSpreadProps = {
-  searching: false, searchId: 0, progress: null, error: '', canResume: false,
+  pair: initialArticlePair("", false), onPairChange() {}, searching: false, searchId: 0, progress: null, error: '', canResume: false,
   onResume() {}, onSearch() {}, onCancel() {}, onValidationError() {},
 };
 
