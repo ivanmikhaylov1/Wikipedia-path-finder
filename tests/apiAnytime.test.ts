@@ -98,3 +98,94 @@ it('restores all continuation parameters across source instances', async () => {
   const request = calls.find(u => u.searchParams.has('plcontinue'))!;
   expect(request.searchParams.get('continue')).toBe('||');
 });
+
+it('invalid continuation discards the previous generation of fresh links', async () => {
+  let phase = 0;
+  vi.stubGlobal('fetch', vi.fn(async (input: URL) => {
+    const q = new URL(String(input)).searchParams;
+    const body = q.has('plcontinue') ? { error: { code: 'badcontinue', info: 'expired' } }
+      : q.get('prop') === 'links|info' ? { query: { pages: [{ title: 'A', ns: 0, links: [{ title: phase++ ? 'Current' : 'Removed', ns: 0 }] }] }, ...(phase === 1 ? { continue: { plcontinue: 'old' } } : {}) }
+      : { query: { pages: q.get('titles')!.split('|').map(title => ({ title, ns: 0 })) } };
+    return { ok: true, status: 200, json: async () => body };
+  }));
+  const source = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  await source.readLinkPage(article('A'), 'out');
+  const restarted = await source.readLinkPage(article('A'), 'out');
+  expect(restarted.edges.map(e => e.to.title)).toEqual(['Current']);
+  expect(restarted.invalidatedEdges?.map(e => e.to.title)).toEqual(['Removed']);
+});
+it('rechecks persisted incoming aliases after a redirect is retargeted', async () => {
+  vi.stubGlobal('indexedDB', new IDBFactory());
+  const aliases = { Alias: 'B' }; wiki({ X: ['Alias'], B: [], C: [] }, aliases);
+  const first = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  await first.readLinkPage(article('B'), 'in'); await first.readLinkPage(article('B'), 'in');
+  aliases.Alias = 'C';
+  const resumed = await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).readLinkPage(article('B'), 'in');
+  expect(resumed.edges).toEqual([]);
+});
+it('rejects a stale multilingual alias whose canonical destination changed', async () => {
+  vi.stubGlobal('fetch', vi.fn(async (input: URL) => {
+    const q = new URL(String(input)).searchParams;
+    return { ok: true, status: 200, json: async () => ({ query: q.get('prop') === 'langlinks'
+      ? { pages: [{ title: 'A', ns: 0, langlinks: [{ lang: 'en', title: 'Alias' }] }] }
+      : { pages: [{ title: 'New', ns: 0 }], redirects: [{ from: 'Alias', to: 'New' }] } }) };
+  }));
+  expect(await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).validateEdges([
+    { from: article('A', 'ru'), to: article('Old'), rawTarget: 'Alias', fresh: false },
+  ])).toBe(false);
+});
+it('returns a bridge page before exploring the rest of a large redirect family', async () => {
+  const aliases = Object.fromEntries(Array.from({ length: 100 }, (_, i) => [`Alias${i}`, 'B']));
+  const calls = wiki({ A: ['Alias0'], B: [] }, aliases);
+  const source = new ApiLinkSource({ ...DEFAULT_LIMITS, maxTotalRequests: 5 }, { anytime: true });
+  await source.readLinkPage(article('B'), 'in'); await source.readLinkPage(article('B'), 'in');
+  const before = calls.length;
+  const page = await source.probeLinkPage([article('A')], [article('B')]);
+  expect(page.edges.map(e => e.rawTarget)).toContain('Alias0');
+  expect(page.complete).toBe(false); expect(page.cursor).toBeDefined();
+  expect(calls.length - before).toBe(1);
+});
+it('preserves a newer complete persistent record against a late partial write', async () => {
+  vi.stubGlobal('indexedDB', new IDBFactory());
+  const { LinkCache } = await import('../src/lib/linkCache');
+  const edge = (to: string) => ({ from: article('A'), to: article(to), rawTarget: to, fresh: true });
+  const first = new LinkCache(), second = new LinkCache();
+  await first.put('race', { edges: [edge('B'), edge('C'), edge('D')], complete: true, storedAt: Date.now(), revision: 3 });
+  await second.put('race', { edges: [edge('B'), edge('C')], complete: false, storedAt: Date.now(), revision: 2, cursor: { plcontinue: '2' } });
+  const saved = await new LinkCache().get('race');
+  expect(saved?.complete).toBe(true); expect(saved?.edges).toHaveLength(3);
+});
+it('serializes pagination across source instances and refreshes their persistent progress', async () => {
+  vi.stubGlobal('indexedDB', new IDBFactory());
+  const calls = wiki({ A: ['B', 'C', 'D'], B: [], C: [], D: [] }, {}, 1);
+  const transport = globalThis.fetch;
+  let release!: () => void; let entered!: () => void;
+  const gate = new Promise<void>(resolve => { release = resolve; });
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  let held = false;
+  vi.stubGlobal('fetch', vi.fn(async (input: URL, init?: RequestInit) => {
+    const q = new URL(String(input)).searchParams;
+    if (q.get('plcontinue') === '1' && !held) { held = true; entered(); await gate; }
+    return transport(input, init);
+  }));
+  const a = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }), b = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  await a.readLinkPage(article('A'), 'out');
+  const delayed = a.readLinkPage(article('A'), 'out'); await started;
+  const next = b.readLinkPage(article('A'), 'out'); release();
+  await delayed; expect((await next).edges).toHaveLength(3);
+  const saved = await a.readLinkPage(article('A'), 'out');
+  expect(saved.complete).toBe(true); expect(saved.edges).toHaveLength(3);
+  expect(calls.filter(u => u.searchParams.get('prop') === 'links|info').map(u => u.searchParams.get('plcontinue'))).toEqual([null, '1', '2']);
+});
+it('resumes bridge pages without repeating the first alias group', async () => {
+  const aliases = Object.fromEntries(Array.from({ length: 100 }, (_, i) => [`Alias${i}`, 'B']));
+  const calls = wiki({ A: ['Alias0', 'Alias99'], B: [] }, aliases);
+  const source = new ApiLinkSource(DEFAULT_LIMITS, { anytime: true });
+  await source.readLinkPage(article('B'), 'in'); await source.readLinkPage(article('B'), 'in');
+  const first = await source.probeLinkPage([article('A')], [article('B')]);
+  const second = await new ApiLinkSource(DEFAULT_LIMITS, { anytime: true }).probeLinkPage([article('A')], [article('B')], first.cursor);
+  const third = await source.probeLinkPage([article('A')], [article('B')], second.cursor);
+  expect(third.complete).toBe(true); expect(third.edges.map(e => e.rawTarget)).toEqual(['Alias99']);
+  const groups = calls.filter(u => u.searchParams.has('pltitles')).map(u => u.searchParams.get('pltitles')!.split('|'));
+  expect(groups.map(g => g.length)).toEqual([50, 50, 1]); expect(new Set(groups.flat()).size).toBe(101);
+});

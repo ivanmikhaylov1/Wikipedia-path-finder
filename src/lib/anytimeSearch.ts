@@ -26,7 +26,7 @@ export async function anytimeSearch(
  const pathTitle=(article:CanonicalArticle)=>source.forwardOnly?articleIdentity(article):article.title;
  const snapshot=():AnytimeResumeState|undefined=>context?{
   version:1,from,to,lang,forwardOnly:!!source.forwardOnly,start:context.start,end:context.end,graph:graph.snapshot(),best,
-  strategies:{completeOut:[...context.completeOut],completeIn:[...context.completeIn],probed:[...context.probed]},
+  strategies:{completeOut:[...context.completeOut],completeIn:[...context.completeIn],probed:[...context.probed],pendingProbes:Object.fromEntries(context.pendingProbes ?? [])},
  }:undefined;
  const finish=(reason:'complete'|'budget'|'timeout'|'depth'|'no_path'):AnytimeOutcome=>{
   const resumeState=reason==='complete'||reason==='no_path'||reason==='depth'?undefined:snapshot();
@@ -34,10 +34,13 @@ export async function anytimeSearch(
    :{status:'not_found',reason:reason==='complete'?'no_path':reason,...(resumeState?{resumeState}:{})};
  };
  const consider=async()=>{
+  while (true) {
   const route=graph.route(start!,end!,Math.min(12,2*limits.maxDepth));if(!route)return;
   const candidate=[pathTitle(start!),...route.map(e=>pathTitle(e.to))];if(best&&candidate.length>=best.length)return;
-  if(!await source.validateEdges(route)){graph.discard(route.filter(e=>!e.fresh));return;}
-  best=candidate;options.onCandidate?.(candidate);
+  const invalid: typeof route = [];
+  if(!await source.validateEdges(route, edge=>invalid.push(edge))){const rejected=invalid.length?invalid:route.filter(e=>!e.fresh);if(!rejected.length)return;graph.discard(rejected);continue;}
+  best=candidate;options.onCandidate?.(candidate);return;
+  }
  };
  try{
   if(!start||!end){
@@ -45,9 +48,10 @@ export async function anytimeSearch(
    start=resolved.get(from)??undefined;end=resolved.get(to)??undefined;
    if(!start)throw new ArticleNotFoundError(from,lang);if(!end)throw new ArticleNotFoundError(to,lang);
   }
-  context={source,graph,start,end,maxDepth:limits.maxDepth,completeOut:new Set(previous?.strategies.completeOut),completeIn:new Set(previous?.strategies.completeIn),probed:new Set(previous?.strategies.probed)};
+  context={source,graph,start,end,maxDepth:limits.maxDepth,completeOut:new Set(previous?.strategies.completeOut),completeIn:new Set(previous?.strategies.completeIn),probed:new Set(previous?.strategies.probed),pendingProbes:new Map(Object.entries(previous?.strategies.pendingProbes ?? {}))};
   onProgress({depth:0,visitedCount:articleIdentity(start)===articleIdentity(end)?1:2,round:1,roundCount:1,linkCap:500,frontierA:1,frontierB:source.forwardOnly?0:1});
   if(articleIdentity(start)===articleIdentity(end)){best=[pathTitle(start)];options.onCandidate?.(best);return finish('complete');}
+  await consider();if(best&&best.length<=2)return finish('complete');
   // A direct-link probe is cheap and bypasses the first-page truncation.
   if(!previous){await bridgeStrategy.step(context);await consider();if(best&&best.length<=2)return finish('complete');}
   while(Date.now()<deadline){

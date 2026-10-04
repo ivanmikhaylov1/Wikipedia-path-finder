@@ -1,5 +1,5 @@
 import { articleIdentity, type CanonicalArticle, type LinkDirection, type LinkEvidence, type LinkPage, type QueryPurpose } from './linkSource';
-import { LinkCache, type AdjacencyRecord } from './linkCache';
+import { LinkCache, withAdjacencyLock, type AdjacencyRecord } from './linkCache';
 import { ApiQueryError, type WikiApiClient } from './wikiApi';
 
 /** Progressive graph acquisition shares the legacy source's HTTP client and budget. */
@@ -40,11 +40,11 @@ export class ApiGraphAcquisition {
   readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose: QueryPurpose = 'explore'): Promise<LinkPage> {
     const key = JSON.stringify([article.lang, article.title, direction, 'namespace0-canonical-v1']);
     const existing = this.inFlight.get(key); if (existing) return existing;
-    const promise = this.acquire(key, article, direction, purpose).finally(() => this.inFlight.delete(key));
+    const promise = withAdjacencyLock(key, () => this.acquire(key, article, direction, purpose)).finally(() => this.inFlight.delete(key));
     this.inFlight.set(key, promise); return promise;
   }
   private async acquire(key: string, article: CanonicalArticle, direction: LinkDirection, purpose: QueryPurpose): Promise<LinkPage> {
-    const record: AdjacencyRecord = await this.cache.get(key) ?? { edges: [], complete: false, storedAt: Date.now(), phase: 'direct', aliases: [], aliasIndex: 0 };
+    let record: AdjacencyRecord = await this.cache.get(key) ?? { edges: [], complete: false, storedAt: Date.now(), phase: 'direct', aliases: [], aliasIndex: 0 };
     if (record.complete) return { edges: record.edges, complete: true };
     const incoming = direction === 'in';
     const aliasesPhase = incoming && record.phase === 'aliases';
@@ -52,12 +52,30 @@ export class ApiGraphAcquisition {
     const params: Record<string, string> = aliasesPhase ? { prop: 'redirects', rdnamespace: '0', rdlimit: 'max' }
       : incoming ? { prop: 'linkshere|info', lhnamespace: '0', lhshow: '!redirect', lhlimit: 'max' }
       : { prop: 'links|info', plnamespace: '0', pllimit: 'max' };
+    let invalidatedEdges: LinkEvidence[] = [];
+    if (incoming && record.phase === 'references') {
+      // Saved alias membership is a hint, never current-search proof.
+      this.identities.delete(JSON.stringify([article.lang, title]));
+      const current = (await this.canonicalize([title], article.lang, purpose)).get(title);
+      if (!current || articleIdentity(current) !== articleIdentity(article)) {
+        invalidatedEdges = record.edges.filter(e => e.rawTarget === title);
+        record.edges = record.edges.filter(e => e.rawTarget !== title);
+        record.aliasIndex = (record.aliasIndex ?? 0) + 1;
+        record.complete = record.aliasIndex >= (record.aliases?.length ?? 0);
+        record.cursor = undefined; record.revision = (record.revision ?? 0) + 1;
+        record = await this.cache.put(key, record);
+        return { edges: record.edges, complete: record.complete, invalidatedEdges };
+      }
+    }
     let data;
     try { data = await this.api.query(article.lang, { ...params, titles: title, ...record.cursor }, purpose); }
     catch (error) {
       if (!(error instanceof ApiQueryError) || !['badcontinue', 'invalidcontinue'].includes(error.code) || !record.cursor) throw error;
-      record.cursor = undefined;
-      data = await this.api.query(article.lang, { ...params, titles: title }, purpose);
+      const invalidatedEdges = record.edges;
+      // Restart the full adjacency generation, including its incoming phases.
+      await this.cache.put(key, { edges: [], complete: false, storedAt: Date.now(), phase: 'direct', aliases: [], aliasIndex: 0, revision: (record.revision ?? 0) + 1 });
+      const restarted = await this.acquire(key, article, direction, purpose);
+      return { ...restarted, invalidatedEdges: [...invalidatedEdges, ...(restarted.invalidatedEdges ?? [])] };
     }
     const page = data.query?.pages?.find(p => p.title === title) ?? data.query?.pages?.[0];
     const edges: LinkEvidence[] = [];
@@ -84,47 +102,61 @@ export class ApiGraphAcquisition {
       else if (record.phase === 'aliases') { record.phase = 'references'; record.complete = !record.aliases?.length; }
       else { record.aliasIndex = (record.aliasIndex ?? 0) + 1; record.complete = record.aliasIndex >= (record.aliases?.length ?? 0); }
     }
-    record.storedAt = Date.now(); await this.cache.put(key, record);
+    record.storedAt = Date.now(); record.revision = (record.revision ?? 0) + 1; record = await this.cache.put(key, record);
     // Include already acquired edges so a resumed/new source can rebuild its discovered graph.
     return { edges: record.edges, complete: record.complete, cursor: record.cursor };
   }
   async probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose: QueryPurpose = 'explore'): Promise<LinkEvidence[]> {
-    const result: LinkEvidence[] = [];
-    for (const lang of new Set(from.map(a => a.lang))) {
-      const sources = from.filter(a => a.lang === lang); const targets = to.filter(a => a.lang === lang);
-      const rawTargets = new Map<string, CanonicalArticle>();
-      targets.forEach(a => { rawTargets.set(a.title, a); this.aliases.get(articleIdentity(a))?.forEach(alias => rawTargets.set(alias, a)); });
-      const entries = [...rawTargets];
-      for (let i = 0; i < sources.length; i += 50) for (let j = 0; j < entries.length; j += 50) {
-        const group = sources.slice(i, i + 50); const wanted = new Map(entries.slice(j, j + 50)); let cursor: Record<string, string> | undefined;
-        do {
-          const data = await this.api.query(lang, { prop: 'links', plnamespace: '0', pllimit: 'max', titles: group.map(a => a.title).join('|'), pltitles: [...wanted.keys()].join('|'), ...cursor }, purpose);
-          for (const page of data.query?.pages ?? []) {
-            const source = group.find(a => a.title === page.title); if (!source || page.missing || page.ns !== 0) continue;
-            for (const link of page.links ?? []) { const target = wanted.get(link.title); if (target && link.ns === 0) result.push({ from: source, to: target, rawTarget: link.title, fresh: true }); }
-          }
-          cursor = data.continue;
-        } while (cursor);
-      }
-    }
+    const result: LinkEvidence[] = []; let cursor: Record<string, string> | undefined;
+    do { const page = await this.probeLinkPage(from, to, cursor, purpose); result.push(...page.edges); cursor = page.cursor; } while (cursor);
     return result;
   }
-  async validateEdges(edges: LinkEvidence[]): Promise<boolean> {
+  /** One HTTP page per scheduling turn. Jobs and cursor travel with the resume state. */
+  async probeLinkPage(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose: QueryPurpose = 'explore'): Promise<LinkPage> {
+    type Job = { lang: string; sources: CanonicalArticle[]; targets: Array<[string, CanonicalArticle]> };
+    const state: { jobs: Job[]; index: number; continuation?: Record<string, string> } = cursor
+      ? JSON.parse(cursor.probe) : { jobs: [], index: 0 };
+    if (!cursor) for (const lang of new Set(from.map(a => a.lang))) {
+      const sources = from.filter(a => a.lang === lang), targets = to.filter(a => a.lang === lang);
+      const raw = new Map<string, CanonicalArticle>();
+      targets.forEach(a => { raw.set(a.title, a); this.aliases.get(articleIdentity(a))?.forEach(alias => raw.set(alias, a)); });
+      const entries = [...raw];
+      for (let i = 0; i < sources.length; i += 50) for (let j = 0; j < entries.length; j += 50)
+        state.jobs.push({ lang, sources: sources.slice(i, i + 50), targets: entries.slice(j, j + 50) });
+    }
+    const job = state.jobs[state.index]; if (!job) return { edges: [], complete: true };
+    const data = await this.api.query(job.lang, { prop: 'links', plnamespace: '0', pllimit: 'max', titles: job.sources.map(a => a.title).join('|'), pltitles: job.targets.map(([title]) => title).join('|'), ...state.continuation }, purpose);
+    const wanted = new Map(job.targets), edges: LinkEvidence[] = [];
+    for (const page of data.query?.pages ?? []) {
+      const source = job.sources.find(a => a.title === page.title); if (!source || page.missing || page.invalid || page.ns !== 0) continue;
+      for (const link of page.links ?? []) {
+        const target = wanted.get(link.title);
+        // Canonical targets are fresh; aliases restored in a resumed job require validation.
+        if (target && link.ns === 0) edges.push({ from: source, to: target, rawTarget: link.title, fresh: link.title === target.title });
+      }
+    }
+    state.continuation = data.continue; if (!data.continue) state.index++;
+    const complete = state.index >= state.jobs.length;
+    return { edges, complete, ...(!complete ? { cursor: { probe: JSON.stringify(state) } } : {}) };
+  }
+  async validateEdges(edges: LinkEvidence[], onInvalid?: (edge: LinkEvidence) => void): Promise<boolean> {
     for (const edge of edges) {
       if (edge.fresh) continue;
       if (edge.from.lang !== edge.to.lang) {
+        const identities = await this.canonicalize([edge.rawTarget], edge.to.lang, 'validate');
+        if (articleIdentity(identities.get(edge.rawTarget) ?? { lang: '', title: '' }) !== articleIdentity(edge.to)) { onInvalid?.(edge); return false; }
         let cursor: Record<string, string> | undefined; let exists = false;
         do {
           const data = await this.api.query(edge.from.lang, { prop: 'langlinks', titles: edge.from.title, lllimit: 'max', ...cursor }, 'validate');
           exists ||= !!data.query?.pages?.[0]?.langlinks?.some(l => l.lang === edge.to.lang && l.title === edge.rawTarget);
           cursor = data.continue;
         } while (cursor && !exists);
-        if (!exists) return false;
+        if (!exists) { onInvalid?.(edge); return false; }
       } else {
         const identities = await this.canonicalize([edge.rawTarget], edge.to.lang, 'validate');
-        if (articleIdentity(identities.get(edge.rawTarget) ?? { lang: '', title: '' }) !== articleIdentity(edge.to)) return false;
+        if (articleIdentity(identities.get(edge.rawTarget) ?? { lang: '', title: '' }) !== articleIdentity(edge.to)) { onInvalid?.(edge); return false; }
         const data = await this.api.query(edge.from.lang, { prop: 'links', titles: edge.from.title, plnamespace: '0', pltitles: edge.rawTarget, pllimit: 'max' }, 'validate');
-        if (!data.query?.pages?.some(p => !p.missing && p.ns === 0 && p.title === edge.from.title && p.links?.some(l => l.ns === 0 && l.title === edge.rawTarget))) return false;
+        if (!data.query?.pages?.some(p => !p.missing && p.ns === 0 && p.title === edge.from.title && p.links?.some(l => l.ns === 0 && l.title === edge.rawTarget))) { onInvalid?.(edge); return false; }
       }
     }
     return true;

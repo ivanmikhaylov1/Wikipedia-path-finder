@@ -65,3 +65,57 @@ it('retains a candidate when the deadline expires after publication',async()=>{
     expect(result).toMatchObject({status:'found',path:['A','B','D'],reason:'timeout'});
   } finally {clock.mockRestore();}
 });
+it('validates a pending shortcut on resume even when acquisition is already exhausted', async () => {
+  const source = new FixtureSource({ A: ['B', 'C'], B: ['C'], C: ['D'], D: [] });
+  const article = (title: string) => ({ title, lang: 'en' });
+  const edge = (from: string, to: string) => ({ from: article(from), to: article(to), rawTarget: to, fresh: false });
+  const edges = [edge('A', 'B'), edge('B', 'C'), edge('C', 'D'), edge('A', 'C')];
+  const identities = ['A', 'B', 'C', 'D'].map(t => JSON.stringify(['en', t]));
+  const result = await anytimeSearch(source, 'A', 'D', 'en', DEFAULT_LIMITS, undefined, { resumeState: {
+    version: 1, from: 'A', to: 'D', lang: 'en', forwardOnly: false, start: article('A'), end: article('D'),
+    graph: { edges }, best: ['A', 'B', 'C', 'D'], strategies: {
+      completeOut: identities, completeIn: identities,
+      probed: [JSON.stringify([[identities[0], identities[1], identities[2], identities[3]], [identities[3], identities[2], identities[1], identities[0]]])],
+    },
+  } });
+  expect(result).toMatchObject({ status: 'found', path: ['A', 'C', 'D'] });
+  expect(source.calls.some(c => c.kind === 'validate')).toBe(true);
+});
+it('continues a pending bridge page when BFS has changed the frontier', async () => {
+  const { bridgeStrategy } = await import('../src/lib/searchStrategies');
+  const { DiscoveredGraph } = await import('../src/lib/discoveredGraph');
+  const article = (title: string) => ({ title, lang: 'en' });
+  const source = new FixtureSource({ A: ['B'], B: ['D'], D: [] });
+  const graph = new DiscoveredGraph();
+  const cursor = { probe: 'saved-job' };
+  const probe = vi.fn(async (_from: unknown, _to: unknown, _continuation?: Record<string,string>) => ({ edges: [], complete: true, cursor: undefined }));
+  Object.assign(source, { probeLinkPage: probe });
+  const key = JSON.stringify([[JSON.stringify(['en', 'A'])], [JSON.stringify(['en', 'D'])]]);
+  graph.add([{ from: article('A'), to: article('B'), rawTarget: 'B', fresh: true }]);
+  const context = { source, graph, start: article('A'), end: article('D'), maxDepth: 3,
+    completeOut: new Set<string>(), completeIn: new Set<string>(), probed: new Set<string>(), pendingProbes: new Map([[key, cursor]]) };
+  await bridgeStrategy.step(context);
+  expect(probe.mock.calls[0][2]).toEqual(cursor);
+  expect(context.pendingProbes.size).toBe(0); expect(context.probed.has(key)).toBe(true);
+});
+it('reconsiders another cached route after rejecting an invalid shortcut', async () => {
+  const article = (title: string) => ({ title, lang: 'en' });
+  const edge = (from: string, to: string) => ({ from: article(from), to: article(to), rawTarget: to, fresh: false });
+  const source = new FixtureSource({ A: ['B'], B: ['C'], C: ['D'], D: [] });
+  source.probeLinks = async () => [];
+  source.validateEdges = async (edges, onInvalid?: (invalid: ReturnType<typeof edge>) => void) => {
+    const bad = edges.find(e => !source.graph[e.from.title]?.includes(e.rawTarget));
+    if (bad) onInvalid?.(bad); return !bad;
+  };
+  const identities = ['A', 'B', 'C', 'D'].map(t => JSON.stringify(['en', t]));
+  const { DiscoveredGraph } = await import('../src/lib/discoveredGraph');
+  const discovered = new DiscoveredGraph({ edges: [edge('A', 'C'), edge('C', 'D'), edge('A', 'B'), edge('B', 'C')] });
+  const key = JSON.stringify([discovered.reachable(article('A'), 'out', 2 * DEFAULT_LIMITS.maxDepth).map(n => JSON.stringify([n.article.lang,n.article.title])), discovered.reachable(article('D'), 'in', DEFAULT_LIMITS.maxDepth).map(n => JSON.stringify([n.article.lang,n.article.title]))]);
+  const result = await anytimeSearch(source, 'A', 'D', 'en', DEFAULT_LIMITS, undefined, { resumeState: {
+    version: 1, from: 'A', to: 'D', lang: 'en', forwardOnly: false, start: article('A'), end: article('D'),
+    graph: { edges: [edge('A', 'C'), edge('C', 'D'), edge('A', 'B'), edge('B', 'C')] }, best: null,
+    strategies: { completeOut: identities, completeIn: identities,
+      probed: [key] },
+  } });
+  expect(result).toMatchObject({ status: 'found', path: ['A', 'B', 'C', 'D'] });
+});

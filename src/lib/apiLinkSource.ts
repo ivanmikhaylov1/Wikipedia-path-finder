@@ -69,8 +69,9 @@ export class ApiLinkSource implements AnytimeLinkSource {
   setDeadline(deadline: number): void { this.api.setDeadline(deadline); }
   canonicalize(titles: string[], lang: string, purpose?: QueryPurpose) { return this.acquisition.canonicalize(titles, lang, purpose); }
   readLinkPage(article: CanonicalArticle, direction: LinkDirection, purpose?: QueryPurpose) { return this.acquisition.readLinkPage(article, direction, purpose); }
+  probeLinkPage(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose?: QueryPurpose) { return this.acquisition.probeLinkPage(from, to, cursor, purpose); }
   probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose) { return this.acquisition.probeLinks(from, to, purpose); }
-  validateEdges(edges: LinkEvidence[]) { return this.acquisition.validateEdges(edges); }
+  validateEdges(edges: LinkEvidence[], onInvalid?: (edge: LinkEvidence) => void) { return this.acquisition.validateEdges(edges, onInvalid); }
   private key(lang: string, title: string, direction: Direction, _cap = this.linkCeiling): string { return JSON.stringify([lang, title, direction]); }
   private async cachedLinks(key: string): Promise<CachedLinks | null> {
     const memory = this.linkCache.get(key);

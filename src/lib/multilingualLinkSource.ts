@@ -51,8 +51,9 @@ export class MultilingualLinkSource implements LinkSource {
     }
     return { ...page, edges: [...page.edges, ...await translated] };
   }
+  probeLinkPage(from: CanonicalArticle[], to: CanonicalArticle[], cursor?: Record<string, string>, purpose?: QueryPurpose) { return this.progressive().probeLinkPage!(from, to, cursor, purpose); }
   probeLinks(from: CanonicalArticle[], to: CanonicalArticle[], purpose?: QueryPurpose) { return this.progressive().probeLinks(from, to, purpose); }
-  validateEdges(edges: LinkEvidence[]) { return this.progressive().validateEdges(edges); }
+  validateEdges(edges: LinkEvidence[], onInvalid?: (edge: LinkEvidence) => void) { return this.progressive().validateEdges(edges, onInvalid); }
   async resolveRedirect(key: string): Promise<string> {
     const article = articleFromKey(key);
     this.calls++;
