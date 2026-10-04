@@ -22,6 +22,7 @@ export type SearchResult =
   | { status: 'found'; path: string[]; exact: boolean }
   | { status: 'not_found'; reason: NotFoundReason; resumeState?: BfsResumeState };
 export interface SearchProgress {
+  strategy?: 'bfs' | 'bridge' | 'guided';
   depth: number;
   visitedCount: number;
   round: number;

@@ -14,7 +14,7 @@ it('never traverses an incoming edge as an outgoing edge and keeps languages sep
   const graph = new DiscoveredGraph(); graph.add([edge('B','A'), { from: a('A','ru'), to: a('B','en'), rawTarget:'B', fresh:true }]);
   expect(graph.route(a('A'), a('B'), 12)).toBeNull();
   expect(graph.route(a('A','ru'), a('B','en'), 12)).toHaveLength(1);
-  expect(graph.reachable(a('A'), 'in', 6).map(n => n.article.title)).toEqual(['A','B']);
+  expect(graph.reachable(a('A'), 'in', 6).map(n => [n.article.lang,n.article.title])).toEqual([['en','A'],['en','B'],['ru','A']]);
 });
 it('preserves raw aliases and evidence freshness in snapshots and invalidates unsupported edges', () => {
   const graph = new DiscoveredGraph(); graph.add([{ ...edge('A','B',false), rawTarget:'Alias' }]);
