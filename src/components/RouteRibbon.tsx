@@ -2,6 +2,8 @@ import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 
 import { routeArticles, routeConnectors, type RoutePoint } from '../lib/routeRibbon';
 import { PublisherMark } from './CollisionSpread';
 import { RouteSearchStatus, type RouteSearchState } from './RouteSearchStatus';
+import { ConstructionCover, EngravingCover, usePointerDepth } from './GenerativeCover';
+import { colophon, pairAngle } from '../lib/coverArt';
 
 export interface RouteRibbonProps { path: string[]; lang: string; multilingual: boolean; onNewPair(): void; onEdit(): void; onShare(): void; shareStatus: string; searchState?: RouteSearchState }
 
@@ -14,6 +16,8 @@ export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onSha
   const resultKey = JSON.stringify([path, lang, multilingual]);
   const articles = useMemo(() => routeArticles(path, lang, multilingual), [path, lang, multilingual]);
   const list = useRef<HTMLOListElement>(null);
+  const section = useRef<HTMLElement>(null);
+  usePointerDepth(section);
   const [assembling, setAssembling] = useState(false);
   const [geometry, setGeometry] = useState<{ width: number; height: number; points: RoutePoint[]; mobile: boolean } | null>(null);
   const arrowId = useId();
@@ -48,10 +52,14 @@ export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onSha
   const edges = Math.max(0, articles.length - 1);
   const octopus = articles.some(article => article.lang === 'ru' && article.title === 'Осьминоги');
   const bauhaus = articles.some(article => article.title.toLowerCase() === 'bauhaus');
-  return <section className={`route-ribbon${assembling ? ' is-assembling' : ''}`} aria-labelledby="route-heading">
+  const first = articles[0], last = articles.at(-1)!;
+  const angle = pairAngle(first, last);
+  return <section ref={section} className={`route-ribbon${assembling ? ' is-assembling' : ''}`} aria-labelledby="route-heading">
     <div className="ribbon-art" aria-hidden="true">
       {octopus && <img className="ribbon-octopus" src={`${import.meta.env.BASE_URL}images/collision/octopus.webp`} srcSet={`${import.meta.env.BASE_URL}images/collision/octopus-small.webp 600w, ${import.meta.env.BASE_URL}images/collision/octopus.webp 1086w`} sizes="(max-width: 767px) 220px, 40vw" width="1086" height="1448" alt="" />}
+      {!octopus && <EngravingCover article={first} angle={angle} className="ribbon-engraving" exchanged />}
       {bauhaus && <div className="ribbon-bauhaus"><i className="blue-disc" /><i className="black-bar" /></div>}
+      {!bauhaus && <ConstructionCover article={last} angle={angle} className="ribbon-construction" exchanged />}
       <span className="ribbon-endword">{articles.at(-1)?.title}</span>
     </div>
     <header className="publisher-margin"><PublisherMark /><p>По ссылкам /<br />Википедии</p></header>
@@ -75,5 +83,6 @@ export function RouteRibbon({ path, lang, multilingual, onNewPair, onEdit, onSha
     </div>
     {searchState && <RouteSearchStatus {...searchState} />}
     <footer className="ribbon-actions"><button type="button" onClick={onNewPair}>Новая пара <span aria-hidden="true">↗</span></button><button type="button" onClick={onShare}>Поделиться <span aria-hidden="true">↗</span></button><button type="button" onClick={onEdit}>Изменить статьи</button><p role="status">{shareStatus}</p></footer>
+    <p className="ribbon-colophon" aria-hidden="true">{colophon(first, last)}</p>
   </section>;
 }

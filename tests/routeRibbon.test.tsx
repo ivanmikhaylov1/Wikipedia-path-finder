@@ -32,7 +32,7 @@ it('labels only language changes and counts actual edges', () => {
   const same = markup({ path: ['Осьминоги'], multilingual: false });
   expect(same.querySelector('.route-counts')?.textContent).toContain('0 переходов / 1 статья');
   expect(same.querySelectorAll('ol a')).toHaveLength(1);
-  expect(same.querySelectorAll('svg path')).toHaveLength(0);
+  expect(same.querySelectorAll('.route-connectors path')).toHaveLength(0);
 });
 it('retains all thirteen articles exactly once', () => {
   const titles = Array.from({ length: 13 }, (_, i) => `Article ${i + 1}`);
@@ -78,7 +78,7 @@ it('exposes all links immediately, ends assembly after 700ms, and restarts on a 
   expect(vi.getTimerCount()).toBe(0);
   act(() => root!.render(<RouteRibbon {...props} path={['A', 'B']} multilingual={false} />));
   expect(container.querySelector('.is-assembling')).not.toBeNull();
-  expect(container.querySelector('svg')).toBeNull(); // linkedom has zero-sized layout.
+  expect(container.querySelector('.route-connectors')).toBeNull(); // linkedom has zero-sized layout.
 });
 
 it('measures actual anchors, recalculates on resize, and disconnects after unmount', () => {
@@ -107,7 +107,7 @@ it('measures actual anchors, recalculates on resize, and disconnects after unmou
   expect(container.querySelector('[data-from="3"]')?.getAttribute('d')).toBe('M 70 310 L 70 410');
   zeroAnchor = true;
   act(() => recalculate());
-  expect(container.querySelector('svg')).toBeNull();
+  expect(container.querySelector('.route-connectors')).toBeNull();
   act(() => root!.unmount()); root = undefined;
   expect(disconnected).toBe(true);
 });
